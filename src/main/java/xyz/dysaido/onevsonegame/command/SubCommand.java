@@ -1,2 +1,11 @@
-package xyz.dysaido.onevsonegame.command;public @interface SubCommand {
+package xyz.dysaido.onevsonegame.command;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.TYPE})
+public @interface SubCommand {
 }

@@ -1,0 +1,14 @@
+broadcast-message: "&e&lClick to join the &oevent"
+join-counter:
+  max-value: 60
+  flood:
+    message: "&e&lClick to join the event, it will be end &c{min}min&e&l, &c{sec}s"
+    periodic: 10
+    min-value: 5
+state:
+  starting:
+  start:
+  end:
+  ending:
+
+scoreboard:
