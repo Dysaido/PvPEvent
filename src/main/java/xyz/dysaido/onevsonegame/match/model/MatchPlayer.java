@@ -7,9 +7,9 @@ import xyz.dysaido.onevsonegame.match.MatchState;
 
 public class MatchPlayer {
 
-    private MatchState state = MatchState.QUEUE;
     private final Inventory mOriginalInventory;
     private final Inventory mGameInventory;
+    private MatchState state = MatchState.QUEUE;
 
     public MatchPlayer(Match match, Player player) {
         mOriginalInventory = player.getInventory();

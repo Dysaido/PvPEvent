@@ -12,8 +12,6 @@ public class Reflection {
 
     public static final FinalFieldSetter FFS;
 
-    public static final String SOURCE = "Check ProtocolSupport git repository";
-
     static {
         FinalFieldSetter inner;
         try {
@@ -59,11 +57,14 @@ public class Reflection {
         return object;
     }
 
+    @FunctionalInterface
     public static interface FinalFieldSetter {
+
         void set(Object holder, Field field, Object value);
+
     }
 
-    public static class FinalFieldSetterBitwiseImpl implements FinalFieldSetter {
+    private static class FinalFieldSetterBitwiseImpl implements FinalFieldSetter {
 
         @Override
         public void set(Object holder, Field field, Object value) {
@@ -80,7 +81,7 @@ public class Reflection {
     private static class FinalFieldSetterUnsafeImpl implements FinalFieldSetter {
         private final Unsafe unsafe;
 
-        private FinalFieldSetterUnsafeImpl() throws ReflectiveOperationException{
+        private FinalFieldSetterUnsafeImpl() throws ReflectiveOperationException {
             Field field = accessible(Unsafe.class.getDeclaredField("theUnsafe"));
             unsafe = (Unsafe) field.get(null);
         }

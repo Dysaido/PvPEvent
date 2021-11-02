@@ -15,17 +15,17 @@ import java.util.Objects;
 
 public class FileManager {
     private final static String TAG = "FileManager";
-    private final JavaPlugin javaPlugin;
+    private final JavaPlugin mPlugin;
     private final File mFile;
     private FileConfiguration mFileConfiguration;
 
     public FileManager(JavaPlugin plugin, String name) {
-        this.javaPlugin = Objects.requireNonNull(plugin);
+        this.mPlugin = Objects.requireNonNull(plugin);
         this.mFile = createFile(Objects.requireNonNull(name));
     }
 
     public FileManager(JavaPlugin plugin, File file) {
-        this.javaPlugin = Objects.requireNonNull(plugin);
+        this.mPlugin = Objects.requireNonNull(plugin);
         this.mFile = Objects.requireNonNull(file);
     }
 
@@ -44,7 +44,7 @@ public class FileManager {
     }
 
     private File createFile(String name) {
-        return new File(javaPlugin.getDataFolder(), name + ".yml");
+        return new File(mPlugin.getDataFolder(), name + ".yml");
     }
 
     private void reloadFile(String filename) {
@@ -57,7 +57,7 @@ public class FileManager {
     private InputStream getResource(String filename) {
         if (filename == null) throw new IllegalArgumentException("Filename cannot be null");
         try {
-            URL url = javaPlugin.getClass().getClassLoader().getResource(filename);
+            URL url = mPlugin.getClass().getClassLoader().getResource(filename);
             if (url == null) return null;
             URLConnection connection = url.openConnection();
             connection.setUseCaches(false);

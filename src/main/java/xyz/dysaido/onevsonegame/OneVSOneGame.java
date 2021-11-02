@@ -1,6 +1,5 @@
 package xyz.dysaido.onevsonegame;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Server;
 import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -13,6 +12,10 @@ public final class OneVSOneGame extends JavaPlugin {
 
     private static OneVSOneGame instance;
     private FileManager arenas;
+
+    public static OneVSOneGame getInstance() {
+        return instance;
+    }
 
     @Override
     public void onEnable() {
@@ -37,9 +40,5 @@ public final class OneVSOneGame extends JavaPlugin {
 
     public FileManager getArenas() {
         return arenas;
-    }
-
-    public static OneVSOneGame getInstance() {
-        return instance;
     }
 }
