@@ -2,21 +2,16 @@ package xyz.dysaido.onevsonegame.match;
 
 import org.bukkit.Location;
 import org.bukkit.inventory.Inventory;
+import xyz.dysaido.onevsonegame.arena.Arena;
 
 public class Match {
 
     private final Inventory mGameInventory;
-    private final Location mSpawn;
-    private final Location mLobby;
-    private final Location mSpawn1;
-    private final Location mSpawn2;
+    private final Arena mArena;
 
-    public Match(Inventory inventory, Location spawn, Location lobby, Location spawn1, Location spawn2) {
+    public Match(Inventory inventory, Arena arena) {
         this.mGameInventory = inventory;
-        this.mSpawn = spawn;
-        this.mLobby = lobby;
-        this.mSpawn1 = spawn1;
-        this.mSpawn2 = spawn2;
+        this.mArena = arena;
     }
 
     public void init() {
@@ -35,19 +30,7 @@ public class Match {
         return mGameInventory;
     }
 
-    public Location getSpawn() {
-        return mSpawn;
-    }
-
-    public Location getLobby() {
-        return mLobby;
-    }
-
-    public Location getSpawn1() {
-        return mSpawn1;
-    }
-
-    public Location getSpawn2() {
-        return mSpawn2;
+    public Arena getArena() {
+        return mArena;
     }
 }

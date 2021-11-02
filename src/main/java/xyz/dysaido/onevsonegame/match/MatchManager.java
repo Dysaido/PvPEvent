@@ -4,10 +4,14 @@ import xyz.dysaido.onevsonegame.OneVSOneGame;
 
 public class MatchManager {
 
-    private final OneVSOneGame mPlugin;
+    private final OneVSOneGame plugin;
 
     public MatchManager(OneVSOneGame plugin) {
-        this.mPlugin = plugin;
+        this.plugin = plugin;
+    }
+
+    public void load() {
+
     }
 
     public Match get() {
