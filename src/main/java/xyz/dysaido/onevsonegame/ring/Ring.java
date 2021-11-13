@@ -1,18 +1,21 @@
-package xyz.dysaido.onevsonegame.arena;
+package xyz.dysaido.onevsonegame.ring;
 
 import org.bukkit.Location;
+import org.bukkit.inventory.Inventory;
 
-public class Arena {
+public class Ring {
     private final String mName;
+    private final Inventory mInventory;
     private final Location mSpawn;
     private final Location mLobby;
     private final Location mSpawn1;
     private final Location mSpawn2;
 
 
-    public Arena(String name, Location spawn, Location lobby, Location spawn1, Location spawn2) {
+    public Ring(String name, Inventory inventory, Location worldSpawn, Location lobby, Location spawn1, Location spawn2) {
         this.mName = name;
-        this.mSpawn = spawn;
+        this.mInventory = inventory;
+        this.mSpawn = worldSpawn;
         this.mLobby = lobby;
         this.mSpawn1 = spawn1;
         this.mSpawn2 = spawn2;
@@ -22,7 +25,7 @@ public class Arena {
         return mName;
     }
 
-    public Location getSpawn() {
+    public Location getWorldSpawn() {
         return mSpawn;
     }
 
@@ -36,6 +39,10 @@ public class Arena {
 
     public Location getSpawn2() {
         return mSpawn2;
+    }
+
+    public Inventory getInventory() {
+        return mInventory;
     }
 
 

@@ -8,7 +8,9 @@ join-counter:
 state:
   starting:
   start:
-  end:
+  fighting:
   ending:
+  end:
 
 scoreboard:
+  enable: false

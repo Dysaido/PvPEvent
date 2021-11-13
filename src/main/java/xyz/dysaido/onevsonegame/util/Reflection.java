@@ -52,6 +52,19 @@ public class Reflection {
         }
     }
 
+    public static void setField(Object object, String fieldName, Class<?> clazz, Object value) {
+        try {
+            Field field = accessible(clazz.getDeclaredField(fieldName));
+            if (Modifier.isFinal(field.getModifiers())) {
+                FFS.set(object, field, value);
+            } else {
+                field.set(object, value);
+            }
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
+    }
+
     public static <T extends AccessibleObject> T accessible(T object) {
         object.setAccessible(true);
         return object;

@@ -3,6 +3,10 @@ package xyz.dysaido.onevsonegame;
 import org.bukkit.Server;
 import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.plugin.java.JavaPlugin;
+import xyz.dysaido.onevsonegame.kit.KitManager;
+import xyz.dysaido.onevsonegame.listener.MatchListener;
+import xyz.dysaido.onevsonegame.match.MatchManager;
+import xyz.dysaido.onevsonegame.ring.RingManager;
 import xyz.dysaido.onevsonegame.util.FileManager;
 import xyz.dysaido.onevsonegame.util.Reflection;
 
@@ -11,7 +15,12 @@ import java.lang.reflect.Field;
 public final class OneVSOneGame extends JavaPlugin {
 
     private static OneVSOneGame instance;
-    private FileManager arenas;
+    private SimpleCommandMap simpleCommandMap;
+    private FileManager ringConfig;
+    private FileManager kitConfig;
+    private KitManager kitManager;
+    private RingManager ringManager;
+    private MatchManager matchManager;
 
     public static OneVSOneGame getInstance() {
         return instance;
@@ -20,10 +29,16 @@ public final class OneVSOneGame extends JavaPlugin {
     @Override
     public void onEnable() {
         instance = this;
-        arenas = new FileManager(this, "games");
+        ringConfig = new FileManager(this, "games");
+        kitConfig = new FileManager(this, "games");
         getConfig().options().copyDefaults(true);
         saveConfig();
+        kitManager = new KitManager(kitConfig);
+        ringManager = new RingManager(ringConfig);
+        matchManager = new MatchManager(this);
 
+
+        getServer().getPluginManager().registerEvents(new MatchListener(this), this);
     }
 
     @Override
@@ -33,12 +48,22 @@ public final class OneVSOneGame extends JavaPlugin {
     }
 
     public SimpleCommandMap getCommandMap() {
-        Server server = getServer();
-        Field field = Reflection.getField(server.getClass(), "commandMap");
-        return Reflection.getObject(server, field, SimpleCommandMap.class);
+        if (simpleCommandMap == null) {
+            Field field = Reflection.getField(getServer().getClass(), "commandMap");
+            simpleCommandMap = Reflection.getObject(getServer(), field, SimpleCommandMap.class);
+        }
+        return simpleCommandMap;
     }
 
-    public FileManager getArenas() {
-        return arenas;
+    public RingManager getRingManager() {
+        return ringManager;
+    }
+
+    public MatchManager getMatchManager() {
+        return matchManager;
+    }
+
+    public KitManager getKitManager() {
+        return kitManager;
     }
 }
