@@ -20,4 +20,11 @@ public class Kit {
         player.updateInventory();
     }
 
+    public ItemStack[] getContents() {
+        return contents;
+    }
+
+    public ItemStack[] getArmor() {
+        return armor;
+    }
 }

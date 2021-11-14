@@ -19,7 +19,7 @@ public class MatchManager {
     }
 
     public Match create(Ring ring) {
-        if (this.match == null) {
+        if (isNull()) {
             this.match = new Match(plugin, ring);
             if (!handler.isAlive()) handler.start();
             return match;
@@ -31,7 +31,6 @@ public class MatchManager {
     }
 
     public void destroy() {
-        match.end();
         if (handler.isAlive()) handler.stop();
         match = null;
     }
@@ -58,6 +57,7 @@ public class MatchManager {
             if (this.executor == null) {
                 this.executor = new ScheduledThreadPoolExecutor(10);
                 this.executor.setRemoveOnCancelPolicy(true);
+
             }
             this.future = this.executor.scheduleAtFixedRate(match, 0L, 100L, TimeUnit.MILLISECONDS);
             this.alive = true;

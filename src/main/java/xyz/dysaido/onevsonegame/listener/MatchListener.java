@@ -1,5 +1,6 @@
 package xyz.dysaido.onevsonegame.listener;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -8,6 +9,7 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.world.WorldLoadEvent;
 import xyz.dysaido.onevsonegame.OneVSOneGame;
 import xyz.dysaido.onevsonegame.match.model.MatchPlayer;
 import xyz.dysaido.onevsonegame.match.model.PlayerState;
@@ -36,7 +38,14 @@ public class MatchListener implements Listener {
 
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent event) {
-
+        Player victim = event.getEntity();
+        plugin.getMatchManager().getMatch().ifPresent(match -> {
+            MatchPlayer matchPlayer = match.getQueue().findByPlayer(victim);
+            if (matchPlayer != null) {
+                matchPlayer.setLose(true);
+                matchPlayer.reset(match.getRing().getLobby());
+            }
+        });
     }
 
     @EventHandler

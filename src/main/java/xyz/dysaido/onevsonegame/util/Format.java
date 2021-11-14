@@ -20,7 +20,11 @@ public class Format {
         texts.stream().map(Format::colored).forEach(Format::broadcast);
     }
 
-    public static String translate(String... strings) {
+    public static void broadcastClickable(String text) {
+        Bukkit.getOnlinePlayers().forEach(player -> player.sendMessage(translate(text)));
+    }
+
+    public static BaseComponent[] translate(String... strings) {
         ComponentBuilder componentBuilder = new ComponentBuilder("");
 
         for (int i = 0; i < strings.length; i++) {
@@ -31,15 +35,14 @@ public class Format {
             componentBuilder.append(ChatColor.translateAlternateColorCodes('&', strings[i]));
             link(componentBuilder);
         }
-        BaseComponent[] components = componentBuilder.create();
-        return new TextComponent(components).toLegacyText();
+        return componentBuilder.create();
     }
 
     private static void link(ComponentBuilder componentBuilder) {
         componentBuilder.event(new HoverEvent(HoverEvent.Action.SHOW_TEXT,  TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&',
                 "&bContributor: &fDysaido#3162"
         ))));
-        componentBuilder.event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "https://github.com/Dysaido"));
+        componentBuilder.event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/event:event join"));
     }
 
 }

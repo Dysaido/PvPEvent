@@ -20,6 +20,15 @@ public class Ring {
         this.mSpawn2 = spawn2;
     }
 
+    public Ring(RingCache ringCache) {
+        this.mName = ringCache.getName();
+        this.mKit = new Kit(ringCache.getContents(), ringCache.getArmor());
+        this.mSpawn = ringCache.getSpawn();
+        this.mLobby = ringCache.getLobby();
+        this.mSpawn1 = ringCache.getSpawn1();
+        this.mSpawn2 = ringCache.getSpawn2();
+    }
+
     public String getName() {
         return mName;
     }

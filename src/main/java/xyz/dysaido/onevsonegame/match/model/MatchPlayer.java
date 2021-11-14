@@ -1,8 +1,11 @@
 package xyz.dysaido.onevsonegame.match.model;
 
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
+import xyz.dysaido.onevsonegame.OneVSOneGame;
 import xyz.dysaido.onevsonegame.match.Match;
 
 import java.util.Collection;
@@ -20,6 +23,7 @@ public class MatchPlayer {
     private final Player player;
     private final Match match;
     private PlayerState state = PlayerState.QUEUE;
+    private boolean lose = false;
     public MatchPlayer(Match match, Player player) {
         this.match = match;
         this.player = player;
@@ -31,7 +35,7 @@ public class MatchPlayer {
         this.originalArmor = player.getInventory().getArmorContents();
     }
 
-    public void setup() {
+    public void setup(Location location) {
         player.setHealth(player.getMaxHealth());
         player.setFoodLevel(20);
         player.setFireTicks(0);
@@ -39,6 +43,12 @@ public class MatchPlayer {
             player.removePotionEffect(effect.getType());
         }
         match.getRing().getKit().apply(player);
+        player.teleport(location);
+        state = PlayerState.FIGHT;
+    }
+
+    public void teleport(Location location) {
+        Bukkit.getScheduler().runTask(OneVSOneGame.getInstance(), () -> player.teleport(location));
     }
 
     public void freeze() {
@@ -49,7 +59,7 @@ public class MatchPlayer {
 
     }
 
-    public void reset() {
+    public void reset(Location location) {
         player.setHealth(originalHealth);
         player.setFoodLevel(originalFoodLevel);
         player.setFireTicks(originalFireTicks);
@@ -59,7 +69,11 @@ public class MatchPlayer {
         originalPotionEffects.forEach(player::addPotionEffect);
         player.getInventory().setContents(originalContents);
         player.getInventory().setArmorContents(originalArmor);
+        player.teleport(location);
+        state = lose ? PlayerState.SPECTATOR : PlayerState.QUEUE;
     }
+
+
 
     public UUID id() {
         return player.getUniqueId();
@@ -73,12 +87,12 @@ public class MatchPlayer {
         return match;
     }
 
-    public void setState(PlayerState state) {
-        this.state = state;
-    }
-
     public PlayerState getState() {
         return state;
+    }
+
+    public void setState(PlayerState state) {
+        this.state = state;
     }
 
     public Collection<PotionEffect> getOriginalPotionEffects() {
@@ -103,5 +117,13 @@ public class MatchPlayer {
 
     public ItemStack[] getOriginalArmor() {
         return originalArmor;
+    }
+
+    public boolean isLose() {
+        return lose;
+    }
+
+    public void setLose(boolean lose) {
+        this.lose = lose;
     }
 }

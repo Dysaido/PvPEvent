@@ -1,5 +1,6 @@
 package xyz.dysaido.onevsonegame;
 
+import org.bukkit.Bukkit;
 import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.plugin.java.JavaPlugin;
 import xyz.dysaido.onevsonegame.command.impl.EventCommand;
@@ -31,7 +32,7 @@ public final class OneVSOneGame extends JavaPlugin {
         saveConfig();
         ringManager = new RingManager(ringConfig);
         matchManager = new MatchManager(this);
-
+        Bukkit.getScheduler().runTaskLater(this, () -> ringManager.load(), 100);
         getCommandMap().register("event", new EventCommand(this));
         getServer().getPluginManager().registerEvents(new MatchListener(this), this);
     }

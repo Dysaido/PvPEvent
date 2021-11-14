@@ -56,23 +56,25 @@ public class MatchQueue {
     }
 
 
-    public void randomizedOpponents() {
+    public Pair<MatchPlayer, MatchPlayer> randomizedOpponents() {
         if (match.getState().equals(MatchState.FIGHTING)) {
             MatchPlayer player1, player2;
             do {
                 player1 = players.get(random.nextInt(players.size()));
                 player2 = players.get(random.nextInt(players.size()));
-            } while (!player1.getState().equals(PlayerState.QUEUE) && !player2.getState().equals(PlayerState.QUEUE) && player1.equals(player2));
-            opponent = new Pair<>(player1, player2);
+            } while (!player1.equals(player2));
+            return opponent = new Pair<>(player1, player2);
         }
+        return null;
+    }
+
+    public boolean shouldDoEnd() {
+        return getPlayersByState(PlayerState.WINNER).size() == 1 || players.size() <= 1;
     }
 
     public Collection<MatchPlayer> getPlayersByState(PlayerState state) {
+        Objects.requireNonNull(state);
         return players.stream().filter(internal -> internal.getState().equals(state)).collect(Collectors.toList());
-    }
-
-    public Pair<MatchPlayer, MatchPlayer> getOpponent() {
-        return opponent;
     }
 
     public boolean contains(MatchPlayer player) {

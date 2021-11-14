@@ -1,11 +1,13 @@
 package xyz.dysaido.onevsonegame.ring;
 
 import org.bukkit.Location;
-import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.PlayerInventory;
+import xyz.dysaido.onevsonegame.util.ItemSerializer;
 
 public class RingCache {
     private final String mName;
-    private Inventory mInventory;
+    private String contents;
+    private String armor;
     private Location mSpawn;
     private Location mLobby;
     private Location mSpawn1;
@@ -19,12 +21,20 @@ public class RingCache {
         return mName;
     }
 
-    public Inventory getInventory() {
-        return mInventory;
+    public void setArmor(String armor) {
+        this.armor = armor;
     }
 
-    public void setInventory(Inventory mInventory) {
-        this.mInventory = mInventory;
+    public void setContents(String contents) {
+        this.contents = contents;
+    }
+
+    public String getContents() {
+        return contents;
+    }
+
+    public String getArmor() {
+        return armor;
     }
 
     public Location getSpawn() {
@@ -58,4 +68,5 @@ public class RingCache {
     public void setSpawn2(Location mSpawn2) {
         this.mSpawn2 = mSpawn2;
     }
+
 }

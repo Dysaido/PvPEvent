@@ -19,7 +19,14 @@ public class LocationSerializer {
     }
 
     public static Location deserialize(String serializedLocation) {
-        return null;
+        String[] strings = serializedLocation.split(",");
+        World world = Bukkit.getServer().getWorld(strings[0]);
+        double blockX = Double.parseDouble(strings[1]);
+        double blockY = Double.parseDouble(strings[2]);
+        double blockZ = Double.parseDouble(strings[3]);
+        float yaw = Float.parseFloat(strings[4]);
+        float pitch = Float.parseFloat(strings[5]);
+        return new Location(world, blockX, blockY, blockZ, yaw, pitch);
     }
 
     public static void serializeToConfig(Location location, ConfigurationSection configuration) {
