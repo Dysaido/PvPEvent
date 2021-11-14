@@ -1,11 +1,9 @@
 package xyz.dysaido.onevsonegame.match.model;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
-import xyz.dysaido.onevsonegame.OneVSOneGame;
 import xyz.dysaido.onevsonegame.match.Match;
 
 import java.util.Collection;
@@ -24,6 +22,7 @@ public class MatchPlayer {
     private final Match match;
     private PlayerState state = PlayerState.QUEUE;
     private boolean lose = false;
+
     public MatchPlayer(Match match, Player player) {
         this.match = match;
         this.player = player;
@@ -33,6 +32,7 @@ public class MatchPlayer {
         this.originalFireTicks = player.getFireTicks();
         this.originalContents = player.getInventory().getContents();
         this.originalArmor = player.getInventory().getArmorContents();
+        player.teleport(match.getRing().getLobby());
     }
 
     public void setup(Location location) {
@@ -44,11 +44,7 @@ public class MatchPlayer {
         }
         match.getRing().getKit().apply(player);
         player.teleport(location);
-        state = PlayerState.FIGHT;
-    }
-
-    public void teleport(Location location) {
-        Bukkit.getScheduler().runTask(OneVSOneGame.getInstance(), () -> player.teleport(location));
+        match.getQueue().addFight(this);
     }
 
     public void freeze() {
@@ -72,7 +68,6 @@ public class MatchPlayer {
         player.teleport(location);
         state = lose ? PlayerState.SPECTATOR : PlayerState.QUEUE;
     }
-
 
 
     public UUID id() {

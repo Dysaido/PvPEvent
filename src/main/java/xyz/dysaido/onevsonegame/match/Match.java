@@ -14,7 +14,7 @@ import java.util.Optional;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class Match implements Runnable {
+public class Match extends MatchTask {
 
     private final Ring ring;
     private final MatchQueue queue;
@@ -23,7 +23,6 @@ public class Match implements Runnable {
     private MatchState state = MatchState.WAITING;
     private int round = 0;
 
-    private long tick = 0;
     private long lastTransaction = 0;
 
     private int waiting = 30;
@@ -31,6 +30,7 @@ public class Match implements Runnable {
     private int ending = 5;
 
     public Match(OneVSOneGame plugin, Ring ring) {
+        super("Match");
         this.plugin = plugin;
         this.ring = ring;
         this.queue = new MatchQueue(this);
@@ -44,37 +44,45 @@ public class Match implements Runnable {
             this.lastTransaction = this.tick;
             // Here task
         }*/
-        this.tick = System.currentTimeMillis();
-        if (this.tick - this.lastTransaction >= 1000) {
-            this.lastTransaction = this.tick;
-            switch (state) {
-                case WAITING:
-                    waiting();
-                    break;
-                case STARTING:
-                    starting();
-                    break;
-                case FIGHTING:
-                    fighting();
-                    break;
-                case ENDING:
-                    ending();
-                    break;
-                default:
-                    plugin.getMatchManager().destroy();
+        lock.lock();
+        try {
+            long tick = System.currentTimeMillis();
+            if (tick - this.lastTransaction >= 1000) {
+                this.lastTransaction = tick;
+                switch (state) {
+                    case WAITING:
+                        waiting();
+                        break;
+                    case STARTING:
+                        starting();
+                        break;
+                    case FIGHTING:
+                        fighting();
+                        break;
+                    case ENDING:
+                        ending();
+                        break;
+                    default:
+                        stop();
+                }
             }
+        } finally {
+            lock.unlock();
         }
     }
 
     public void join(Player player) {
         Objects.requireNonNull(player);
         if (waiting > 0) {
-            MatchPlayer matchPlayer = new MatchPlayer(this, player);
-            if (!queue.contains(matchPlayer)) {
+            if (!queue.contains(player)) {
+                MatchPlayer matchPlayer = new MatchPlayer(this, player);
                 queue.addMatchPlayer(matchPlayer);
-                player.teleport(ring.getLobby());
                 Format.broadcast(ChatColor.AQUA + player.getName() + " joined the event!");
+            } else {
+                player.sendMessage("You are already joined");
             }
+        } else {
+            player.sendMessage("Lose");
         }
     }
 
@@ -85,8 +93,6 @@ public class Match implements Runnable {
             queue.removeMatchPlayer(matchPlayer);
             matchPlayer.reset(ring.getWorldSpawn());
             Format.broadcast(ChatColor.AQUA + player.getName() + " left the event!");
-        } else {
-            player.sendMessage("Lose");
         }
     }
 
@@ -99,8 +105,12 @@ public class Match implements Runnable {
         }
         waiting--;
         if (waiting <= 0) {
-            Format.broadcast("Event join has been disabled");
-            setState(MatchState.STARTING);
+            if (queue.shouldDoEnd()) {
+                setState(MatchState.ENDING);
+            } else {
+                Format.broadcast("Event join has been disabled");
+                setState(MatchState.STARTING);
+            }
         }
     }
 
@@ -114,17 +124,17 @@ public class Match implements Runnable {
     }
 
     public void fighting() {
-        if (queue.getPlayersByState(PlayerState.QUEUE).size() == 0 && shouldNextRound()) {
+        if (shouldNextRound()) {
+            Optional<MatchPlayer> matchPlayer = queue.getPlayersByState(PlayerState.FIGHT).stream().findFirst();
+            matchPlayer.ifPresent(internal -> internal.reset(ring.getLobby()));
+            nextRound();
+        } else if (queue.getPlayersByState(PlayerState.QUEUE).size() == 0) {
             Optional<MatchPlayer> matchPlayer = queue.getPlayersByState(PlayerState.FIGHT).stream().findFirst();
             matchPlayer.ifPresent(internal -> {
                 Format.broadcast("Event's winner" + internal.getPlayer().getName());
                 internal.setState(PlayerState.WINNER);
             });
             if (queue.shouldDoEnd()) setState(MatchState.ENDING);
-        } else if (shouldNextRound()) {
-            Optional<MatchPlayer> matchPlayer = queue.getPlayersByState(PlayerState.FIGHT).stream().findFirst();
-            matchPlayer.ifPresent(internal -> internal.reset(ring.getLobby()));
-            nextRound();
         }
     }
 
@@ -134,25 +144,21 @@ public class Match implements Runnable {
         if (ending <= 0) {
             Format.broadcast("Event is ended");
             queue.getMatchPlayers().stream().map(MatchPlayer::getPlayer).forEach(player -> player.teleport(ring.getWorldSpawn()));
-            plugin.getMatchManager().destroy();
+            stop();
         }
     }
 
     private void nextRound() {
         this.round++;
-        if (!queue.shouldDoEnd()) {
-            Pair<MatchPlayer, MatchPlayer> opponents = this.queue.randomizedOpponents();
-            MatchPlayer damager = opponents.getKey();
-            MatchPlayer victim = opponents.getValue();
-            damager.setup(ring.getSpawn1());
-            victim.setup(ring.getSpawn2());
-        } else {
-            state = MatchState.ENDING;
-        }
+        Pair<MatchPlayer, MatchPlayer> opponents = this.queue.randomizedOpponents();
+        MatchPlayer damager = opponents.getKey();
+        MatchPlayer victim = opponents.getValue();
+        damager.setup(ring.getSpawn1());
+        victim.setup(ring.getSpawn2());
     }
 
     private boolean shouldNextRound() {
-        return queue.getPlayersByState(PlayerState.FIGHT).size() <= 1 && getState().equals(MatchState.FIGHTING);
+        return queue.getPlayersByState(PlayerState.FIGHT).size() <= 1 && getState().equals(MatchState.FIGHTING) && !queue.shouldDoEnd();
     }
 
     public MatchQueue getQueue() {

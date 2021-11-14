@@ -3,6 +3,7 @@ package xyz.dysaido.onevsonegame.match;
 import org.bukkit.entity.Player;
 import xyz.dysaido.onevsonegame.match.model.MatchPlayer;
 import xyz.dysaido.onevsonegame.match.model.PlayerState;
+import xyz.dysaido.onevsonegame.util.Format;
 import xyz.dysaido.onevsonegame.util.Pair;
 
 import java.util.*;
@@ -11,7 +12,7 @@ import java.util.stream.Collectors;
 public class MatchQueue {
 
     private final Random random = new Random();
-    private final List<MatchPlayer> players = new ArrayList<>();
+    private final Set<MatchPlayer> players = new HashSet<>();
     private final Match match;
     private Pair<MatchPlayer, MatchPlayer> opponent;
 
@@ -21,7 +22,8 @@ public class MatchQueue {
 
     public void addMatchPlayer(MatchPlayer player) {
         Objects.requireNonNull(player);
-        if (!players.contains(player)) players.add(player);
+        players.add(player);
+        addQueue(player);
     }
 
     public void removeMatchPlayer(MatchPlayer player) {
@@ -60,8 +62,9 @@ public class MatchQueue {
         if (match.getState().equals(MatchState.FIGHTING)) {
             MatchPlayer player1, player2;
             do {
-                player1 = players.get(random.nextInt(players.size()));
-                player2 = players.get(random.nextInt(players.size()));
+                MatchPlayer[] players = this.players.toArray(new MatchPlayer[0]);
+                player1 = players[random.nextInt(this.players.size())];
+                player2 = players[random.nextInt(this.players.size())];
             } while (!player1.equals(player2));
             return opponent = new Pair<>(player1, player2);
         }
@@ -69,6 +72,7 @@ public class MatchQueue {
     }
 
     public boolean shouldDoEnd() {
+        Format.broadcast("MatchPlayers: "+ players.size());
         return getPlayersByState(PlayerState.WINNER).size() == 1 || players.size() <= 1;
     }
 
@@ -77,12 +81,16 @@ public class MatchQueue {
         return players.stream().filter(internal -> internal.getState().equals(state)).collect(Collectors.toList());
     }
 
+    public boolean contains(Player player) {
+        return players.stream().map(MatchPlayer::getPlayer).anyMatch(internal -> internal.equals(player));
+    }
+
     public boolean contains(MatchPlayer player) {
         return players.contains(player);
     }
 
     public Collection<MatchPlayer> getMatchPlayers() {
-        return Collections.unmodifiableList(players);
+        return Collections.unmodifiableSet(players);
     }
 
 }
