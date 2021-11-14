@@ -1,9 +1,7 @@
 package xyz.dysaido.onevsonegame;
 
-import org.bukkit.Server;
 import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.plugin.java.JavaPlugin;
-import xyz.dysaido.onevsonegame.kit.KitManager;
 import xyz.dysaido.onevsonegame.listener.MatchListener;
 import xyz.dysaido.onevsonegame.match.MatchManager;
 import xyz.dysaido.onevsonegame.ring.RingManager;
@@ -17,8 +15,6 @@ public final class OneVSOneGame extends JavaPlugin {
     private static OneVSOneGame instance;
     private SimpleCommandMap simpleCommandMap;
     private FileManager ringConfig;
-    private FileManager kitConfig;
-    private KitManager kitManager;
     private RingManager ringManager;
     private MatchManager matchManager;
 
@@ -29,11 +25,9 @@ public final class OneVSOneGame extends JavaPlugin {
     @Override
     public void onEnable() {
         instance = this;
-        ringConfig = new FileManager(this, "games");
-        kitConfig = new FileManager(this, "games");
+        ringConfig = new FileManager(this, "rings");
         getConfig().options().copyDefaults(true);
         saveConfig();
-        kitManager = new KitManager(kitConfig);
         ringManager = new RingManager(ringConfig);
         matchManager = new MatchManager(this);
 
@@ -63,7 +57,4 @@ public final class OneVSOneGame extends JavaPlugin {
         return matchManager;
     }
 
-    public KitManager getKitManager() {
-        return kitManager;
-    }
 }

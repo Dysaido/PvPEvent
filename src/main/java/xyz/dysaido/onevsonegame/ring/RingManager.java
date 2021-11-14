@@ -16,6 +16,14 @@ public class RingManager {
         // TODO: load from config some arenas
     }
 
+    private void load() {
+
+    }
+
+    public void save(Ring ring) {
+
+    }
+
     public Ring get(String name) {
         return arenaMap.get(name);
     }

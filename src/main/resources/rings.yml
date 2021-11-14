@@ -1,0 +1,14 @@
+practice:
+  spawn: "world,0,0,0,0,0"
+  lobby: "world,0,0,0,0,0"
+  spawn_1: "world,0,0,0,0,0"
+  spawn_2: "world,0,0,0,0,0"
+  contents: "grdgdhergehe"
+  armor: "grgrdbbfb"
+sumo:
+  spawn: "world,0,0,0,0,0"
+  lobby: "world,0,0,0,0,0"
+  spawn_1: "world,0,0,0,0,0"
+  spawn_2: "world,0,0,0,0,0"
+  contents: "grdgdhergehe"
+  armor: "grgrdbbfb"

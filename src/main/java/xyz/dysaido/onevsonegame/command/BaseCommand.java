@@ -6,6 +6,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
+import xyz.dysaido.onevsonegame.util.Format;
 
 import java.util.Arrays;
 import java.util.List;
@@ -18,7 +19,7 @@ public abstract class BaseCommand<P extends JavaPlugin> extends Command {
     private boolean onlyConsole = false;
 
     public BaseCommand(P plugin, String name, String description, String usage, List<String> aliases) {
-        super(name, description, usage, aliases);
+        super(name, Format.colored(description), Format.colored(usage), aliases);
         this.plugin = plugin;
     }
 
