@@ -14,17 +14,19 @@ public class MatchManager {
         this.plugin = plugin;
     }
 
+    public void make() {
+
+    }
+
+    public void destruction() {
+
+    }
+
     public Match create(Ring ring) {
-        if (isNull()) {
-            this.match = new Match(plugin, ring);
-            this.match.start();
-            return match;
-        } else {
-            this.match.stop();
-            this.match = new Match(plugin, ring);
-            this.match.start();
-            return match;
-        }
+        if (!isNull()) this.match.stop();
+        this.match = new Match(plugin, ring);
+        this.match.start();
+        return match;
 //            throw new RuntimeException("The match has already been created. Please, you have to destroy previous match that you wanna create a new match.");
     }
 
@@ -33,7 +35,7 @@ public class MatchManager {
     }
 
     public void destroy() {
-        match.stop();
+        System.out.println("Destroy");
         match = null;
     }
 

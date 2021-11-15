@@ -49,6 +49,7 @@ public class Match extends MatchTask {
             long tick = System.currentTimeMillis();
             if (tick - this.lastTransaction >= 1000) {
                 this.lastTransaction = tick;
+                System.out.println("Tasking...");
                 switch (state) {
                     case WAITING:
                         waiting();
@@ -128,13 +129,17 @@ public class Match extends MatchTask {
             Optional<MatchPlayer> matchPlayer = queue.getPlayersByState(PlayerState.FIGHT).stream().findFirst();
             matchPlayer.ifPresent(internal -> internal.reset(ring.getLobby()));
             nextRound();
-        } else if (queue.getPlayersByState(PlayerState.QUEUE).size() == 0) {
+        } else if (queue.getPlayersByState(PlayerState.QUEUE).size() == 0 && !hasFighting()) {
             Optional<MatchPlayer> matchPlayer = queue.getPlayersByState(PlayerState.FIGHT).stream().findFirst();
             matchPlayer.ifPresent(internal -> {
-                Format.broadcast("Event's winner" + internal.getPlayer().getName());
+                Format.broadcast("Event's winner " + internal.getPlayer().getName());
                 internal.setState(PlayerState.WINNER);
+                internal.reset(ring.getWorldSpawn());
             });
-            if (queue.shouldDoEnd()) setState(MatchState.ENDING);
+            if (queue.shouldDoEnd()) {
+                queue.getMatchPlayers().stream().map(MatchPlayer::getPlayer).forEach(player -> player.teleport(ring.getWorldSpawn()));
+                setState(MatchState.ENDING);
+            }
         }
     }
 
@@ -143,8 +148,8 @@ public class Match extends MatchTask {
         ending--;
         if (ending <= 0) {
             Format.broadcast("Event is ended");
-            queue.getMatchPlayers().stream().map(MatchPlayer::getPlayer).forEach(player -> player.teleport(ring.getWorldSpawn()));
             stop();
+            plugin.getMatchManager().destroy();
         }
     }
 
@@ -157,8 +162,12 @@ public class Match extends MatchTask {
         victim.setup(ring.getSpawn2());
     }
 
+    private boolean hasFighting() {
+        return queue.getPlayersByState(PlayerState.FIGHT).size() == 2;
+    }
+
     private boolean shouldNextRound() {
-        return queue.getPlayersByState(PlayerState.FIGHT).size() <= 1 && getState().equals(MatchState.FIGHTING) && !queue.shouldDoEnd();
+        return queue.getPlayersByState(PlayerState.FIGHT).size() <= 1 && queue.getPlayersByState(PlayerState.QUEUE).size() > 0 && getState().equals(MatchState.FIGHTING) && !queue.shouldDoEnd();
     }
 
     public MatchQueue getQueue() {

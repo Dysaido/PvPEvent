@@ -1,11 +1,13 @@
 package xyz.dysaido.onevsonegame.match.model;
 
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import xyz.dysaido.onevsonegame.match.Match;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.UUID;
 
@@ -18,6 +20,7 @@ public class MatchPlayer {
     private final double originalHealth;
     private final int originalFoodLevel;
     private final int originalFireTicks;
+    private final GameMode originalGamemode;
     private final Player player;
     private final Match match;
     private PlayerState state = PlayerState.QUEUE;
@@ -32,6 +35,7 @@ public class MatchPlayer {
         this.originalFireTicks = player.getFireTicks();
         this.originalContents = player.getInventory().getContents();
         this.originalArmor = player.getInventory().getArmorContents();
+        this.originalGamemode = player.getGameMode();
         player.teleport(match.getRing().getLobby());
     }
 
@@ -39,6 +43,7 @@ public class MatchPlayer {
         player.setHealth(player.getMaxHealth());
         player.setFoodLevel(20);
         player.setFireTicks(0);
+        player.setGameMode(GameMode.SURVIVAL);
         for (PotionEffect effect : player.getActivePotionEffects()) {
             player.removePotionEffect(effect.getType());
         }
@@ -59,6 +64,7 @@ public class MatchPlayer {
         player.setHealth(originalHealth);
         player.setFoodLevel(originalFoodLevel);
         player.setFireTicks(originalFireTicks);
+        player.setGameMode(originalGamemode);
         for (PotionEffect effect : player.getActivePotionEffects()) {
             player.removePotionEffect(effect.getType());
         }
@@ -121,4 +127,5 @@ public class MatchPlayer {
     public void setLose(boolean lose) {
         this.lose = lose;
     }
+
 }

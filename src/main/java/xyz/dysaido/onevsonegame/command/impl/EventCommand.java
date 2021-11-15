@@ -17,7 +17,7 @@ public class EventCommand extends BaseCommand<OneVSOneGame> {
 
     public EventCommand(OneVSOneGame plugin) {
         super(plugin, "event", "Event command", "/event [options]", Collections.emptyList());
-        setPermission("event.command.perform");
+//        setPermission("event.command.perform");
         setOnlyPlayer(true);
     }
 
@@ -28,41 +28,45 @@ public class EventCommand extends BaseCommand<OneVSOneGame> {
 
     @Override
     public void execute(Player player, String label, List<String> list) {
+        if (player.hasPermission("event.command.perform")) {
+            switch (list.get(0)) {
+                case "create":
+                    ringCache = new RingCache(list.get(1));
+                    player.sendMessage("Create");
+                    break;
+                case "lobby":
+                    ringCache.setLobby(player.getLocation());
+                    player.sendMessage("Lobby");
+                    break;
+                case "spawn":
+                    ringCache.setSpawn(player.getLocation());
+                    player.sendMessage("Spawn");
+                    break;
+                case "spawn1":
+                    ringCache.setSpawn1(player.getLocation());
+                    player.sendMessage("Spawn1");
+                    break;
+                case "spawn2":
+                    ringCache.setSpawn2(player.getLocation());
+                    player.sendMessage("Spawn2");
+                    break;
+                case "inventory":
+                    PlayerInventory inventory = player.getInventory();
+                    ringCache.setContents(ItemSerializer.serialize(inventory.getContents()));
+                    ringCache.setArmor(ItemSerializer.serialize(inventory.getArmorContents()));
+                    player.sendMessage("Inventory");
+                    break;
+                case "save":
+                    plugin.getRingManager().save(ringCache);
+                    player.sendMessage("Save");
+                    break;
+                case "host":
+                    plugin.getMatchManager().create(plugin.getRingManager().get(list.get(1)));
+                    player.sendMessage("Host");
+                    break;
+            }
+        }
         switch (list.get(0)) {
-            case "create":
-                ringCache = new RingCache(list.get(1));
-                player.sendMessage("Create");
-                break;
-            case "lobby":
-                ringCache.setLobby(player.getLocation());
-                player.sendMessage("Lobby");
-                break;
-            case "spawn":
-                ringCache.setSpawn(player.getLocation());
-                player.sendMessage("Spawn");
-                break;
-            case "spawn1":
-                ringCache.setSpawn1(player.getLocation());
-                player.sendMessage("Spawn1");
-                break;
-            case "spawn2":
-                ringCache.setSpawn2(player.getLocation());
-                player.sendMessage("Spawn2");
-                break;
-            case "inventory":
-                PlayerInventory inventory = player.getInventory();
-                ringCache.setContents(ItemSerializer.serialize(inventory.getContents()));
-                ringCache.setArmor(ItemSerializer.serialize(inventory.getArmorContents()));
-                player.sendMessage("Inventory");
-                break;
-            case "save":
-                plugin.getRingManager().save(ringCache);
-                player.sendMessage("Save");
-                break;
-            case "host":
-                plugin.getMatchManager().create(plugin.getRingManager().get(list.get(1)));
-                player.sendMessage("Host");
-                break;
             case "join":
                 plugin.getMatchManager().getMatch().ifPresent(match -> match.join(player));
                 break;

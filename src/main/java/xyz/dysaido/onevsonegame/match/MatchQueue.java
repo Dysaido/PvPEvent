@@ -3,7 +3,6 @@ package xyz.dysaido.onevsonegame.match;
 import org.bukkit.entity.Player;
 import xyz.dysaido.onevsonegame.match.model.MatchPlayer;
 import xyz.dysaido.onevsonegame.match.model.PlayerState;
-import xyz.dysaido.onevsonegame.util.Format;
 import xyz.dysaido.onevsonegame.util.Pair;
 
 import java.util.*;
@@ -12,7 +11,7 @@ import java.util.stream.Collectors;
 public class MatchQueue {
 
     private final Random random = new Random();
-    private final Set<MatchPlayer> players = new HashSet<>();
+    private final List<MatchPlayer> players = new ArrayList<>();
     private final Match match;
     private Pair<MatchPlayer, MatchPlayer> opponent;
 
@@ -22,7 +21,7 @@ public class MatchQueue {
 
     public void addMatchPlayer(MatchPlayer player) {
         Objects.requireNonNull(player);
-        players.add(player);
+        if (!players.contains(player)) players.add(player);
         addQueue(player);
     }
 
@@ -59,24 +58,19 @@ public class MatchQueue {
 
 
     public Pair<MatchPlayer, MatchPlayer> randomizedOpponents() {
-        if (match.getState().equals(MatchState.FIGHTING)) {
-            MatchPlayer player1, player2;
-            do {
-                MatchPlayer[] players = this.players.toArray(new MatchPlayer[0]);
-                player1 = players[random.nextInt(this.players.size())];
-                player2 = players[random.nextInt(this.players.size())];
-            } while (!player1.equals(player2));
-            return opponent = new Pair<>(player1, player2);
-        }
-        return null;
+        MatchPlayer player1, player2;
+        do {
+            player1 = players.get(random.nextInt(this.players.size()));
+            player2 = players.get(random.nextInt(this.players.size()));
+        } while (player1 == player2);
+        return opponent = new Pair<>(player1, player2);
     }
 
     public boolean shouldDoEnd() {
-        Format.broadcast("MatchPlayers: "+ players.size());
         return getPlayersByState(PlayerState.WINNER).size() == 1 || players.size() <= 1;
     }
 
-    public Collection<MatchPlayer> getPlayersByState(PlayerState state) {
+    public List<MatchPlayer> getPlayersByState(PlayerState state) {
         Objects.requireNonNull(state);
         return players.stream().filter(internal -> internal.getState().equals(state)).collect(Collectors.toList());
     }
@@ -90,7 +84,7 @@ public class MatchQueue {
     }
 
     public Collection<MatchPlayer> getMatchPlayers() {
-        return Collections.unmodifiableSet(players);
+        return Collections.unmodifiableList(players);
     }
 
 }
