@@ -71,6 +71,7 @@ public class MatchPlayer {
         player.setHealth(originalHealth);
         player.setFoodLevel(originalFoodLevel);
         player.setFireTicks(originalFireTicks);
+        player.setWalkSpeed(originalWalkSpeed);
         player.setGameMode(originalGamemode);
         backupKit.apply(player);
         for (PotionEffect effect : player.getActivePotionEffects()) {
