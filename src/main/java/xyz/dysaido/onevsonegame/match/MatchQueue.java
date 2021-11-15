@@ -66,7 +66,7 @@ public class MatchQueue {
         return opponent = new Pair<>(player1, player2);
     }
 
-    public boolean shouldDoEnd() {
+    public boolean shouldEnd() {
         return getPlayersByState(PlayerState.WINNER).size() == 1 || players.size() <= 1;
     }
 
@@ -87,4 +87,7 @@ public class MatchQueue {
         return Collections.unmodifiableList(players);
     }
 
+    public Pair<MatchPlayer, MatchPlayer> getOpponent() {
+        return opponent;
+    }
 }

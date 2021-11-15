@@ -8,7 +8,7 @@ import java.util.Optional;
 public class MatchManager {
 
     private final OneVSOneGame plugin;
-    private Match match;
+    private volatile Match match;
 
     public MatchManager(OneVSOneGame plugin) {
         this.plugin = plugin;
@@ -35,8 +35,8 @@ public class MatchManager {
     }
 
     public void destroy() {
-        System.out.println("Destroy");
-        match = null;
+        this.match.stop();
+        this.match = null;
     }
 
     public boolean isNull() {

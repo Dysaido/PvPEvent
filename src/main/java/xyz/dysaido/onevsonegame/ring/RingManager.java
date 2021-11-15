@@ -37,7 +37,7 @@ public class RingManager {
             cache.setLobby(LocationSerializer.deserialize(lobby));
             cache.setContents(contents);
             cache.setArmor(armor);
-            Logger.debug("RingManager", LocationSerializer.deserialize(worldspawn).toString());
+            Logger.debug("RingManager", cache.toString());
             arenaMap.computeIfAbsent(name, s -> new Ring(cache));
         }
     }

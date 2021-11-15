@@ -1,5 +1,5 @@
 package xyz.dysaido.onevsonegame.match;
 
 public enum MatchState {
-    WAITING, STARTING, FIGHTING, ENDING
+    WAITING, STARTING, FIGHTING, ENDING, END
 }

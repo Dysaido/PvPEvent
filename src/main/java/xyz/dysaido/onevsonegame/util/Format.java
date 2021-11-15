@@ -13,7 +13,7 @@ public class Format {
     }
 
     public static void broadcast(String text) {
-        Bukkit.broadcastMessage(colored(text));
+        Bukkit.getOnlinePlayers().forEach(player -> player.sendMessage(colored(text)));
     }
 
     public static void broadcast(List<String> texts) {

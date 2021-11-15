@@ -71,6 +71,7 @@ public class MatchPlayer {
         originalPotionEffects.forEach(player::addPotionEffect);
         player.getInventory().setContents(originalContents);
         player.getInventory().setArmorContents(originalArmor);
+        player.updateInventory();
         player.teleport(location);
         state = lose ? PlayerState.SPECTATOR : PlayerState.QUEUE;
     }

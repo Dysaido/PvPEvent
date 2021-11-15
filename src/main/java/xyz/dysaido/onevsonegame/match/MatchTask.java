@@ -1,32 +1,26 @@
 package xyz.dysaido.onevsonegame.match;
 
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import org.bukkit.Bukkit;
+import org.bukkit.scheduler.BukkitTask;
+import xyz.dysaido.onevsonegame.OneVSOneGame;
 
 public abstract class MatchTask {
 
     private final String name;
-    private ScheduledThreadPoolExecutor executor;
-    private ScheduledFuture<?> future;
-    public MatchTask(String name) {
+    private final OneVSOneGame plugin;
+    private BukkitTask task;
+
+    public MatchTask(String name, OneVSOneGame plugin) {
         this.name = name;
+        this.plugin = plugin;
     }
 
     public void start() {
-        this.executor = new ScheduledThreadPoolExecutor(10);
-        this.executor.setRemoveOnCancelPolicy(true);
-        this.future = this.executor.scheduleAtFixedRate(this::run, 0L, 100L, TimeUnit.MILLISECONDS);
-
+        task = Bukkit.getScheduler().runTaskTimer(plugin, this::run, 0, 1);
     }
 
     public void stop() {
-        if (this.future != null) {
-            future.cancel(true);
-        }
-        if (this.executor != null) {
-            this.executor.shutdownNow();
-        }
+        task.cancel();
     }
 
     public String getName() {
