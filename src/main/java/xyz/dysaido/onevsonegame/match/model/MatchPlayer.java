@@ -3,7 +3,6 @@ package xyz.dysaido.onevsonegame.match.model;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import xyz.dysaido.onevsonegame.kit.Kit;
 import xyz.dysaido.onevsonegame.match.Match;
@@ -17,12 +16,14 @@ public class MatchPlayer {
     private final double originalHealth;
     private final int originalFoodLevel;
     private final int originalFireTicks;
+    private final float originalWalkSpeed;
     private final GameMode originalGamemode;
     private final Kit backupKit;
     private final Player player;
     private final Match match;
     private PlayerState state = PlayerState.QUEUE;
     private boolean lose = false;
+    private boolean frozen = false;
 
     public MatchPlayer(Match match, Player player) {
         this.match = match;
@@ -31,6 +32,7 @@ public class MatchPlayer {
         this.originalHealth = player.getHealth();
         this.originalFoodLevel = player.getFoodLevel();
         this.originalFireTicks = player.getFireTicks();
+        this.originalWalkSpeed = player.getWalkSpeed();
         this.backupKit = new Kit(player.getInventory().getContents(), player.getInventory().getArmorContents());
         this.originalGamemode = player.getGameMode();
         player.teleport(match.getRing().getLobby());
@@ -40,6 +42,7 @@ public class MatchPlayer {
         player.setHealth(player.getMaxHealth());
         player.setFoodLevel(20);
         player.setFireTicks(0);
+        player.setWalkSpeed(0.2f);
         player.setGameMode(GameMode.SURVIVAL);
         for (PotionEffect effect : player.getActivePotionEffects()) {
             player.removePotionEffect(effect.getType());
@@ -50,11 +53,13 @@ public class MatchPlayer {
     }
 
     public void freeze() {
-
+        frozen = true;
+        player.setWalkSpeed(0f);
     }
 
     public void unfreeze() {
-
+        player.setWalkSpeed(0.2f);
+        frozen = false;
     }
 
     public void reset(Location location, PlayerState state) {
@@ -112,8 +117,15 @@ public class MatchPlayer {
         return originalFireTicks;
     }
 
+    public float getOriginalWalkSpeed() {
+        return originalWalkSpeed;
+    }
+
     public boolean isLose() {
         return lose;
     }
 
+    public boolean isFrozen() {
+        return frozen;
+    }
 }
