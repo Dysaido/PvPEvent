@@ -61,6 +61,7 @@ public class EventCommand extends BaseCommand<OneVSOneGame> {
                     player.sendMessage("Save");
                     break;
                 case "host":
+                    plugin.getRingManager().load();
                     plugin.getMatchManager().create(plugin.getRingManager().get(list.get(1)));
                     player.sendMessage("Host");
                     break;

@@ -17,8 +17,6 @@ import java.util.Map;
 public final class OneVSOneGame extends JavaPlugin {
 
     private static OneVSOneGame instance;
-    private SimpleCommandMap simpleCommandMap;
-    private Map<String, Command> knownCommands;
     private FileManager ringConfig;
     private RingManager ringManager;
     private MatchManager matchManager;
@@ -37,18 +35,18 @@ public final class OneVSOneGame extends JavaPlugin {
         ringManager = new RingManager(ringConfig);
         matchManager = new MatchManager(this);
         eventCommand = new EventCommand(this);
-        Bukkit.getScheduler().runTaskLater(this, () -> ringManager.load(), 200);
         getServer().getPluginManager().registerEvents(new MatchListener(this), this);
         registerCommand();
     }
 
     private void registerCommand() {
         getCommandMap().register("event", eventCommand);
+        getKnownCommands(getCommandMap()).put(eventCommand.getName(), eventCommand);
     }
 
     private void unregisterCommand() {
-        knownCommands.values().remove(eventCommand);
-        eventCommand.unregister(simpleCommandMap);
+        getKnownCommands(getCommandMap()).values().remove(eventCommand);
+        eventCommand.unregister(getCommandMap());
     }
 
     @Override
@@ -58,19 +56,13 @@ public final class OneVSOneGame extends JavaPlugin {
     }
 
     public SimpleCommandMap getCommandMap() {
-        if (simpleCommandMap == null) {
-            Field field = Reflection.getField(getServer().getClass(), "commandMap");
-            simpleCommandMap = Reflection.getObject(getServer(), field, SimpleCommandMap.class);
-        }
-        return simpleCommandMap;
+        Field field = Reflection.getField(getServer().getClass(), "commandMap");
+        return Reflection.getObject(getServer(), field, SimpleCommandMap.class);
     }
 
     public Map<String, Command> getKnownCommands(SimpleCommandMap simpleCommandMap) {
-        if (knownCommands == null) {
-            Field field = Reflection.getField(SimpleCommandMap.class, "knownCommands");
-            knownCommands = Reflection.getObject(simpleCommandMap, field, Map.class);
-        }
-        return knownCommands;
+        Field field = Reflection.getField(SimpleCommandMap.class, "knownCommands");
+        return Reflection.getObject(simpleCommandMap, field, Map.class);
     }
 
     public RingManager getRingManager() {

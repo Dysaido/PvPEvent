@@ -37,8 +37,10 @@ public class RingManager {
             cache.setLobby(LocationSerializer.deserialize(lobby));
             cache.setContents(contents);
             cache.setArmor(armor);
-            Logger.debug("RingManager", cache.toString());
-            arenaMap.computeIfAbsent(name, s -> new Ring(cache));
+            arenaMap.computeIfAbsent(name, s -> {
+                Logger.debug("RingManager", cache.toString());
+                return new Ring(cache);
+            });
         }
     }
 
@@ -62,6 +64,7 @@ public class RingManager {
         }
         ringConfig.saveFile();
         ringConfig.reloadFile();
+        load();
     }
 
     public Ring get(String name) {
