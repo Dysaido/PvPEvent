@@ -1,11 +1,13 @@
 package xyz.dysaido.onevsonegame.listener;
 
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerKickEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import xyz.dysaido.onevsonegame.OneVSOneGame;
 import xyz.dysaido.onevsonegame.match.model.MatchPlayer;
@@ -53,4 +55,18 @@ public class MatchListener implements Listener {
         });
     }
 
+    @EventHandler
+    public void onPlayerMove(PlayerMoveEvent event) {
+        Player player = event.getPlayer();
+        plugin.getMatchManager().getMatch().ifPresent(match -> {
+            MatchPlayer matchPlayer = match.getQueue().findByPlayer(player);
+            if (matchPlayer != null && matchPlayer.isFrozen() && hasMove(event.getFrom(), event.getTo())) {
+                event.setTo(event.getFrom());
+            }
+        });
+    }
+
+    public boolean hasMove(Location from, Location to) {
+        return to.getX() != from.getX() || to.getY() != from.getY() || to.getZ() != from.getZ();
+    }
 }
