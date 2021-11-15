@@ -2,6 +2,5 @@ name: OneVSOneGame
 version: '${project.version}'
 main: xyz.dysaido.onevsonegame.OneVSOneGame
 load: STARTUP
-loadbefore: [Multiverse-Core]
 authors: [ Dysaido ]
 description: This is a game plugin for your server. You can make some arena and in those the players play an 1v1 game.
