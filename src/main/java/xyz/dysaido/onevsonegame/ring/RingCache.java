@@ -1,11 +1,14 @@
 package xyz.dysaido.onevsonegame.ring;
 
 import org.bukkit.Location;
+import org.bukkit.inventory.ItemStack;
+
+import java.util.Arrays;
 
 public class RingCache {
     private final String mName;
-    private String contents;
-    private String armor;
+    private ItemStack[] contents;
+    private ItemStack[] armor;
     private Location mSpawn;
     private Location mLobby;
     private Location mSpawn1;
@@ -17,22 +20,6 @@ public class RingCache {
 
     public String getName() {
         return mName;
-    }
-
-    public String getContents() {
-        return contents;
-    }
-
-    public void setContents(String contents) {
-        this.contents = contents;
-    }
-
-    public String getArmor() {
-        return armor;
-    }
-
-    public void setArmor(String armor) {
-        this.armor = armor;
     }
 
     public Location getSpawn() {
@@ -67,12 +54,28 @@ public class RingCache {
         this.mSpawn2 = mSpawn2;
     }
 
+    public ItemStack[] getArmor() {
+        return armor;
+    }
+
+    public void setArmor(ItemStack[] armor) {
+        this.armor = armor;
+    }
+
+    public ItemStack[] getContents() {
+        return contents;
+    }
+
+    public void setContents(ItemStack[] contents) {
+        this.contents = contents;
+    }
+
     @Override
     public String toString() {
         return "RingCache{" +
                 "name='" + mName + '\'' +
-                ", contents='" + !contents.isEmpty() + '\'' +
-                ", armor='" + !armor.isEmpty() + '\'' +
+                ", contents='" + Arrays.toString(contents) + '\'' +
+                ", armor='" + Arrays.toString(armor) + '\'' +
                 ", spawn=" + mSpawn +
                 ", lobby=" + mLobby +
                 ", spawn1=" + mSpawn1 +

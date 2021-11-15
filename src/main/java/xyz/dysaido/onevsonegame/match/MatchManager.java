@@ -14,14 +14,6 @@ public class MatchManager {
         this.plugin = plugin;
     }
 
-    public void make() {
-
-    }
-
-    public void destruction() {
-
-    }
-
     public Match create(Ring ring) {
         if (!isNull()) this.match.stop();
         this.match = new Match(plugin, ring);

@@ -3,6 +3,7 @@ package xyz.dysaido.onevsonegame.ring;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.inventory.ItemStack;
 import xyz.dysaido.onevsonegame.util.FileManager;
 import xyz.dysaido.onevsonegame.util.LocationSerializer;
 import xyz.dysaido.onevsonegame.util.Logger;
@@ -28,8 +29,8 @@ public class RingManager {
             String lobby = section.getString("lobby");
             String spawn1 = section.getString("spawn1");
             String spawn2 = section.getString("spawn2");
-            String contents = section.getString("contents");
-            String armor = section.getString("armor");
+            ItemStack[] contents = section.getList("contents").toArray(new ItemStack[0]);
+            ItemStack[] armor = section.getList("armor").toArray(new ItemStack[0]);
             RingCache cache = new RingCache(name);
             cache.setSpawn(LocationSerializer.deserialize(worldspawn));
             cache.setSpawn1(LocationSerializer.deserialize(spawn1));
@@ -51,8 +52,8 @@ public class RingManager {
         String lobby = LocationSerializer.serialize(ringCache.getLobby());
         String spawn1 = LocationSerializer.serialize(ringCache.getSpawn1());
         String spawn2 = LocationSerializer.serialize(ringCache.getSpawn2());
-        String contents = ringCache.getContents();
-        String armor = ringCache.getArmor();
+        ItemStack[] contents = ringCache.getContents();
+        ItemStack[] armor = ringCache.getArmor();
         if (!configuration.isConfigurationSection(name)) {
             ConfigurationSection section = configuration.createSection(name);
             section.set("worldspawn", worldspawn);
@@ -68,6 +69,7 @@ public class RingManager {
     }
 
     public Ring get(String name) {
+        load();
         return arenaMap.get(name);
     }
 

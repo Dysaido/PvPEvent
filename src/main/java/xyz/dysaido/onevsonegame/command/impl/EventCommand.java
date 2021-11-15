@@ -6,7 +6,6 @@ import org.bukkit.inventory.PlayerInventory;
 import xyz.dysaido.onevsonegame.OneVSOneGame;
 import xyz.dysaido.onevsonegame.command.BaseCommand;
 import xyz.dysaido.onevsonegame.ring.RingCache;
-import xyz.dysaido.onevsonegame.util.ItemSerializer;
 
 import java.util.Collections;
 import java.util.List;
@@ -17,7 +16,6 @@ public class EventCommand extends BaseCommand<OneVSOneGame> {
 
     public EventCommand(OneVSOneGame plugin) {
         super(plugin, "event", "Event command", "/event [options]", Collections.emptyList());
-//        setPermission("event.command.perform");
         setOnlyPlayer(true);
     }
 
@@ -52,8 +50,8 @@ public class EventCommand extends BaseCommand<OneVSOneGame> {
                     break;
                 case "inventory":
                     PlayerInventory inventory = player.getInventory();
-                    ringCache.setContents(ItemSerializer.serialize(inventory.getContents()));
-                    ringCache.setArmor(ItemSerializer.serialize(inventory.getArmorContents()));
+                    ringCache.setContents(inventory.getContents());
+                    ringCache.setArmor(inventory.getArmorContents());
                     player.sendMessage("Inventory");
                     break;
                 case "save":
@@ -62,7 +60,6 @@ public class EventCommand extends BaseCommand<OneVSOneGame> {
                     break;
                 case "host":
                     if (plugin.getRingManager().get(list.get(1)) != null) {
-                        plugin.getRingManager().load();
                         plugin.getMatchManager().create(plugin.getRingManager().get(list.get(1)));
                         player.sendMessage("Host");
                     } else {

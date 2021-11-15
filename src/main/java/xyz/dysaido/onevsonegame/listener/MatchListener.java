@@ -6,6 +6,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -13,10 +14,13 @@ import xyz.dysaido.onevsonegame.OneVSOneGame;
 import xyz.dysaido.onevsonegame.match.model.MatchPlayer;
 import xyz.dysaido.onevsonegame.match.model.PlayerState;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class MatchListener implements Listener {
 
     private final OneVSOneGame plugin;
-
+    private final List<String> commands = Arrays.asList("event", "event:event");
     public MatchListener(OneVSOneGame plugin) {
         this.plugin = plugin;
     }
@@ -29,6 +33,21 @@ public class MatchListener implements Listener {
     @EventHandler
     public void onPlayerKick(PlayerKickEvent event) {
         plugin.getMatchManager().getMatch().ifPresent(match -> match.leave(event.getPlayer()));
+    }
+
+    @EventHandler
+    public void onCommand(PlayerCommandPreprocessEvent event) {
+        plugin.getMatchManager().getMatch().ifPresent(match -> {
+            Player player = event.getPlayer();
+            if (match.getQueue().contains(player)) {
+                String message = event.getMessage().split(" ")[0].toLowerCase();
+                String command = message.substring(1);
+                if (!player.hasPermission("event.command.perform") && message.startsWith("/") && !commands.contains(command)) {
+                    event.setCancelled(true);
+                    player.sendMessage("/event leave");
+                }
+            }
+        });
     }
 
     @EventHandler
