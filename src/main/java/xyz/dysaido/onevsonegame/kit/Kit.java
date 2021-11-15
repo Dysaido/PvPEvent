@@ -14,6 +14,11 @@ public class Kit {
         this.armor = ItemSerializer.deserialize(armor);
     }
 
+    public Kit(ItemStack[] contents, ItemStack[] armor) {
+        this.contents = contents;
+        this.armor = armor;
+    }
+
     public void apply(Player player) {
         player.getInventory().setContents(contents);
         player.getInventory().setArmorContents(armor);
