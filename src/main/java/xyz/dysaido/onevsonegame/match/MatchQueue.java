@@ -60,8 +60,8 @@ public class MatchQueue {
     public Pair<MatchPlayer, MatchPlayer> randomizedOpponents() {
         MatchPlayer player1, player2;
         do {
-            player1 = players.get(random.nextInt(this.players.size()));
-            player2 = players.get(random.nextInt(this.players.size()));
+            player1 = getPlayersByState(PlayerState.QUEUE).get(random.nextInt(this.players.size()));
+            player2 = getPlayersByState(PlayerState.QUEUE).get(random.nextInt(this.players.size()));
         } while (player1 == player2);
         return opponent = new Pair<>(player1, player2);
     }
