@@ -85,6 +85,9 @@ public class Match extends MatchTask {
                     ending--;
                     if (ending == 0) {
                         Format.broadcast("Event is ended");
+                        queue.getPlayersByState(PlayerState.SPECTATOR).stream().map(MatchPlayer::getPlayer).forEach(player -> {
+                            player.teleport(ring.getWorldSpawn());
+                        });
                         state = MatchState.END;
                     }
                     break;
@@ -121,6 +124,7 @@ public class Match extends MatchTask {
 
     private void nextRound() {
         this.round++;
+        Format.broadcast("Round: " + round);
         Pair<MatchPlayer, MatchPlayer> opponents = this.queue.randomizedOpponents();
         MatchPlayer damager = opponents.getKey();
         MatchPlayer victim = opponents.getValue();

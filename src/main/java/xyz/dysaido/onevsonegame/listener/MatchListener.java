@@ -33,10 +33,10 @@ public class MatchListener implements Listener {
     public void onPlayerDeath(PlayerDeathEvent event) {
         Player victim = event.getEntity();
         plugin.getMatchManager().getMatch().ifPresent(match -> {
-            MatchPlayer matchPlayer = match.getQueue().findByPlayer(victim);
-            if (matchPlayer != null) {
-                event.setDeathMessage(null);
+            if (match.getQueue().contains(victim)) {
+                MatchPlayer matchPlayer = match.getQueue().findByPlayer(victim);
                 event.getDrops().clear();
+                event.setDeathMessage(null);
                 matchPlayer.reset(match.getRing().getLobby(), PlayerState.SPECTATOR);
             }
         });
@@ -46,9 +46,11 @@ public class MatchListener implements Listener {
     public void onPlayerInventory(InventoryClickEvent event) {
         Player player = (Player) event.getWhoClicked();
         plugin.getMatchManager().getMatch().ifPresent(match -> {
-            MatchPlayer matchPlayer = match.getQueue().findByPlayer(player);
-            if (matchPlayer != null && (matchPlayer.getState() == PlayerState.QUEUE || matchPlayer.getState() == PlayerState.SPECTATOR)) {
-                event.setCancelled(true);
+            if (match.getQueue().contains(player)) {
+                MatchPlayer matchPlayer = match.getQueue().findByPlayer(player);
+                if (matchPlayer.getState() == PlayerState.QUEUE || matchPlayer.getState() == PlayerState.SPECTATOR) {
+                    event.setCancelled(true);
+                }
             }
         });
     }

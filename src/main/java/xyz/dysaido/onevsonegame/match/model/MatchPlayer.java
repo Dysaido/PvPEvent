@@ -5,23 +5,20 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
+import xyz.dysaido.onevsonegame.kit.Kit;
 import xyz.dysaido.onevsonegame.match.Match;
-import xyz.dysaido.onevsonegame.util.Format;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.UUID;
 
 public class MatchPlayer {
-
-    private final ItemStack[] originalContents;
-    private final ItemStack[] originalArmor;
 
     private final Collection<PotionEffect> originalPotionEffects;
     private final double originalHealth;
     private final int originalFoodLevel;
     private final int originalFireTicks;
     private final GameMode originalGamemode;
+    private final Kit backupKit;
     private final Player player;
     private final Match match;
     private PlayerState state = PlayerState.QUEUE;
@@ -34,8 +31,7 @@ public class MatchPlayer {
         this.originalHealth = player.getHealth();
         this.originalFoodLevel = player.getFoodLevel();
         this.originalFireTicks = player.getFireTicks();
-        this.originalContents = player.getInventory().getContents();
-        this.originalArmor = player.getInventory().getArmorContents();
+        this.backupKit = new Kit(player.getInventory().getContents(), player.getInventory().getArmorContents());
         this.originalGamemode = player.getGameMode();
         player.teleport(match.getRing().getLobby());
     }
@@ -65,20 +61,18 @@ public class MatchPlayer {
         this.state = state;
         if (player.isDead()) {
             this.lose = true;
-            player.spigot().respawn();
+//            player.spigot().respawn();
         }
-        player.teleport(location);
         player.setHealth(originalHealth);
         player.setFoodLevel(originalFoodLevel);
         player.setFireTicks(originalFireTicks);
         player.setGameMode(originalGamemode);
+        backupKit.apply(player);
         for (PotionEffect effect : player.getActivePotionEffects()) {
             player.removePotionEffect(effect.getType());
         }
         originalPotionEffects.forEach(player::addPotionEffect);
-        player.getInventory().setContents(originalContents);
-        player.getInventory().setArmorContents(originalArmor);
-        player.updateInventory();
+        player.teleport(location);
     }
 
 
@@ -116,14 +110,6 @@ public class MatchPlayer {
 
     public int getOriginalFireTicks() {
         return originalFireTicks;
-    }
-
-    public ItemStack[] getOriginalContents() {
-        return originalContents;
-    }
-
-    public ItemStack[] getOriginalArmor() {
-        return originalArmor;
     }
 
     public boolean isLose() {
