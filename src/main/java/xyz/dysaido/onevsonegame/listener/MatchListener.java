@@ -61,9 +61,11 @@ public class MatchListener implements Listener {
     public void onPlayerMove(PlayerMoveEvent event) {
         Player player = event.getPlayer();
         plugin.getMatchManager().getMatch().ifPresent(match -> {
-            MatchPlayer matchPlayer = match.getQueue().findByPlayer(player);
-            if (matchPlayer != null && matchPlayer.isFrozen() && hasMove(event.getFrom(), event.getTo())) {
-                event.setTo(event.getFrom());
+            if (match.getQueue().contains(player)) {
+                MatchPlayer matchPlayer = match.getQueue().findByPlayer(player);
+                if (matchPlayer.isFrozen() && hasMove(event.getFrom(), event.getTo())) {
+                    event.setTo(event.getFrom());
+                }
             }
         });
     }
