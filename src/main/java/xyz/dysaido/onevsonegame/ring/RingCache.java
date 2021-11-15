@@ -71,8 +71,8 @@ public class RingCache {
     public String toString() {
         return "RingCache{" +
                 "name='" + mName + '\'' +
-                ", contents='" + contents + '\'' +
-                ", armor='" + armor + '\'' +
+                ", contents='" + !contents.isEmpty() + '\'' +
+                ", armor='" + !armor.isEmpty() + '\'' +
                 ", spawn=" + mSpawn +
                 ", lobby=" + mLobby +
                 ", spawn1=" + mSpawn1 +

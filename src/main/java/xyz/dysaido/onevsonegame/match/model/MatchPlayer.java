@@ -6,6 +6,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import xyz.dysaido.onevsonegame.match.Match;
+import xyz.dysaido.onevsonegame.util.Format;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -60,7 +61,13 @@ public class MatchPlayer {
 
     }
 
-    public void reset(Location location) {
+    public void reset(Location location, PlayerState state) {
+        this.state = state;
+        if (player.isDead()) {
+            this.lose = true;
+            player.spigot().respawn();
+        }
+        player.teleport(location);
         player.setHealth(originalHealth);
         player.setFoodLevel(originalFoodLevel);
         player.setFireTicks(originalFireTicks);
@@ -72,8 +79,6 @@ public class MatchPlayer {
         player.getInventory().setContents(originalContents);
         player.getInventory().setArmorContents(originalArmor);
         player.updateInventory();
-        player.teleport(location);
-        state = lose ? PlayerState.SPECTATOR : PlayerState.QUEUE;
     }
 
 
@@ -123,10 +128,6 @@ public class MatchPlayer {
 
     public boolean isLose() {
         return lose;
-    }
-
-    public void setLose(boolean lose) {
-        this.lose = lose;
     }
 
 }

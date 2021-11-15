@@ -35,11 +35,9 @@ public class MatchListener implements Listener {
         plugin.getMatchManager().getMatch().ifPresent(match -> {
             MatchPlayer matchPlayer = match.getQueue().findByPlayer(victim);
             if (matchPlayer != null) {
-                matchPlayer.setLose(true);
                 event.setDeathMessage(null);
                 event.getDrops().clear();
-                if (victim.isDead()) victim.spigot().respawn();
-                matchPlayer.reset(match.getRing().getLobby());
+                matchPlayer.reset(match.getRing().getLobby(), PlayerState.SPECTATOR);
             }
         });
     }

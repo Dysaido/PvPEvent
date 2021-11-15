@@ -17,7 +17,7 @@ public class Match extends MatchTask {
     private final Ring ring;
     private final MatchQueue queue;
     private final OneVSOneGame plugin;
-    private MatchState state = MatchState.WAITING;
+    private volatile MatchState state = MatchState.WAITING;
     private int round = 0;
 
     private long lastTransaction = 0;
@@ -38,7 +38,6 @@ public class Match extends MatchTask {
         long tick = System.currentTimeMillis();
         if (tick - this.lastTransaction >= 1000) {
             this.lastTransaction = tick;
-            System.out.println("Tasking...");
             switch (state) {
                 case WAITING:
                     if (waiting % 5 == 0) {
@@ -50,10 +49,10 @@ public class Match extends MatchTask {
                     waiting--;
                     if (waiting == 0) {
                         if (queue.shouldEnd()) {
-                            setState(MatchState.ENDING);
+                            state = MatchState.ENDING;
                         } else {
                             Format.broadcast("Event join has been disabled");
-                            setState(MatchState.STARTING);
+                            state = MatchState.STARTING;
                         }
                     }
                     break;
@@ -62,24 +61,22 @@ public class Match extends MatchTask {
                     starting--;
                     if (starting == 0) {
                         Format.broadcast("Event start");
-                        setState(MatchState.FIGHTING);
+                        state = MatchState.FIGHTING;
                     }
                     break;
                 case FIGHTING:
                     if (shouldNextRound()) {
                         Optional<MatchPlayer> matchPlayer = queue.getPlayersByState(PlayerState.FIGHT).stream().findFirst();
-                        matchPlayer.ifPresent(internal -> internal.reset(ring.getLobby()));
+                        matchPlayer.ifPresent(internal -> internal.reset(ring.getLobby(), PlayerState.QUEUE));
                         nextRound();
                     } else if (queue.getPlayersByState(PlayerState.QUEUE).size() == 0 && !hasFighting()) {
                         Optional<MatchPlayer> matchPlayer = queue.getPlayersByState(PlayerState.FIGHT).stream().findFirst();
                         matchPlayer.ifPresent(internal -> {
                             Format.broadcast("Event's winner " + internal.getPlayer().getName());
-                            internal.setState(PlayerState.WINNER);
-                            internal.reset(ring.getWorldSpawn());
+                            internal.reset(ring.getWorldSpawn(), PlayerState.WINNER);
                         });
                         if (queue.shouldEnd()) {
-                            queue.getMatchPlayers().stream().map(MatchPlayer::getPlayer).forEach(player -> player.teleport(ring.getWorldSpawn()));
-                            setState(MatchState.ENDING);
+                            state = MatchState.ENDING;
                         }
                     }
                     break;
@@ -88,7 +85,7 @@ public class Match extends MatchTask {
                     ending--;
                     if (ending == 0) {
                         Format.broadcast("Event is ended");
-                        setState(MatchState.END);
+                        state = MatchState.END;
                     }
                     break;
                 default:
@@ -116,8 +113,8 @@ public class Match extends MatchTask {
         Objects.requireNonNull(player);
         MatchPlayer matchPlayer = queue.findByPlayer(player);
         if (matchPlayer != null) {
+            matchPlayer.reset(ring.getWorldSpawn(), PlayerState.SPECTATOR);
             queue.removeMatchPlayer(matchPlayer);
-            matchPlayer.reset(ring.getWorldSpawn());
             Format.broadcast(ChatColor.AQUA + player.getName() + " left the event!");
         }
     }
