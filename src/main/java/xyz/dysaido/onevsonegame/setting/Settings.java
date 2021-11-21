@@ -24,9 +24,9 @@ public class Settings {
 
     public void initialAnnotatedClass(Class<?> clazz) {
         if (Objects.isNull(clazz)) return;
-        List<Field> fields = Arrays.stream(clazz.getFields()).parallel().filter(field -> field.isAnnotationPresent(ConfigSetting.class)).sorted(Comparator.comparing(Field::getName)).collect(Collectors.toList());
+        List<Field> fields = Arrays.stream(clazz.getFields()).parallel().filter(field -> field.isAnnotationPresent(Options.class)).sorted(Comparator.comparing(Field::getName)).collect(Collectors.toList());
         fields.forEach(field -> {
-            ConfigSetting setting = field.getAnnotation(ConfigSetting.class);
+            Options setting = field.getAnnotation(Options.class);
             String name = setting.name().length() > 0 ? setting.name() : field.getName();
             try {
                 if (plugin.getConfig().get(setting.path() + "." + name) == null) {
@@ -46,7 +46,7 @@ public class Settings {
 
     @Retention(RetentionPolicy.RUNTIME)
     @Target({ElementType.FIELD, ElementType.TYPE})
-    public @interface ConfigSetting {
+    public @interface Options {
         String path() default "";
         String name() default "";
     }
