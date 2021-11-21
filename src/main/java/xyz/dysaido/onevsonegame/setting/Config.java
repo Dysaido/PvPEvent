@@ -24,22 +24,22 @@ public class Config {
     public static String CLICKABLE_MESSAGE = "&b[Click to join]";
 
     @Settings.ConfigSetting(path = "message", name = "join_finished")
-    public static String EVENT_JOIN_FINISHED_MESSAGE = "Event will start";
+    public static String EVENT_JOIN_FINISHED_MESSAGE = "&bEvent will start";
 
     @Settings.ConfigSetting(path = "message", name = "starting")
-    public static String EVENT_WILL_START_MESSAGE = "Event will be started {second} sec";
+    public static String EVENT_WILL_START_MESSAGE = "&7Event will be started &b{second} &7sec";
 
     @Settings.ConfigSetting(path = "message", name = "start")
-    public static String EVENT_START_MESSAGE = "Event start";
+    public static String EVENT_START_MESSAGE = "&bEvent start";
 
     @Settings.ConfigSetting(path = "message", name = "winner")
-    public static String EVENT_WINNER_MESSAGE = "Event's winner {player}";
+    public static String EVENT_WINNER_MESSAGE = "&7Event's winner &b{player}";
 
     @Settings.ConfigSetting(path = "message", name = "ending")
-    public static String EVENT_ENDING_MESSAGE = "Event will be ended {second} sec";
+    public static String EVENT_ENDING_MESSAGE = "&7Event will be ended &b{second} &7sec";
 
     @Settings.ConfigSetting(path = "message", name = "end")
-    public static String EVENT_ENDED_MESSAGE = "Event ended!";
+    public static String EVENT_ENDED_MESSAGE = "&bEvent ended!";
 
     @Settings.ConfigSetting(path = "settings.count", name = "waiting")
     public static int WAITING = 30;
