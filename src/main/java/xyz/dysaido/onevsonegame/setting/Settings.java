@@ -47,7 +47,8 @@ public class Settings {
     @Retention(RetentionPolicy.RUNTIME)
     @Target({ElementType.FIELD, ElementType.TYPE})
     public @interface Options {
-        String path() default "";
-        String name() default "";
+        String path();
+        String name();
+        String comment() default "";
     }
 }
