@@ -26,7 +26,9 @@ public final class OneVSOneGame extends JavaPlugin {
     private Settings settings;
 
     public static OneVSOneGame getInstance() {
-        return instance;
+        synchronized (OneVSOneGame.class) {
+            return instance;
+        }
     }
 
     @Override
