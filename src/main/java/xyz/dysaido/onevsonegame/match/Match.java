@@ -1,11 +1,11 @@
 package xyz.dysaido.onevsonegame.match;
 
-import net.md_5.bungee.api.ChatColor;
 import org.bukkit.entity.Player;
 import xyz.dysaido.onevsonegame.OneVSOneGame;
 import xyz.dysaido.onevsonegame.match.model.MatchPlayer;
 import xyz.dysaido.onevsonegame.match.model.PlayerState;
 import xyz.dysaido.onevsonegame.ring.Ring;
+import xyz.dysaido.onevsonegame.setting.Config;
 import xyz.dysaido.onevsonegame.util.Format;
 import xyz.dysaido.onevsonegame.util.Pair;
 
@@ -22,9 +22,9 @@ public class Match extends MatchTask {
 
     private long lastTransaction = 0;
 
-    private int waiting = 30;
-    private int starting = 5;
-    private int ending = 5;
+    private int waiting = Config.WAITING;
+    private int starting = Config.STARTING;
+    private int ending = Config.ENDING;
 
     public Match(OneVSOneGame plugin, Ring ring) {
         super("Match", plugin);
@@ -40,27 +40,27 @@ public class Match extends MatchTask {
             this.lastTransaction = tick;
             switch (state) {
                 case WAITING:
-                    if (waiting % 5 == 0) {
-                        Format.broadcast("Join for event " + waiting + "sec");
-                        Format.broadcastClickable("&b[Click to join]");
-                    } else if (waiting < 5) {
-                        Format.broadcastClickable("&b[Click to join]");
+                    if (waiting >= 5) {
+                        String message = Config.WAITING_MESSAGE;
+                        Format.broadcast(message.replace("{second}", String.valueOf(waiting)));
                     }
+                    Format.broadcastClickable(Config.CLICKABLE_MESSAGE);
                     waiting--;
                     if (waiting == 0) {
                         if (queue.shouldEnd()) {
                             state = MatchState.ENDING;
                         } else {
-                            Format.broadcast("Event join has been disabled");
+                            Format.broadcast(Config.EVENT_JOIN_FINISHED_MESSAGE);
                             state = MatchState.STARTING;
                         }
                     }
                     break;
                 case STARTING:
-                    Format.broadcast("Event will be started " + starting + "sec");
+                    String message = Config.EVENT_WILL_START_MESSAGE;
+                    Format.broadcast(message.replace("{second}", String.valueOf(starting)));
                     starting--;
                     if (starting == 0) {
-                        Format.broadcast("Event start");
+                        Format.broadcast(Config.EVENT_START_MESSAGE);
                         state = MatchState.FIGHTING;
                     }
                     break;
@@ -72,7 +72,8 @@ public class Match extends MatchTask {
                     } else if (queue.getPlayersByState(PlayerState.QUEUE).size() == 0 && !hasFighting()) {
                         Optional<MatchPlayer> matchPlayer = queue.getPlayersByState(PlayerState.FIGHT).stream().findFirst();
                         matchPlayer.ifPresent(internal -> {
-                            Format.broadcast("Event's winner " + internal.getPlayer().getName());
+                            String winnerMessage = Config.EVENT_WINNER_MESSAGE;
+                            Format.broadcast(winnerMessage.replace("{player}", internal.getPlayer().getName()));
                             internal.reset(ring.getWorldSpawn(), PlayerState.WINNER);
                         });
                         if (queue.shouldEnd()) {
@@ -81,10 +82,10 @@ public class Match extends MatchTask {
                     }
                     break;
                 case ENDING:
-                    Format.broadcast("Event will be ended " + ending + "sec");
+                    Format.broadcast(Config.EVENT_ENDING_MESSAGE.replace("{second}", String.valueOf(ending)));
                     ending--;
                     if (ending == 0) {
-                        Format.broadcast("Event is ended");
+                        Format.broadcast(Config.EVENT_ENDED_MESSAGE);
                         queue.getPlayersByState(PlayerState.SPECTATOR).stream().map(MatchPlayer::getPlayer).forEach(player -> {
                             player.teleport(ring.getWorldSpawn());
                         });
@@ -103,12 +104,13 @@ public class Match extends MatchTask {
             if (!queue.contains(player)) {
                 MatchPlayer matchPlayer = new MatchPlayer(this, player);
                 queue.addMatchPlayer(matchPlayer);
-                Format.broadcast(ChatColor.AQUA + player.getName() + " joined the event!");
+                String message = Config.JOIN_MESSAGE;
+                Format.broadcast(message.replace("{player}", player.getName()));
             } else {
-                player.sendMessage("You are already joined");
+                player.sendMessage(Format.colored(Config.ALREADY_JOINED_MESSAGE));
             }
         } else {
-            player.sendMessage("There isn't event");
+            player.sendMessage(Format.colored(Config.EVENT_NOT_AVAILABLE_MESSAGE));
         }
     }
 
@@ -118,13 +120,15 @@ public class Match extends MatchTask {
         if (matchPlayer != null) {
             matchPlayer.reset(ring.getWorldSpawn(), PlayerState.SPECTATOR);
             queue.removeMatchPlayer(matchPlayer);
-            Format.broadcast(ChatColor.AQUA + player.getName() + " left the event!");
+            String message = Config.LEAVE_MESSAGE;
+            Format.broadcast(message.replace("{player}", player.getName()));
         }
     }
 
     private void nextRound() {
         this.round++;
-        Format.broadcast("Round: " + round);
+        String message = Config.NEXT_ROUND;
+        Format.broadcast(message.replace("{round}", String.valueOf(round)));
         Pair<MatchPlayer, MatchPlayer> opponents = this.queue.randomizedOpponents();
         MatchPlayer damager = opponents.getKey();
         MatchPlayer victim = opponents.getValue();

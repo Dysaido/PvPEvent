@@ -8,6 +8,8 @@ import xyz.dysaido.onevsonegame.command.impl.EventCommand;
 import xyz.dysaido.onevsonegame.listener.MatchListener;
 import xyz.dysaido.onevsonegame.match.MatchManager;
 import xyz.dysaido.onevsonegame.ring.RingManager;
+import xyz.dysaido.onevsonegame.setting.Config;
+import xyz.dysaido.onevsonegame.setting.Settings;
 import xyz.dysaido.onevsonegame.util.FileManager;
 import xyz.dysaido.onevsonegame.util.Reflection;
 
@@ -21,6 +23,7 @@ public final class OneVSOneGame extends JavaPlugin {
     private RingManager ringManager;
     private MatchManager matchManager;
     private EventCommand eventCommand;
+    private Settings settings;
 
     public static OneVSOneGame getInstance() {
         return instance;
@@ -30,8 +33,8 @@ public final class OneVSOneGame extends JavaPlugin {
     public void onEnable() {
         instance = this;
         ringConfig = new FileManager(this, "rings");
-        getConfig().options().copyDefaults(true);
-        saveConfig();
+        settings = new Settings(this);
+        settings.initialAnnotatedClass(Config.class);
         ringManager = new RingManager(ringConfig);
         matchManager = new MatchManager(this);
         eventCommand = new EventCommand(this);
@@ -47,6 +50,13 @@ public final class OneVSOneGame extends JavaPlugin {
     private void unregisterCommand() {
         getKnownCommands(getCommandMap()).values().remove(eventCommand);
         eventCommand.unregister(getCommandMap());
+    }
+
+    @Override
+    public void reloadConfig() {
+        super.reloadConfig();
+        settings.initialAnnotatedClass(Config.class);
+        ringConfig.reloadFile();
     }
 
     @Override

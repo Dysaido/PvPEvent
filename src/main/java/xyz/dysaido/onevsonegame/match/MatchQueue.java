@@ -50,13 +50,6 @@ public class MatchQueue {
         return players.stream().filter(internal -> internal.getPlayer().equals(player)).findAny().orElse(null);
     }
 
-    public MatchPlayer findByPlayerState(Player player, PlayerState state) {
-        Objects.requireNonNull(player);
-        Objects.requireNonNull(state);
-        return players.stream().filter(internal -> internal.getPlayer().equals(player) && internal.getState().equals(state)).findAny().orElse(null);
-    }
-
-
     public Pair<MatchPlayer, MatchPlayer> randomizedOpponents() {
         MatchPlayer player1, player2;
         do {
