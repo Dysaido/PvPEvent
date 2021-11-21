@@ -40,11 +40,7 @@ public class Match extends MatchTask {
             this.lastTransaction = tick;
             switch (state) {
                 case WAITING:
-                    if (waiting >= 5) {
-                        String message = Config.WAITING_MESSAGE;
-                        Format.broadcast(message.replace("{second}", String.valueOf(waiting)));
-                    }
-                    Format.broadcastClickable(Config.CLICKABLE_MESSAGE);
+                    Format.broadcast(Config.WAITING_MESSAGE.replace("{second}", String.valueOf(waiting)));
                     waiting--;
                     if (waiting == 0) {
                         if (queue.shouldEnd()) {
@@ -56,8 +52,7 @@ public class Match extends MatchTask {
                     }
                     break;
                 case STARTING:
-                    String message = Config.EVENT_WILL_START_MESSAGE;
-                    Format.broadcast(message.replace("{second}", String.valueOf(starting)));
+                    Format.broadcast(Config.EVENT_WILL_START_MESSAGE.replace("{second}", String.valueOf(starting)));
                     starting--;
                     if (starting == 0) {
                         Format.broadcast(Config.EVENT_START_MESSAGE);
@@ -72,8 +67,7 @@ public class Match extends MatchTask {
                     } else if (queue.getPlayersByState(PlayerState.QUEUE).size() == 0 && !hasFighting()) {
                         Optional<MatchPlayer> matchPlayer = queue.getPlayersByState(PlayerState.FIGHT).stream().findFirst();
                         matchPlayer.ifPresent(internal -> {
-                            String winnerMessage = Config.EVENT_WINNER_MESSAGE;
-                            Format.broadcast(winnerMessage.replace("{player}", internal.getPlayer().getName()));
+                            Format.broadcast(Config.EVENT_WINNER_MESSAGE.replace("{player}", internal.getPlayer().getName()));
                             internal.reset(ring.getWorldSpawn(), PlayerState.WINNER);
                         });
                         if (queue.shouldEnd()) {
@@ -104,8 +98,7 @@ public class Match extends MatchTask {
             if (!queue.contains(player)) {
                 MatchPlayer matchPlayer = new MatchPlayer(this, player);
                 queue.addMatchPlayer(matchPlayer);
-                String message = Config.JOIN_MESSAGE;
-                Format.broadcast(message.replace("{player}", player.getName()));
+                Format.broadcast(Config.JOIN_MESSAGE.replace("{player}", player.getName()));
             } else {
                 player.sendMessage(Format.colored(Config.ALREADY_JOINED_MESSAGE));
             }
@@ -120,15 +113,13 @@ public class Match extends MatchTask {
         if (matchPlayer != null) {
             matchPlayer.reset(ring.getWorldSpawn(), PlayerState.SPECTATOR);
             queue.removeMatchPlayer(matchPlayer);
-            String message = Config.LEAVE_MESSAGE;
-            Format.broadcast(message.replace("{player}", player.getName()));
+            Format.broadcast(Config.LEAVE_MESSAGE.replace("{player}", player.getName()));
         }
     }
 
     private void nextRound() {
         this.round++;
-        String message = Config.NEXT_ROUND;
-        Format.broadcast(message.replace("{round}", String.valueOf(round)));
+        Format.broadcast(Config.NEXT_ROUND.replace("{round}", String.valueOf(round)));
         Pair<MatchPlayer, MatchPlayer> opponents = this.queue.randomizedOpponents();
         MatchPlayer damager = opponents.getKey();
         MatchPlayer victim = opponents.getValue();

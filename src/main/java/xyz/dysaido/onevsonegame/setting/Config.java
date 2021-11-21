@@ -3,22 +3,22 @@ package xyz.dysaido.onevsonegame.setting;
 public class Config {
 
     @Settings.ConfigSetting(path = "message", name = "join")
-    public static String JOIN_MESSAGE = "{player} joined the event!";
+    public static String JOIN_MESSAGE = "&b{player} &7joined the event!";
 
     @Settings.ConfigSetting(path = "message", name = "leave")
-    public static String LEAVE_MESSAGE = "{player} left the event!";
+    public static String LEAVE_MESSAGE = "&b{player} &7left the event!";
 
     @Settings.ConfigSetting(path = "message", name = "already_joined")
-    public static String ALREADY_JOINED_MESSAGE = "You are already joined!";
+    public static String ALREADY_JOINED_MESSAGE = "&7You are already joined!";
 
     @Settings.ConfigSetting(path = "message", name = "event_not_available")
-    public static String EVENT_NOT_AVAILABLE_MESSAGE = "Event not available!";
+    public static String EVENT_NOT_AVAILABLE_MESSAGE = "&cEvent not available!";
 
     @Settings.ConfigSetting(path = "message", name = "nexround")
-    public static String NEXT_ROUND = "Round {round}";
+    public static String NEXT_ROUND = "&bRound {round}";
 
     @Settings.ConfigSetting(path = "message", name = "waiting")
-    public static String WAITING_MESSAGE = "Join for event {second} sec";
+    public static String WAITING_MESSAGE = "&7Join for event {second} sec";
 
     @Settings.ConfigSetting(path = "message", name = "clickable_broadcast")
     public static String CLICKABLE_MESSAGE = "&b[Click to join]";
