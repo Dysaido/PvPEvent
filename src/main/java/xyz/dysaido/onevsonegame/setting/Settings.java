@@ -23,7 +23,7 @@ public class Settings {
     }
 
     public void initialAnnotatedClass(Class<?> clazz) {
-        if (Objects.isNull(clazz)) return;
+        Objects.requireNonNull(clazz, "Class cannot be null");
         List<Field> fields = Arrays.stream(clazz.getFields()).parallel().filter(field -> field.isAnnotationPresent(Options.class)).sorted(Comparator.comparing(Field::getName)).collect(Collectors.toList());
         fields.forEach(field -> {
             Options setting = field.getAnnotation(Options.class);
