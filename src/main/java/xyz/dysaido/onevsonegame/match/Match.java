@@ -40,7 +40,7 @@ public class Match extends MatchTask {
             this.lastTransaction = tick;
             switch (state) {
                 case WAITING:
-                    Format.broadcast(Config.WAITING_MESSAGE.replace("{second}", String.valueOf(waiting)));
+                    Format.broadcastClickable(Config.WAITING_MESSAGE.replace("{second}", String.valueOf(waiting)));
                     waiting--;
                     if (waiting == 0) {
                         if (queue.shouldEnd()) {

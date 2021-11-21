@@ -22,7 +22,12 @@ public class Format {
     }
 
     public static void broadcastClickable(String text) {
-        Bukkit.getOnlinePlayers().forEach(player -> player.sendMessage(translate(text)));
+        try {
+            Bukkit.getOnlinePlayers().forEach(player -> player.sendMessage(translate(text)));
+        } catch (Exception e) {
+            Logger.error("Format", "You are using spigot, because of this you don't use clickable message, please upgrade paper!");
+            broadcast(text);
+        }
     }
 
     public static BaseComponent[] translate(String... strings) {
@@ -33,7 +38,7 @@ public class Format {
                 componentBuilder.append("\n");
             }
 
-            componentBuilder.append(ChatColor.translateAlternateColorCodes('&', strings[i]));
+            componentBuilder.append(colored(strings[i]));
             link(componentBuilder);
         }
         return componentBuilder.create();

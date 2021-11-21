@@ -27,6 +27,14 @@ public class EventCommand extends BaseCommand<OneVSOneGame> {
 
     @Override
     public void execute(Player player, String label, List<String> list) {
+        switch (list.get(0)) {
+            case "join":
+                plugin.getMatchManager().getMatch().ifPresent(match -> match.join(player));
+                return;
+            case "leave":
+                plugin.getMatchManager().getMatch().ifPresent(match -> match.leave(player));
+                return;
+        }
         if (player.hasPermission("event.command.perform")) {
             if (list.size() == 0) {
                 sendHelp(player);
@@ -108,14 +116,6 @@ public class EventCommand extends BaseCommand<OneVSOneGame> {
                     sendHelp(player);
                     break;
             }
-        }
-        switch (list.get(0)) {
-            case "join":
-                plugin.getMatchManager().getMatch().ifPresent(match -> match.join(player));
-                break;
-            case "leave":
-                plugin.getMatchManager().getMatch().ifPresent(match -> match.leave(player));
-                break;
         }
     }
 
