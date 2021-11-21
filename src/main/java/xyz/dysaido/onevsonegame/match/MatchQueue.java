@@ -19,30 +19,35 @@ public class MatchQueue {
         this.match = match;
     }
 
-    public void addMatchPlayer(MatchPlayer player) {
+    public MatchPlayer addMatchPlayer(MatchPlayer player) {
         Objects.requireNonNull(player);
         if (!players.contains(player)) players.add(player);
         addQueue(player);
+        return player;
     }
 
-    public void removeMatchPlayer(MatchPlayer player) {
+    public MatchPlayer removeMatchPlayer(MatchPlayer player) {
         Objects.requireNonNull(player);
         players.remove(player);
+        return player;
     }
 
-    public void addQueue(MatchPlayer player) {
+    public MatchPlayer addQueue(MatchPlayer player) {
         Objects.requireNonNull(player);
         player.setState(PlayerState.QUEUE);
+        return player;
     }
 
-    public void addFight(MatchPlayer player) {
+    public MatchPlayer addFight(MatchPlayer player) {
         Objects.requireNonNull(player);
         player.setState(PlayerState.FIGHT);
+        return player;
     }
 
-    public void addSpectator(MatchPlayer player) {
+    public MatchPlayer addSpectator(MatchPlayer player) {
         Objects.requireNonNull(player);
         player.setState(PlayerState.SPECTATOR);
+        return player;
     }
 
     public MatchPlayer findByPlayer(Player player) {
@@ -53,8 +58,9 @@ public class MatchQueue {
     public Pair<MatchPlayer, MatchPlayer> randomizedOpponents() {
         MatchPlayer player1, player2;
         do {
-            player1 = getPlayersByState(PlayerState.QUEUE).get(random.nextInt(this.players.size()));
-            player2 = getPlayersByState(PlayerState.QUEUE).get(random.nextInt(this.players.size()));
+            List<MatchPlayer> queues = getPlayersByState(PlayerState.QUEUE);
+            player1 = queues.get(random.nextInt(queues.size()));
+            player2 = queues.get(random.nextInt(queues.size()));
         } while (player1 == player2);
         return opponent = new Pair<>(player1, player2);
     }

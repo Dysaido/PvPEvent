@@ -14,7 +14,7 @@ public class Config {
     @Settings.ConfigSetting(path = "message", name = "event_not_available")
     public static String EVENT_NOT_AVAILABLE_MESSAGE = "&cEvent not available!";
 
-    @Settings.ConfigSetting(path = "message", name = "nexround")
+    @Settings.ConfigSetting(path = "message", name = "nextround")
     public static String NEXT_ROUND = "&bRound {round}";
 
     @Settings.ConfigSetting(path = "message", name = "waiting")

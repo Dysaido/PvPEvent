@@ -123,8 +123,8 @@ public class Match extends MatchTask {
         Pair<MatchPlayer, MatchPlayer> opponents = this.queue.randomizedOpponents();
         MatchPlayer damager = opponents.getKey();
         MatchPlayer victim = opponents.getValue();
-        damager.setup(ring.getSpawn1());
-        victim.setup(ring.getSpawn2());
+        queue.addFight(damager).setup(ring.getSpawn1());
+        queue.addFight(victim).setup(ring.getSpawn2());
     }
 
     private boolean hasFighting() {

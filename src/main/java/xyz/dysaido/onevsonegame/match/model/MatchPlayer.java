@@ -49,7 +49,6 @@ public class MatchPlayer {
         }
         match.getRing().getKit().apply(player);
         player.teleport(location);
-        match.getQueue().addFight(this);
     }
 
     public void freeze() {

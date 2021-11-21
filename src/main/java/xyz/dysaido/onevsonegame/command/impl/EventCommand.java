@@ -28,7 +28,7 @@ public class EventCommand extends BaseCommand<OneVSOneGame> {
     @Override
     public void execute(Player player, String label, List<String> list) {
         if (list.size() == 0) {
-            sendHelp(player);
+            if (player.hasPermission("event.command.perform")) sendHelp(player);
             return;
         }
         switch (list.get(0)) {
