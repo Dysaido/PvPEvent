@@ -1,7 +1,9 @@
 package xyz.dysaido.onevsonegame.match;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import xyz.dysaido.onevsonegame.OneVSOneGame;
+import xyz.dysaido.onevsonegame.event.*;
 import xyz.dysaido.onevsonegame.match.model.MatchPlayer;
 import xyz.dysaido.onevsonegame.match.model.PlayerState;
 import xyz.dysaido.onevsonegame.ring.Ring;
@@ -67,6 +69,7 @@ public class Match extends MatchTask {
                     } else if (queue.getPlayersByState(PlayerState.QUEUE).size() == 0 && !hasFighting()) {
                         Optional<MatchPlayer> matchPlayer = queue.getPlayersByState(PlayerState.FIGHT).stream().findFirst();
                         matchPlayer.ifPresent(internal -> {
+                            Bukkit.getServer().getPluginManager().callEvent(new GamePlayerWinEvent(this, internal));
                             Format.broadcast(Settings.EVENT_WINNER_MESSAGE.replace("{player}", internal.getPlayer().getName()));
                             internal.reset(ring.getWorldSpawn(), PlayerState.WINNER);
                         });
@@ -97,6 +100,7 @@ public class Match extends MatchTask {
         if (waiting > 0) {
             if (!queue.contains(player)) {
                 MatchPlayer matchPlayer = new MatchPlayer(this, player);
+                Bukkit.getServer().getPluginManager().callEvent(new GamePlayerJoinEvent(this, matchPlayer));
                 queue.addMatchPlayer(matchPlayer);
                 Format.broadcast(Settings.JOIN_MESSAGE.replace("{player}", player.getName()));
             } else {
@@ -109,8 +113,9 @@ public class Match extends MatchTask {
 
     public void leave(Player player) {
         Objects.requireNonNull(player);
-        MatchPlayer matchPlayer = queue.findByPlayer(player);
-        if (matchPlayer != null) {
+        if (queue.contains(player)) {
+            MatchPlayer matchPlayer = queue.findByPlayer(player);
+            Bukkit.getServer().getPluginManager().callEvent(new GamePlayerLeaveEvent(this, matchPlayer));
             matchPlayer.reset(ring.getWorldSpawn(), PlayerState.SPECTATOR);
             queue.removeMatchPlayer(matchPlayer);
             Format.broadcast(Settings.LEAVE_MESSAGE.replace("{player}", player.getName()));
@@ -121,6 +126,7 @@ public class Match extends MatchTask {
         this.round++;
         Format.broadcast(Settings.NEXT_ROUND.replace("{round}", String.valueOf(round)));
         Pair<MatchPlayer, MatchPlayer> opponents = this.queue.randomizedOpponents();
+        Bukkit.getServer().getPluginManager().callEvent(new GameNextRoundEvent(this, opponents));
         MatchPlayer damager = opponents.getKey();
         MatchPlayer victim = opponents.getValue();
         queue.addFight(damager).setup(ring.getSpawn1());

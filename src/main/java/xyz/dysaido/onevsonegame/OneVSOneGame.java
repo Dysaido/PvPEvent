@@ -10,13 +10,14 @@ import xyz.dysaido.onevsonegame.ring.RingManager;
 import xyz.dysaido.onevsonegame.setting.Settings;
 import xyz.dysaido.onevsonegame.setting.Config;
 import xyz.dysaido.onevsonegame.util.FileManager;
+import xyz.dysaido.onevsonegame.util.Logger;
 import xyz.dysaido.onevsonegame.util.Reflection;
 
 import java.lang.reflect.Field;
 import java.util.Map;
 
 public final class OneVSOneGame extends JavaPlugin {
-
+    private static final String TAG = "MAIN";
     private static OneVSOneGame instance;
     private FileManager ringConfig;
     private RingManager ringManager;
@@ -33,6 +34,9 @@ public final class OneVSOneGame extends JavaPlugin {
     @Override
     public void onEnable() {
         instance = this;
+        Logger.information(TAG, "1v1Event plugin was enabled");
+        Logger.information(TAG, "Contributing: https://github.com/Dysaido/1v1Event");
+        Logger.information(TAG, "Check for updates: https://www.spigotmc.org/resources/1v1-event.97786/");
         ringConfig = new FileManager(this, "rings");
         config = new Config(this);
         config.initialAnnotatedClass(Settings.class);
@@ -64,6 +68,7 @@ public final class OneVSOneGame extends JavaPlugin {
     @Override
     public void onDisable() {
         instance = null;
+        Logger.information(TAG, "1v1Event plugin was disabled");
         unregisterCommand();
     }
 

@@ -1,5 +1,6 @@
 package xyz.dysaido.onevsonegame.listener;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -11,6 +12,7 @@ import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import xyz.dysaido.onevsonegame.OneVSOneGame;
+import xyz.dysaido.onevsonegame.event.GamePlayerLoseEvent;
 import xyz.dysaido.onevsonegame.match.model.MatchPlayer;
 import xyz.dysaido.onevsonegame.match.model.PlayerState;
 
@@ -56,6 +58,7 @@ public class MatchListener implements Listener {
         plugin.getMatchManager().getMatch().ifPresent(match -> {
             if (match.getQueue().contains(victim)) {
                 MatchPlayer matchPlayer = match.getQueue().findByPlayer(victim);
+                Bukkit.getServer().getPluginManager().callEvent(new GamePlayerLoseEvent(match, matchPlayer));
                 event.getDrops().clear();
                 event.setDeathMessage(null);
                 matchPlayer.reset(match.getRing().getLobby(), PlayerState.SPECTATOR);

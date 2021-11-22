@@ -19,6 +19,7 @@ public abstract class BaseCommand<P extends JavaPlugin> extends Command {
 
     protected final P plugin;
     private final Map<String, SubAdapter> commandsMap = new HashMap<>();
+    private String seeHelpPermission = "";
     private Map<String, BaseCommand<P>> loadedCommands = new HashMap<>();
     public static <T extends BaseCommand<?>> T getCommand(Class<T> clazz) {
 
@@ -48,7 +49,7 @@ public abstract class BaseCommand<P extends JavaPlugin> extends Command {
                 if (args[0].equalsIgnoreCase(adapter.name) || adapter.aliases.contains(args[0])) {
                     if (sender instanceof Player) {
                         if (adapter.onlyConsole) {
-                            sender.sendMessage(MESSAGE.NO_PERMISSION.format());
+                            sender.sendMessage(MESSAGE.ONLY_CONSOLE.format());
                             return;
                         }
                         if (adapter.onlyOp && !sender.isOp()) {
@@ -63,7 +64,7 @@ public abstract class BaseCommand<P extends JavaPlugin> extends Command {
                         }
                     } else {
                         if (adapter.onlyPlayer) {
-                            sender.sendMessage(MESSAGE.NO_PERMISSION.format());
+                            sender.sendMessage(MESSAGE.ONLY_PLAYER.format());
                             return;
                         }
                     }
@@ -72,7 +73,11 @@ public abstract class BaseCommand<P extends JavaPlugin> extends Command {
                     adapter.execute(sender, list.toArray(new String[0]));
                 }
             } else {
-                sendHelp(adapter, sender);
+                if (canSeeHelp(sender)) {
+                    sendHelp(adapter, sender);
+                } else {
+                    sender.sendMessage(MESSAGE.NO_PERMISSION.format());
+                }
             }
         });
         return true;
@@ -106,6 +111,14 @@ public abstract class BaseCommand<P extends JavaPlugin> extends Command {
 
     public void unregisterCommand(SubAdapter command) {
         commandsMap.remove(command.getName());
+    }
+
+    public void setSeeHelpPermission(String permission) {
+        this.seeHelpPermission = permission;
+    }
+
+    public boolean canSeeHelp(CommandSender sender) {
+        return !seeHelpPermission.isEmpty() && sender.hasPermission(seeHelpPermission);
     }
 
     public enum MESSAGE {

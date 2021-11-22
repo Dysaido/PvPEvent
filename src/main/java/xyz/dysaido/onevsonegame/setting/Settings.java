@@ -18,10 +18,10 @@ public class Settings {
     public static String NEXT_ROUND = "&bRound {round}";
 
     @Config.Options(path = "message", name = "waiting")
-    public static String WAITING_MESSAGE = "&7Join for event {second} sec";
+    public static String WAITING_MESSAGE = "&7Join for event &b{second} sec";
 
     @Config.Options(path = "message", name = "clickable_broadcast")
-    public static String CLICKABLE_MESSAGE = "&b[Click to join]";
+    public static String CLICKABLE_MESSAGE = "&7(Click to join)";
 
     @Config.Options(path = "message", name = "join_finished")
     public static String EVENT_JOIN_FINISHED_MESSAGE = "&bEvent will start";
@@ -73,6 +73,9 @@ public class Settings {
 
     @Config.Options(path = "command.message", name = "reload")
     public static String COMMAND_RELOAD_MESSAGE = "&fReload this configs and some options";
+
+    @Config.Options(path = "command.message", name = "reload")
+    public static String COMMAND_MENU_MESSAGE = "&fYou perform this command for open menu";
 
     @Config.Options(path = "settings.count", name = "waiting")
     public static int WAITING = 30;

@@ -18,6 +18,20 @@ public class EventCommand extends BaseCommand<OneVSOneGame> {
 
     public EventCommand(OneVSOneGame plugin) {
         super(plugin, "event", "Event command", "/event [options]", Collections.emptyList());
+        setSeeHelpPermission("event.command.help");
+    }
+
+    @SubCommand(name = "menu", usage = "/event menu", onlyPlayer = true, permission = "event.command.perform")
+    public static class Menu extends SubAdapter {
+        public Menu() {
+            super();
+            setDescription(Settings.COMMAND_MENU_MESSAGE);
+        }
+
+        @Override
+        protected void execute(CommandSender sender, String[] args) {
+            sender.sendMessage(Format.colored("&aDevelopment"));
+        }
     }
 
     @SubCommand(name = "reload", usage = "/event reload", permission = "event.command.perform")
