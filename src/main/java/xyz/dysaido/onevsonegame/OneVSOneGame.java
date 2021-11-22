@@ -1,6 +1,5 @@
 package xyz.dysaido.onevsonegame;
 
-import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -8,8 +7,8 @@ import xyz.dysaido.onevsonegame.command.impl.EventCommand;
 import xyz.dysaido.onevsonegame.listener.MatchListener;
 import xyz.dysaido.onevsonegame.match.MatchManager;
 import xyz.dysaido.onevsonegame.ring.RingManager;
-import xyz.dysaido.onevsonegame.setting.Config;
 import xyz.dysaido.onevsonegame.setting.Settings;
+import xyz.dysaido.onevsonegame.setting.Config;
 import xyz.dysaido.onevsonegame.util.FileManager;
 import xyz.dysaido.onevsonegame.util.Reflection;
 
@@ -23,7 +22,7 @@ public final class OneVSOneGame extends JavaPlugin {
     private RingManager ringManager;
     private MatchManager matchManager;
     private EventCommand eventCommand;
-    private Settings settings;
+    private Config config;
 
     public static OneVSOneGame getInstance() {
         synchronized (OneVSOneGame.class) {
@@ -35,11 +34,12 @@ public final class OneVSOneGame extends JavaPlugin {
     public void onEnable() {
         instance = this;
         ringConfig = new FileManager(this, "rings");
-        settings = new Settings(this);
-        settings.initialAnnotatedClass(Config.class);
+        config = new Config(this);
+        config.initialAnnotatedClass(Settings.class);
         ringManager = new RingManager(ringConfig);
         matchManager = new MatchManager(this);
         eventCommand = new EventCommand(this);
+        eventCommand.loadCommands();
         getServer().getPluginManager().registerEvents(new MatchListener(this), this);
         registerCommand();
     }
@@ -57,7 +57,7 @@ public final class OneVSOneGame extends JavaPlugin {
     @Override
     public void reloadConfig() {
         super.reloadConfig();
-        settings.initialAnnotatedClass(Config.class);
+        config.initialAnnotatedClass(Settings.class);
         ringConfig.reloadFile();
     }
 

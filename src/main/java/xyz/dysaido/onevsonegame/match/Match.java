@@ -5,7 +5,7 @@ import xyz.dysaido.onevsonegame.OneVSOneGame;
 import xyz.dysaido.onevsonegame.match.model.MatchPlayer;
 import xyz.dysaido.onevsonegame.match.model.PlayerState;
 import xyz.dysaido.onevsonegame.ring.Ring;
-import xyz.dysaido.onevsonegame.setting.Config;
+import xyz.dysaido.onevsonegame.setting.Settings;
 import xyz.dysaido.onevsonegame.util.Format;
 import xyz.dysaido.onevsonegame.util.Pair;
 
@@ -22,9 +22,9 @@ public class Match extends MatchTask {
 
     private long lastTransaction = 0;
 
-    private int waiting = Config.WAITING;
-    private int starting = Config.STARTING;
-    private int ending = Config.ENDING;
+    private int waiting = Settings.WAITING;
+    private int starting = Settings.STARTING;
+    private int ending = Settings.ENDING;
 
     public Match(OneVSOneGame plugin, Ring ring) {
         super("Match", plugin);
@@ -40,22 +40,22 @@ public class Match extends MatchTask {
             this.lastTransaction = tick;
             switch (state) {
                 case WAITING:
-                    Format.broadcastClickable(Config.WAITING_MESSAGE.replace("{second}", String.valueOf(waiting)));
+                    Format.broadcastClickable(Settings.WAITING_MESSAGE.replace("{second}", String.valueOf(waiting)));
                     waiting--;
                     if (waiting == 0) {
                         if (queue.shouldEnd()) {
                             state = MatchState.ENDING;
                         } else {
-                            Format.broadcast(Config.EVENT_JOIN_FINISHED_MESSAGE);
+                            Format.broadcast(Settings.EVENT_JOIN_FINISHED_MESSAGE);
                             state = MatchState.STARTING;
                         }
                     }
                     break;
                 case STARTING:
-                    Format.broadcast(Config.EVENT_WILL_START_MESSAGE.replace("{second}", String.valueOf(starting)));
+                    Format.broadcast(Settings.EVENT_WILL_START_MESSAGE.replace("{second}", String.valueOf(starting)));
                     starting--;
                     if (starting == 0) {
-                        Format.broadcast(Config.EVENT_START_MESSAGE);
+                        Format.broadcast(Settings.EVENT_START_MESSAGE);
                         state = MatchState.FIGHTING;
                     }
                     break;
@@ -67,7 +67,7 @@ public class Match extends MatchTask {
                     } else if (queue.getPlayersByState(PlayerState.QUEUE).size() == 0 && !hasFighting()) {
                         Optional<MatchPlayer> matchPlayer = queue.getPlayersByState(PlayerState.FIGHT).stream().findFirst();
                         matchPlayer.ifPresent(internal -> {
-                            Format.broadcast(Config.EVENT_WINNER_MESSAGE.replace("{player}", internal.getPlayer().getName()));
+                            Format.broadcast(Settings.EVENT_WINNER_MESSAGE.replace("{player}", internal.getPlayer().getName()));
                             internal.reset(ring.getWorldSpawn(), PlayerState.WINNER);
                         });
                         if (queue.shouldEnd()) {
@@ -76,10 +76,10 @@ public class Match extends MatchTask {
                     }
                     break;
                 case ENDING:
-                    Format.broadcast(Config.EVENT_ENDING_MESSAGE.replace("{second}", String.valueOf(ending)));
+                    Format.broadcast(Settings.EVENT_ENDING_MESSAGE.replace("{second}", String.valueOf(ending)));
                     ending--;
                     if (ending == 0) {
-                        Format.broadcast(Config.EVENT_ENDED_MESSAGE);
+                        Format.broadcast(Settings.EVENT_ENDED_MESSAGE);
                         queue.getPlayersByState(PlayerState.SPECTATOR).stream().map(MatchPlayer::getPlayer).forEach(player -> {
                             player.teleport(ring.getWorldSpawn());
                         });
@@ -98,12 +98,12 @@ public class Match extends MatchTask {
             if (!queue.contains(player)) {
                 MatchPlayer matchPlayer = new MatchPlayer(this, player);
                 queue.addMatchPlayer(matchPlayer);
-                Format.broadcast(Config.JOIN_MESSAGE.replace("{player}", player.getName()));
+                Format.broadcast(Settings.JOIN_MESSAGE.replace("{player}", player.getName()));
             } else {
-                player.sendMessage(Format.colored(Config.ALREADY_JOINED_MESSAGE));
+                player.sendMessage(Format.colored(Settings.ALREADY_JOINED_MESSAGE));
             }
         } else {
-            player.sendMessage(Format.colored(Config.EVENT_NOT_AVAILABLE_MESSAGE));
+            player.sendMessage(Format.colored(Settings.EVENT_NOT_AVAILABLE_MESSAGE));
         }
     }
 
@@ -113,13 +113,13 @@ public class Match extends MatchTask {
         if (matchPlayer != null) {
             matchPlayer.reset(ring.getWorldSpawn(), PlayerState.SPECTATOR);
             queue.removeMatchPlayer(matchPlayer);
-            Format.broadcast(Config.LEAVE_MESSAGE.replace("{player}", player.getName()));
+            Format.broadcast(Settings.LEAVE_MESSAGE.replace("{player}", player.getName()));
         }
     }
 
     private void nextRound() {
         this.round++;
-        Format.broadcast(Config.NEXT_ROUND.replace("{round}", String.valueOf(round)));
+        Format.broadcast(Settings.NEXT_ROUND.replace("{round}", String.valueOf(round)));
         Pair<MatchPlayer, MatchPlayer> opponents = this.queue.randomizedOpponents();
         MatchPlayer damager = opponents.getKey();
         MatchPlayer victim = opponents.getValue();

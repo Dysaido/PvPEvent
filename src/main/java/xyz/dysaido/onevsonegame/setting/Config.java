@@ -1,56 +1,55 @@
 package xyz.dysaido.onevsonegame.setting;
 
+import org.bukkit.plugin.java.JavaPlugin;
+import xyz.dysaido.onevsonegame.util.Logger;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+import java.lang.reflect.Field;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 public class Config {
+    private static final String TAG = "Settings";
+    private final JavaPlugin plugin;
 
-    @Settings.Options(path = "message", name = "join")
-    public static String JOIN_MESSAGE = "&b{player} &7joined the event!";
+    public Config(JavaPlugin plugin) {
+        this.plugin = plugin;
+    }
 
-    @Settings.Options(path = "message", name = "leave")
-    public static String LEAVE_MESSAGE = "&b{player} &7left the event!";
+    public void initialAnnotatedClass(Class<?> clazz) {
+        Objects.requireNonNull(clazz, "Class cannot be null");
+        Stream<Field> fields = Arrays.stream(clazz.getFields()).parallel().filter(field -> field.isAnnotationPresent(Options.class));
+        fields.sorted(Comparator.comparing(Field::getName)).forEach(field -> {
+            Options setting = field.getAnnotation(Options.class);
+            String name = setting.name().length() > 0 ? setting.name() : field.getName();
+            try {
+                if (plugin.getConfig().get(setting.path() + "." + name) == null) {
+                    plugin.getConfig().set(setting.path() + "." + name, field.get(null));
+                    plugin.saveConfig();
+                } else {
+                    Object configObj = plugin.getConfig().get(setting.path() + "." + name);
+                    field.set(null, configObj);
+                }
+                Logger.information(plugin.getName() + TAG, "SUCCESS CONFIG SETTING, IT'S NAME : " + name);
+            } catch (Exception e) {
+                Logger.error(plugin.getName() + TAG, "FAILED CONFIG SETTING, IT'S NAME : " + name);
+            }
+        });
 
-    @Settings.Options(path = "message", name = "already_joined")
-    public static String ALREADY_JOINED_MESSAGE = "&7You are already joined!";
+    }
 
-    @Settings.Options(path = "message", name = "event_not_available")
-    public static String EVENT_NOT_AVAILABLE_MESSAGE = "&cEvent not available!";
-
-    @Settings.Options(path = "message", name = "nextround")
-    public static String NEXT_ROUND = "&bRound {round}";
-
-    @Settings.Options(path = "message", name = "waiting")
-    public static String WAITING_MESSAGE = "&7Join for event {second} sec";
-
-    @Settings.Options(path = "message", name = "clickable_broadcast")
-    public static String CLICKABLE_MESSAGE = "&b[Click to join]";
-
-    @Settings.Options(path = "message", name = "join_finished")
-    public static String EVENT_JOIN_FINISHED_MESSAGE = "&bEvent will start";
-
-    @Settings.Options(path = "message", name = "starting")
-    public static String EVENT_WILL_START_MESSAGE = "&7Event will be started &b{second} &7sec";
-
-    @Settings.Options(path = "message", name = "start")
-    public static String EVENT_START_MESSAGE = "&bEvent start";
-
-    @Settings.Options(path = "message", name = "winner")
-    public static String EVENT_WINNER_MESSAGE = "&7Event's winner &b{player}";
-
-    @Settings.Options(path = "message", name = "ending")
-    public static String EVENT_ENDING_MESSAGE = "&7Event will be ended &b{second} &7sec";
-
-    @Settings.Options(path = "message", name = "end")
-    public static String EVENT_ENDED_MESSAGE = "&bEvent ended!";
-
-    @Settings.Options(path = "settings.count", name = "waiting")
-    public static int WAITING = 30;
-
-    @Settings.Options(path = "settings.count", name = "starting")
-    public static int STARTING = 5;
-
-    @Settings.Options(path = "settings.count", name = "ending")
-    public static int ENDING = 5;
-
-    @Settings.Options(path = "settings.bool", name = "freeze")
-    public static boolean FREEZE = false;
-
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target({ElementType.FIELD, ElementType.TYPE})
+    public @interface Options {
+        String path();
+        String name();
+        String comment() default "";
+    }
 }

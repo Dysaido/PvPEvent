@@ -3,7 +3,7 @@ package xyz.dysaido.onevsonegame.util;
 import net.md_5.bungee.api.chat.*;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import xyz.dysaido.onevsonegame.setting.Config;
+import xyz.dysaido.onevsonegame.setting.Settings;
 
 import java.util.List;
 
@@ -46,7 +46,7 @@ public class Format {
 
     private static void link(ComponentBuilder componentBuilder) {
         componentBuilder.event(new HoverEvent(HoverEvent.Action.SHOW_TEXT,  TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&',
-                Config.CLICKABLE_MESSAGE
+                Settings.CLICKABLE_MESSAGE
         ))));
         componentBuilder.event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/event:event join"));
     }
