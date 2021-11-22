@@ -2,8 +2,10 @@ package xyz.dysaido.onevsonegame.listener;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -11,13 +13,18 @@ import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.inventory.Inventory;
+import xyz.dysaido.inventory.DyInventory;
 import xyz.dysaido.onevsonegame.OneVSOneGame;
 import xyz.dysaido.onevsonegame.event.GamePlayerLoseEvent;
 import xyz.dysaido.onevsonegame.match.model.MatchPlayer;
 import xyz.dysaido.onevsonegame.match.model.PlayerState;
+import xyz.dysaido.onevsonegame.util.Logger;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 public class MatchListener implements Listener {
 
@@ -54,8 +61,8 @@ public class MatchListener implements Listener {
 
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent event) {
-        Player victim = event.getEntity();
         plugin.getMatchManager().getMatch().ifPresent(match -> {
+            Player victim = event.getEntity();
             if (match.getQueue().contains(victim)) {
                 MatchPlayer matchPlayer = match.getQueue().findByPlayer(victim);
                 Bukkit.getServer().getPluginManager().callEvent(new GamePlayerLoseEvent(match, matchPlayer));
@@ -67,9 +74,20 @@ public class MatchListener implements Listener {
     }
 
     @EventHandler
-    public void onPlayerInventory(InventoryClickEvent event) {
-        Player player = (Player) event.getWhoClicked();
+    public void onInventoryClick(InventoryClickEvent event) {
+        Inventory inventory = event.getClickedInventory() != null ? event.getClickedInventory() : event.getInventory();
+        Logger.debug("Listener", "OnClick");
+        if (inventory != null && inventory.getHolder() instanceof DyInventory) {
+            Logger.debug("Listener", "inventory");
+            ((DyInventory) inventory.getHolder()).onClick(event);
+            event.setCancelled(true);
+        } else if (event.getView().getTopInventory().getHolder() instanceof DyInventory) {
+            Logger.debug("Listener", "topInventory");
+            event.setCancelled(true);
+        }
+        Logger.debug("Listener", "Else");
         plugin.getMatchManager().getMatch().ifPresent(match -> {
+            Player player = (Player) event.getWhoClicked();
             if (match.getQueue().contains(player)) {
                 MatchPlayer matchPlayer = match.getQueue().findByPlayer(player);
                 if (matchPlayer.getState() == PlayerState.QUEUE || matchPlayer.getState() == PlayerState.SPECTATOR) {
@@ -81,8 +99,8 @@ public class MatchListener implements Listener {
 
     @EventHandler
     public void onPlayerMove(PlayerMoveEvent event) {
-        Player player = event.getPlayer();
         plugin.getMatchManager().getMatch().ifPresent(match -> {
+            Player player = event.getPlayer();
             if (match.getQueue().contains(player)) {
                 MatchPlayer matchPlayer = match.getQueue().findByPlayer(player);
                 if (matchPlayer.isFrozen() && hasMove(event.getFrom(), event.getTo())) {

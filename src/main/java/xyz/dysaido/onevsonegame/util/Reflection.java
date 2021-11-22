@@ -1,5 +1,6 @@
 package xyz.dysaido.onevsonegame.util;
 
+import org.bukkit.Bukkit;
 import sun.misc.Unsafe;
 
 import java.lang.reflect.AccessibleObject;
@@ -11,6 +12,7 @@ import java.util.Objects;
 public class Reflection {
 
     public static final FinalFieldSetter FFS;
+    public static final String VERSION = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
 
     static {
         FinalFieldSetter inner;

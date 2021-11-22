@@ -6,12 +6,14 @@ import org.bukkit.plugin.java.JavaPlugin;
 import xyz.dysaido.onevsonegame.command.impl.EventCommand;
 import xyz.dysaido.onevsonegame.listener.MatchListener;
 import xyz.dysaido.onevsonegame.match.MatchManager;
+import xyz.dysaido.onevsonegame.menu.MainMenu;
 import xyz.dysaido.onevsonegame.ring.RingManager;
 import xyz.dysaido.onevsonegame.setting.Settings;
 import xyz.dysaido.onevsonegame.setting.Config;
 import xyz.dysaido.onevsonegame.util.FileManager;
 import xyz.dysaido.onevsonegame.util.Logger;
 import xyz.dysaido.onevsonegame.util.Reflection;
+import xyz.dysaido.onevsonegame.util.ServerVersion;
 
 import java.lang.reflect.Field;
 import java.util.Map;
@@ -24,7 +26,9 @@ public final class OneVSOneGame extends JavaPlugin {
     private MatchManager matchManager;
     private EventCommand eventCommand;
     private Config config;
-
+    private ServerVersion serverVersion;
+//    private DyInventoryManager inventoryManager;
+    private MainMenu mainMenu;
     public static OneVSOneGame getInstance() {
         synchronized (OneVSOneGame.class) {
             return instance;
@@ -34,9 +38,11 @@ public final class OneVSOneGame extends JavaPlugin {
     @Override
     public void onEnable() {
         instance = this;
+        serverVersion = ServerVersion.valueOf(Reflection.VERSION);
         Logger.information(TAG, "1v1Event plugin was enabled");
         Logger.information(TAG, "Contributing: https://github.com/Dysaido/1v1Event");
         Logger.information(TAG, "Check for updates: https://www.spigotmc.org/resources/1v1-event.97786/");
+        mainMenu = new MainMenu(this);
         ringConfig = new FileManager(this, "rings");
         config = new Config(this);
         config.initialAnnotatedClass(Settings.class);
@@ -47,6 +53,10 @@ public final class OneVSOneGame extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new MatchListener(this), this);
         registerCommand();
     }
+
+//    private void registerGUI() {
+//        inventoryManager.addInventory(new MainGUI(this));
+//    }
 
     private void registerCommand() {
         getCommandMap().register("event", eventCommand);
@@ -90,4 +100,11 @@ public final class OneVSOneGame extends JavaPlugin {
         return matchManager;
     }
 
+    public ServerVersion getServerVersion() {
+        return serverVersion;
+    }
+
+    public MainMenu getMainMenu() {
+        return mainMenu;
+    }
 }

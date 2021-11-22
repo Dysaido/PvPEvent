@@ -9,6 +9,7 @@ import xyz.dysaido.onevsonegame.setting.Settings;
 import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 import java.util.List;
+import java.util.stream.IntStream;
 
 public class Format {
 
@@ -43,9 +44,10 @@ public class Format {
     private static void sendClickableMessage(Player player, BaseComponent[] components) throws ReflectiveOperationException {
         Class<?> PlayerClass = player.getClass();
         Object array = Array.newInstance(BaseComponent.class, components.length);
-        for (int i = 0; i<components.length; i++) {
+        IntStream.range(0, components.length).forEach(i -> Array.set(array, i, components[i]));
+        /*for (int i = 0; i < components.length; i++) {
             Array.set(array, i, components[i]);
-        }
+        }*/
         Class<?> arrayInput = Class.forName("[Lnet.md_5.bungee.api.chat.BaseComponent;");
         Method sendMessage = PlayerClass.getDeclaredMethod("sendMessage", arrayInput);
         sendMessage.invoke(player, array);
