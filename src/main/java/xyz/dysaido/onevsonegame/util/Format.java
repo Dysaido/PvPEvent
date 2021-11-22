@@ -3,8 +3,11 @@ package xyz.dysaido.onevsonegame.util;
 import net.md_5.bungee.api.chat.*;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
 import xyz.dysaido.onevsonegame.setting.Settings;
 
+import java.lang.reflect.Array;
+import java.lang.reflect.Method;
 import java.util.List;
 
 public class Format {
@@ -22,12 +25,30 @@ public class Format {
     }
 
     public static void broadcastClickable(String text) {
-        try {
-            Bukkit.getOnlinePlayers().forEach(player -> player.sendMessage(translate(text)));
-        } catch (Exception e) {
-            Logger.error("Format", "You are using spigot, because of this you don't use clickable message, please upgrade paper!");
-            broadcast(text);
+        BaseComponent[] components = translate(text);
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            try {
+                sendClickableMessage(player, components);
+            } catch (ReflectiveOperationException e) {
+                try {
+                    player.spigot().sendMessage(components);
+                } catch (Throwable throwable) {
+                    Logger.warning("Format", "Your server does not supported clickable message, please upgrade spigot/paper!");
+                    broadcast(text);
+                }
+            }
         }
+    }
+
+    private static void sendClickableMessage(Player player, BaseComponent[] components) throws ReflectiveOperationException {
+        Class<?> PlayerClass = player.getClass();
+        Object array = Array.newInstance(BaseComponent.class, components.length);
+        for (int i = 0; i<components.length; i++) {
+            Array.set(array, i, components[i]);
+        }
+        Class<?> arrayInput = Class.forName("[Lnet.md_5.bungee.api.chat.BaseComponent;");
+        Method sendMessage = PlayerClass.getDeclaredMethod("sendMessage", arrayInput);
+        sendMessage.invoke(player, array);
     }
 
     public static BaseComponent[] translate(String... strings) {
@@ -39,13 +60,13 @@ public class Format {
             }
 
             componentBuilder.append(colored(strings[i]));
-            link(componentBuilder);
+            action(componentBuilder);
         }
         return componentBuilder.create();
     }
 
-    private static void link(ComponentBuilder componentBuilder) {
-        componentBuilder.event(new HoverEvent(HoverEvent.Action.SHOW_TEXT,  TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&',
+    private static void action(ComponentBuilder componentBuilder) {
+        componentBuilder.event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&',
                 Settings.CLICKABLE_MESSAGE
         ))));
         componentBuilder.event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/event:event join"));
