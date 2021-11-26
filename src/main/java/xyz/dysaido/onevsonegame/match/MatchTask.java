@@ -7,7 +7,7 @@ import xyz.dysaido.onevsonegame.OneVSOneGame;
 public abstract class MatchTask {
 
     private final String name;
-    private final OneVSOneGame plugin;
+    protected final OneVSOneGame plugin;
     private BukkitTask task;
 
     public MatchTask(String name, OneVSOneGame plugin) {
@@ -23,7 +23,7 @@ public abstract class MatchTask {
         task.cancel();
     }
 
-    public String getName() {
+    public String name() {
         return name;
     }
 
