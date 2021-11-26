@@ -12,10 +12,10 @@ public class MatchQueue {
 
     private final Random random = new Random();
     private final List<MatchPlayer> players = new ArrayList<>();
-    private final Match match;
+    private final BaseMatch match;
     private Pair<MatchPlayer, MatchPlayer> opponent;
 
-    public MatchQueue(Match match) {
+    public MatchQueue(BaseMatch match) {
         this.match = match;
     }
 
@@ -75,10 +75,12 @@ public class MatchQueue {
     }
 
     public boolean contains(Player player) {
+        Objects.requireNonNull(player);
         return players.stream().map(MatchPlayer::getPlayer).anyMatch(internal -> internal.equals(player));
     }
 
     public boolean contains(MatchPlayer player) {
+        Objects.requireNonNull(player);
         return players.contains(player);
     }
 
