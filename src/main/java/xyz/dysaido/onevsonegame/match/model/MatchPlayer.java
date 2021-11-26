@@ -5,7 +5,7 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import xyz.dysaido.onevsonegame.kit.Kit;
-import xyz.dysaido.onevsonegame.match.Match;
+import xyz.dysaido.onevsonegame.match.BaseMatch;
 
 import java.util.Collection;
 import java.util.UUID;
@@ -20,12 +20,12 @@ public class MatchPlayer {
     private final GameMode originalGamemode;
     private final Kit backupKit;
     private final Player player;
-    private final Match match;
+    private final BaseMatch match;
     private PlayerState state = PlayerState.QUEUE;
     private boolean lose = false;
     private boolean frozen = false;
 
-    public MatchPlayer(Match match, Player player) {
+    public MatchPlayer(BaseMatch match, Player player) {
         this.match = match;
         this.player = player;
         this.originalPotionEffects = player.getActivePotionEffects();
@@ -89,7 +89,7 @@ public class MatchPlayer {
         return player;
     }
 
-    public Match getMatch() {
+    public BaseMatch getMatch() {
         return match;
     }
 

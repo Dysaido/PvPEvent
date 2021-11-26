@@ -234,7 +234,7 @@ public class EventCommand extends BaseCommand<OneVSOneGame> {
             if (args.length > 0) {
                 String name = args[0];
                 if (plugin.getRingManager().get(name) != null) {
-                    plugin.getMatchManager().create(plugin.getRingManager().get(name));
+                    plugin.getMatchManager().createSolo(plugin.getRingManager().get(name));
                     sender.sendMessage("Host");
                 } else {
                     sender.sendMessage("Couldn't find this event");
