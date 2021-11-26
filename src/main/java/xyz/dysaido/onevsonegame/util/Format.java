@@ -31,6 +31,7 @@ public class Format {
             try {
                 sendClickableMessage(player, components);
             } catch (ReflectiveOperationException e) {
+                Logger.debug("Format", "Your server does not supported direct-send clickable message!");
                 try {
                     player.spigot().sendMessage(components);
                 } catch (Throwable throwable) {
@@ -60,18 +61,17 @@ public class Format {
             if (i != 0) {
                 componentBuilder.append("\n");
             }
-
             componentBuilder.append(colored(strings[i]));
-            action(componentBuilder);
+            setupEvents(componentBuilder);
         }
         return componentBuilder.create();
     }
 
-    private static void action(ComponentBuilder componentBuilder) {
-        componentBuilder.event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&',
-                Settings.CLICKABLE_MESSAGE
-        ))));
-        componentBuilder.event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/event:event join"));
+    private static void setupEvents(ComponentBuilder componentBuilder) {
+        componentBuilder.event(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+                TextComponent.fromLegacyText(colored(Settings.CLICKABLE_MESSAGE))));
+        componentBuilder.event(new ClickEvent(ClickEvent.Action.RUN_COMMAND,
+                "/event:event join"));
     }
 
 }
