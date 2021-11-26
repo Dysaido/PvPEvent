@@ -26,18 +26,25 @@ public class MatchListener implements Listener {
 
     private final OneVSOneGame plugin;
     private final List<String> commands = Arrays.asList("event", "event:event");
+    private static final String TAG = "Listener";
     public MatchListener(OneVSOneGame plugin) {
         this.plugin = plugin;
     }
 
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
-        plugin.getMatchManager().getMatch().ifPresent(match -> match.leave(event.getPlayer()));
+        plugin.getMatchManager().getMatch().ifPresent(match -> {
+            Logger.debug(TAG, "QuitEvent");
+            match.leave(event.getPlayer());
+        });
     }
 
     @EventHandler
     public void onPlayerKick(PlayerKickEvent event) {
-        plugin.getMatchManager().getMatch().ifPresent(match -> match.leave(event.getPlayer()));
+        plugin.getMatchManager().getMatch().ifPresent(match -> {
+            Logger.debug(TAG, "QuitEvent");
+            match.leave(event.getPlayer());
+        });
     }
 
     @EventHandler
@@ -47,6 +54,7 @@ public class MatchListener implements Listener {
             if (match.getQueue().contains(player)) {
                 String message = event.getMessage().split(" ")[0].toLowerCase();
                 String command = message.substring(1);
+                Logger.debug(TAG, "CommandPreprocess, Message: " + message);
                 if (!player.hasPermission("event.command.perform") && message.startsWith("/") && !commands.contains(command)) {
                     event.setCancelled(true);
                     player.sendMessage("/event leave");
@@ -64,6 +72,7 @@ public class MatchListener implements Listener {
                 Bukkit.getServer().getPluginManager().callEvent(new GamePlayerLoseEvent(match, matchPlayer));
                 event.getDrops().clear();
                 event.setDeathMessage(null);
+                Logger.debug(TAG, "PlayerDeath, MatchPlayer: " + matchPlayer.getPlayer().getName());
                 matchPlayer.reset(match.getRing().getLobby(), PlayerState.SPECTATOR);
             }
         });
@@ -72,21 +81,20 @@ public class MatchListener implements Listener {
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
         Inventory inventory = event.getClickedInventory() != null ? event.getClickedInventory() : event.getInventory();
-        Logger.debug("Listener", "OnClick");
         if (inventory != null && inventory.getHolder() instanceof BaseInventory) {
-            Logger.debug("Listener", "inventory");
+            Logger.debug(TAG, "InventoryClick - getInventory().getHolder()");
             ((BaseInventory) inventory.getHolder()).onClick(event);
             event.setCancelled(true);
         } else if (event.getView().getTopInventory().getHolder() instanceof BaseInventory) {
-            Logger.debug("Listener", "topInventory");
+            Logger.debug(TAG, "InventoryClick - getView().getTopInventory().getHolder()");
             event.setCancelled(true);
         }
-        Logger.debug("Listener", "Else");
         plugin.getMatchManager().getMatch().ifPresent(match -> {
             Player player = (Player) event.getWhoClicked();
             if (match.getQueue().contains(player)) {
                 MatchPlayer matchPlayer = match.getQueue().findByPlayer(player);
                 if (matchPlayer.getState() == PlayerState.QUEUE || matchPlayer.getState() == PlayerState.SPECTATOR) {
+                    Logger.debug(TAG, "InventoryClick - Queued player do not authorized to use own inventory");
                     event.setCancelled(true);
                 }
             }
@@ -100,6 +108,7 @@ public class MatchListener implements Listener {
             if (match.getQueue().contains(player)) {
                 MatchPlayer matchPlayer = match.getQueue().findByPlayer(player);
                 if (matchPlayer.isFrozen() && hasMove(event.getFrom(), event.getTo())) {
+                    Logger.debug(TAG, String.format("PlayerMove - %s was frozen", matchPlayer.getPlayer().getName()));
                     event.setTo(event.getFrom());
                 }
             }
