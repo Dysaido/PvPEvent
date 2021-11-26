@@ -2,19 +2,19 @@ package xyz.dysaido.onevsonegame.menu.impl;
 
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import xyz.dysaido.onevsonegame.OneVSOneGame;
 import xyz.dysaido.onevsonegame.menu.ActionPair;
 import xyz.dysaido.onevsonegame.menu.BaseInventory;
-import xyz.dysaido.inventory.DyItemBuilder;
-import xyz.dysaido.onevsonegame.OneVSOneGame;
+import xyz.dysaido.onevsonegame.util.ItemBuilder;
 import xyz.dysaido.onevsonegame.util.Materials;
 
 public class MainMenu extends BaseInventory {
 
     private final OneVSOneGame plugin;
-    private final ItemStack anvils = DyItemBuilder.create(Materials.ANVIL, 1, "&cEvents Manage");
-    private final ItemStack books = DyItemBuilder.create(Materials.BOOK, 1, "&cContributor");
-    private final ItemStack signs = DyItemBuilder.create(Materials.SIGN, 1, "&cAvailable Match");
-    private final ItemStack hoes = DyItemBuilder.create(Materials.DIAMOND_HOE, 1, "&cArena Setter");
+    private final ItemStack anvils = new ItemBuilder(Materials.ANVIL, 1).displayName("&cEvents Manage").build();
+    private final ItemStack books = new ItemBuilder(Materials.BOOK, 1).displayName("&cContributor").build();
+    private final ItemStack signs = new ItemBuilder(Materials.SIGN, 1).displayName("&cAvailable Match").build();
+    private final ItemStack hoes = new ItemBuilder(Materials.DIAMOND_HOE, 1).displayName("&cArena Setter").build();
 
     public MainMenu(OneVSOneGame plugin) {
         super("Main menu", 3);

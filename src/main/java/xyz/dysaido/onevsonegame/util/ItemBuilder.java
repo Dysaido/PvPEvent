@@ -25,6 +25,10 @@ public class ItemBuilder {
         this.item = new ItemStack(material);
     }
 
+    public ItemBuilder(Material material, int amount) {
+        this.item = new ItemStack(material, amount);
+    }
+
     public ItemBuilder(Material material, short damage) {
         this.item = new ItemStack(material, 1, damage);
     }
@@ -46,14 +50,14 @@ public class ItemBuilder {
 
     public ItemBuilder lore(String... lore) {
         ItemMeta meta = item.getItemMeta();
-        meta.setLore(Arrays.asList(lore).stream().map(string -> Format.colored(string)).collect(Collectors.toList()));
+        meta.setLore(Arrays.stream(lore).map(Format::colored).collect(Collectors.toList()));
         item.setItemMeta(meta);
         return this;
     }
 
     public ItemBuilder lore(Collection<String> lore) {
         ItemMeta meta = item.getItemMeta();
-        meta.setLore(lore.stream().map(string -> Format.colored(string)).collect(Collectors.toList()));
+        meta.setLore(lore.stream().map(Format::colored).collect(Collectors.toList()));
         item.setItemMeta(meta);
         return this;
     }
