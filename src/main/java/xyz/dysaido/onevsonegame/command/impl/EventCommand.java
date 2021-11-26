@@ -21,7 +21,7 @@ public class EventCommand extends BaseCommand<OneVSOneGame> {
         setSeeHelpPermission("event.command.help");
     }
 
-    @SubCommand(name = "menu", usage = "/event menu", onlyPlayer = true, permission = "event.command.perform")
+    @SubCommand(name = "menu", usage = "/event menu", onlyPlayer = true)
     public static class Menu extends SubAdapter {
         public Menu() {
             super();
@@ -32,7 +32,6 @@ public class EventCommand extends BaseCommand<OneVSOneGame> {
         protected void execute(CommandSender sender, String[] args) {
             Player player = (Player) sender;
             plugin.getMenuManager().getMainMenu().open(player);
-
         }
     }
 
