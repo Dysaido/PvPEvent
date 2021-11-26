@@ -6,7 +6,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 import xyz.dysaido.onevsonegame.command.impl.EventCommand;
 import xyz.dysaido.onevsonegame.listener.MatchListener;
 import xyz.dysaido.onevsonegame.match.MatchManager;
-import xyz.dysaido.onevsonegame.menu.MainMenu;
+import xyz.dysaido.onevsonegame.menu.impl.MainMenu;
+import xyz.dysaido.onevsonegame.menu.MenuManager;
 import xyz.dysaido.onevsonegame.ring.RingManager;
 import xyz.dysaido.onevsonegame.setting.Settings;
 import xyz.dysaido.onevsonegame.setting.Config;
@@ -27,8 +28,8 @@ public final class OneVSOneGame extends JavaPlugin {
     private EventCommand eventCommand;
     private Config config;
     private ServerVersion serverVersion;
-//    private DyInventoryManager inventoryManager;
     private MainMenu mainMenu;
+    private MenuManager menuManager;
     public static OneVSOneGame getInstance() {
         synchronized (OneVSOneGame.class) {
             return instance;
@@ -42,7 +43,7 @@ public final class OneVSOneGame extends JavaPlugin {
         Logger.information(TAG, "1v1Event plugin was enabled");
         Logger.information(TAG, "Contributing: https://github.com/Dysaido/1v1Event");
         Logger.information(TAG, "Check for updates: https://www.spigotmc.org/resources/1v1-event.97786/");
-        mainMenu = new MainMenu(this);
+        menuManager = new MenuManager(this);
         ringConfig = new FileManager(this, "rings");
         config = new Config(this);
         config.initialAnnotatedClass(Settings.class);
@@ -53,10 +54,6 @@ public final class OneVSOneGame extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new MatchListener(this), this);
         registerCommand();
     }
-
-//    private void registerGUI() {
-//        inventoryManager.addInventory(new MainGUI(this));
-//    }
 
     private void registerCommand() {
         getCommandMap().register("event", eventCommand);
@@ -104,7 +101,7 @@ public final class OneVSOneGame extends JavaPlugin {
         return serverVersion;
     }
 
-    public MainMenu getMainMenu() {
-        return mainMenu;
+    public MenuManager getMenuManager() {
+        return menuManager;
     }
 }

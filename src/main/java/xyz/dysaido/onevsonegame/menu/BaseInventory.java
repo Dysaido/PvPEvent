@@ -1,4 +1,4 @@
-package xyz.dysaido.inventory;
+package xyz.dysaido.onevsonegame.menu;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.HumanEntity;
@@ -12,13 +12,13 @@ import xyz.dysaido.onevsonegame.util.Format;
 import java.util.HashMap;
 import java.util.Map;
 
-public abstract class DyInventory implements InventoryHolder {
+public abstract class BaseInventory implements InventoryHolder {
 
-    private final Map<Integer, CustomAction<ItemStack, Player>> itemMap;
+    private final Map<Integer, ActionPair<ItemStack, Player>> itemMap;
     private final Inventory inventory;
     private boolean clickable = false;
 
-    public DyInventory(String title, int rows) {
+    public BaseInventory(String title, int rows) {
         this.itemMap = new HashMap<>(rows * 9);
         this.inventory = Bukkit.createInventory(this, rows * 9, Format.colored(title));
     }
@@ -42,7 +42,7 @@ public abstract class DyInventory implements InventoryHolder {
         }
     }
 
-    public void setItemWithAction(int i, CustomAction<ItemStack, Player> action) {
+    public void setItemWithAction(int i, ActionPair<ItemStack, Player> action) {
         itemMap.put(i, action);
         inventory.setItem(i, action.getMaterial());
     }

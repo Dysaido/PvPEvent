@@ -2,10 +2,8 @@ package xyz.dysaido.onevsonegame.listener;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -14,7 +12,7 @@ import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.Inventory;
-import xyz.dysaido.inventory.DyInventory;
+import xyz.dysaido.onevsonegame.menu.BaseInventory;
 import xyz.dysaido.onevsonegame.OneVSOneGame;
 import xyz.dysaido.onevsonegame.event.GamePlayerLoseEvent;
 import xyz.dysaido.onevsonegame.match.model.MatchPlayer;
@@ -23,8 +21,6 @@ import xyz.dysaido.onevsonegame.util.Logger;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
 
 public class MatchListener implements Listener {
 
@@ -77,11 +73,11 @@ public class MatchListener implements Listener {
     public void onInventoryClick(InventoryClickEvent event) {
         Inventory inventory = event.getClickedInventory() != null ? event.getClickedInventory() : event.getInventory();
         Logger.debug("Listener", "OnClick");
-        if (inventory != null && inventory.getHolder() instanceof DyInventory) {
+        if (inventory != null && inventory.getHolder() instanceof BaseInventory) {
             Logger.debug("Listener", "inventory");
-            ((DyInventory) inventory.getHolder()).onClick(event);
+            ((BaseInventory) inventory.getHolder()).onClick(event);
             event.setCancelled(true);
-        } else if (event.getView().getTopInventory().getHolder() instanceof DyInventory) {
+        } else if (event.getView().getTopInventory().getHolder() instanceof BaseInventory) {
             Logger.debug("Listener", "topInventory");
             event.setCancelled(true);
         }

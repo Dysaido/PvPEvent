@@ -86,6 +86,9 @@ public class Settings {
     @Config.Options(path = "settings.count", name = "ending")
     public static int ENDING = 5;
 
+    @Config.Options(path = "settings.bool", name = "debug")
+    public static boolean DEBUG = false;
+
     @Config.Options(path = "settings.bool", name = "freeze")
     public static boolean FREEZE = false;
 

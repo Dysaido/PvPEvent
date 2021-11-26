@@ -1,14 +1,14 @@
-package xyz.dysaido.onevsonegame.menu;
+package xyz.dysaido.onevsonegame.menu.impl;
 
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import xyz.dysaido.inventory.CustomAction;
-import xyz.dysaido.inventory.DyInventory;
+import xyz.dysaido.onevsonegame.menu.ActionPair;
+import xyz.dysaido.onevsonegame.menu.BaseInventory;
 import xyz.dysaido.inventory.DyItemBuilder;
 import xyz.dysaido.onevsonegame.OneVSOneGame;
 import xyz.dysaido.onevsonegame.util.Materials;
 
-public class MainMenu extends DyInventory {
+public class MainMenu extends BaseInventory {
 
     private final OneVSOneGame plugin;
     private final ItemStack anvils = DyItemBuilder.create(Materials.ANVIL, 1, "&cEvents Manage");
@@ -22,15 +22,15 @@ public class MainMenu extends DyInventory {
         setClickable(true);
         // 11,13,15
 
-        CustomAction<ItemStack, Player> onEventsAction = new CustomAction<>(anvils);
-        CustomAction<ItemStack, Player> onContributorsAction = new CustomAction<>(books);
-        CustomAction<ItemStack, Player> onAvailableMatch = new CustomAction<>(signs);
-        CustomAction<ItemStack, Player> onArenaSetterAction = new CustomAction<>(hoes);
+        ActionPair<ItemStack, Player> onEventsAction = new ActionPair<>(anvils);
+        ActionPair<ItemStack, Player> onContributorsAction = new ActionPair<>(books);
+        ActionPair<ItemStack, Player> onAvailableMatch = new ActionPair<>(signs);
+        ActionPair<ItemStack, Player> onArenaSetterAction = new ActionPair<>(hoes);
 
-        onEventsAction.addAction(player -> player.sendMessage("Saved event"));
-        onContributorsAction.addAction(player -> player.sendMessage("Contributor"));
-        onAvailableMatch.addAction(player -> player.sendMessage("onAvailableMatch"));
-        onArenaSetterAction.addAction(player -> player.sendMessage("Arena Setter"));
+        onEventsAction.setAction(player -> player.sendMessage("Saved event"));
+        onContributorsAction.setAction(player -> player.sendMessage("Contributor"));
+        onAvailableMatch.setAction(player -> player.sendMessage("onAvailableMatch"));
+        onArenaSetterAction.setAction(player -> player.sendMessage("Arena Setter"));
 
         setItemWithAction(10, onEventsAction);
         setItemWithAction(13, onContributorsAction);

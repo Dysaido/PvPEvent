@@ -2,6 +2,7 @@ package xyz.dysaido.onevsonegame.util;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import xyz.dysaido.onevsonegame.setting.Settings;
 
 public final class Logger {
     private final static int DEBUG = 0;
@@ -31,7 +32,7 @@ public final class Logger {
     private static void println(int priority, String tag, String message) {
         switch (priority) {
             case DEBUG:
-                sendMessage(ChatColor.DARK_GREEN, " [" + tag + "] : " + message);
+                if (Settings.DEBUG) sendMessage(ChatColor.DARK_GREEN, " [" + tag + "] : " + message);
                 break;
             case INFORMATION:
                 sendMessage(ChatColor.BLUE, " [" + tag + "] : " + message);

@@ -31,7 +31,7 @@ public class EventCommand extends BaseCommand<OneVSOneGame> {
         @Override
         protected void execute(CommandSender sender, String[] args) {
             Player player = (Player) sender;
-            plugin.getMainMenu().open(player);
+            plugin.getMenuManager().getMainMenu().open(player);
 
         }
     }

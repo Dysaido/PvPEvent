@@ -37,7 +37,7 @@ public class Config {
                     Object configObj = plugin.getConfig().get(setting.path() + "." + name);
                     field.set(null, configObj);
                 }
-                Logger.information(plugin.getName() + TAG, "SUCCESS CONFIG SETTING, IT'S NAME : " + name);
+                Logger.debug(plugin.getName() + TAG, "SUCCESS CONFIG SETTING, IT'S NAME : " + name);
             } catch (Exception e) {
                 Logger.error(plugin.getName() + TAG, "FAILED CONFIG SETTING, IT'S NAME : " + name);
             }
