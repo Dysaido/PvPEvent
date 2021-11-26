@@ -34,7 +34,7 @@ public class MatchListener implements Listener {
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
         plugin.getMatchManager().getMatch().ifPresent(match -> {
-            Logger.debug(TAG, "QuitEvent");
+            Logger.debug(TAG, "PlayerQuit");
             match.leave(event.getPlayer());
         });
     }
@@ -42,7 +42,7 @@ public class MatchListener implements Listener {
     @EventHandler
     public void onPlayerKick(PlayerKickEvent event) {
         plugin.getMatchManager().getMatch().ifPresent(match -> {
-            Logger.debug(TAG, "QuitEvent");
+            Logger.debug(TAG, "PlayerKick");
             match.leave(event.getPlayer());
         });
     }
