@@ -16,6 +16,7 @@ public class RingManager {
     private final Map<String, Ring> arenaMap = new HashMap<>();
     private final static String TAG = "RingManager";
     private final FileManager ringConfig;
+    private boolean loaded = false;
     public RingManager(FileManager fileManager) {
         this.ringConfig = fileManager;
     }
@@ -43,6 +44,7 @@ public class RingManager {
                 return new Ring(cache);
             });
         }
+        loaded = true;
     }
 
     public void save(RingCache ringCache) {
@@ -69,7 +71,7 @@ public class RingManager {
     }
 
     public Ring get(String name) {
-        load();
+        if (!loaded) load();
         return arenaMap.get(name);
     }
 
@@ -86,10 +88,15 @@ public class RingManager {
     }
 
     public Ring remove(String name) {
+        FileConfiguration configuration = ringConfig.getFile();
+        if (configuration.isConfigurationSection(name)) {
+            configuration.set(name, null);
+        }
         return arenaMap.remove(name);
     }
 
     public Collection<Ring> getRings() {
+        if (!loaded) load();
         return arenaMap.values();
     }
 
