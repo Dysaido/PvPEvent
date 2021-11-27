@@ -44,7 +44,7 @@ public abstract class BaseInventory implements InventoryHolder {
 
     public void setItemWithAction(int i, ActionPair<ItemStack, Player> action) {
         itemMap.put(i, action);
-        inventory.setItem(i, action.getMaterial());
+        inventory.setItem(i, action.getKey());
     }
 
     public boolean isClickable() {
