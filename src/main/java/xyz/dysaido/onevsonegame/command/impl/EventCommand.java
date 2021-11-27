@@ -1,11 +1,13 @@
 package xyz.dysaido.onevsonegame.command.impl;
 
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.PlayerInventory;
 import xyz.dysaido.onevsonegame.OneVSOneGame;
 import xyz.dysaido.onevsonegame.command.BaseCommand;
 import xyz.dysaido.onevsonegame.command.SubCommand;
+import xyz.dysaido.onevsonegame.ring.Ring;
 import xyz.dysaido.onevsonegame.ring.RingCache;
 import xyz.dysaido.onevsonegame.setting.Settings;
 import xyz.dysaido.onevsonegame.util.Format;
@@ -21,6 +23,22 @@ public class EventCommand extends BaseCommand<OneVSOneGame> {
         setSeeHelpPermission("event.command.help");
     }
 
+    @SubCommand(name = "list", usage = "/event list")
+    public static class List extends SubAdapter {
+        public List() {
+            super();
+            setDescription(Settings.COMMAND_LIST_MESSAGE);
+        }
+
+        @Override
+        protected void execute(CommandSender sender, String[] args) {
+            sender.sendMessage(Format.colored("&e&lEvents:\n"));
+            plugin.getRingManager().getRings().stream().map(Ring::getName).forEach(s -> {
+                sender.sendMessage(Format.colored("&7" + s));
+            });
+        }
+    }
+
     @SubCommand(name = "menu", usage = "/event menu", onlyPlayer = true)
     public static class Menu extends SubAdapter {
         public Menu() {
@@ -31,7 +49,8 @@ public class EventCommand extends BaseCommand<OneVSOneGame> {
         @Override
         protected void execute(CommandSender sender, String[] args) {
             Player player = (Player) sender;
-            plugin.getMenuManager().getMainMenu().open(player);
+            player.sendMessage(ChatColor.RED + "The menu not supported yet.");
+            //plugin.getMenuManager().getMainMenu().open(player);
         }
     }
 
