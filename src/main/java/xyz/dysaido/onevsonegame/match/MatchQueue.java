@@ -13,7 +13,6 @@ public class MatchQueue {
     private final Random random = new Random();
     private final List<MatchPlayer> players = new ArrayList<>();
     private final BaseMatch match;
-    private Pair<MatchPlayer, MatchPlayer> opponent;
 
     public MatchQueue(BaseMatch match) {
         this.match = match;
@@ -55,14 +54,30 @@ public class MatchQueue {
         return players.stream().filter(internal -> internal.getPlayer().equals(player)).findAny().orElse(null);
     }
 
-    public Pair<MatchPlayer, MatchPlayer> randomizedOpponents() {
+    public Pair<MatchPlayer, MatchPlayer> randomizedSolosOpponents() {
         MatchPlayer player1, player2;
         do {
             List<MatchPlayer> queues = getPlayersByState(PlayerState.QUEUE);
             player1 = queues.get(random.nextInt(queues.size()));
             player2 = queues.get(random.nextInt(queues.size()));
         } while (player1 == player2);
-        return opponent = new Pair<>(player1, player2);
+        return new Pair<>(player1, player2);
+    }
+
+    public Pair<Pair<MatchPlayer, MatchPlayer>, Pair<MatchPlayer, MatchPlayer>> randomizedDuosOpponents() {
+        MatchPlayer player1, player2, player3, player4;
+        List<MatchPlayer> queues = getPlayersByState(PlayerState.QUEUE);
+        do {
+            player1 = queues.get(random.nextInt(queues.size()));
+            player2 = queues.get(random.nextInt(queues.size()));
+        } while (player1 == player2);
+        Pair<MatchPlayer, MatchPlayer> pair1 = new Pair<>(player1, player2);
+        do {
+            player3 = queues.get(random.nextInt(queues.size()));
+            player4 = queues.get(random.nextInt(queues.size()));
+        } while (player3 == player4 && pair1.getKey() == player3 && pair1.getValue() == player3 && pair1.getKey() == player4 && pair1.getValue() == player4);
+        Pair<MatchPlayer, MatchPlayer> pair2 = new Pair<>(player3, player4);
+        return new Pair<>(pair1, pair2);
     }
 
     public List<MatchPlayer> getPlayersByState(PlayerState state) {
@@ -84,7 +99,4 @@ public class MatchQueue {
         return Collections.unmodifiableList(players);
     }
 
-    public Pair<MatchPlayer, MatchPlayer> getOpponent() {
-        return opponent;
-    }
 }
