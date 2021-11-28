@@ -7,6 +7,7 @@ import org.bukkit.inventory.PlayerInventory;
 import xyz.dysaido.onevsonegame.OneVSOneGame;
 import xyz.dysaido.onevsonegame.command.BaseCommand;
 import xyz.dysaido.onevsonegame.command.SubCommand;
+import xyz.dysaido.onevsonegame.match.MatchState;
 import xyz.dysaido.onevsonegame.ring.Ring;
 import xyz.dysaido.onevsonegame.ring.RingCache;
 import xyz.dysaido.onevsonegame.setting.Settings;
@@ -21,6 +22,20 @@ public class EventCommand extends BaseCommand<OneVSOneGame> {
     public EventCommand(OneVSOneGame plugin) {
         super(plugin, "event", "Event command", "/event [options]", Collections.emptyList());
         setSeeHelpPermission("event.command.help");
+    }
+
+    @SubCommand(name = "stop", usage = "/event stop", permission = "event.command.perform")
+    public static class Stop extends SubAdapter {
+        public Stop() {
+            super();
+            setDescription(Settings.COMMAND_STOP_MESSAGE);
+        }
+
+        @Override
+        protected void execute(CommandSender sender, String[] args) {
+            sender.sendMessage(Format.colored("&aSuccess stop!"));
+            plugin.getMatchManager().getMatch().ifPresent(baseMatch -> baseMatch.setState(MatchState.ENDING));
+        }
     }
 
     @SubCommand(name = "list", usage = "/event list")
