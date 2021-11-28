@@ -80,7 +80,9 @@ public class MatchPlayer {
         player.teleport(location);
     }
 
-
+    public String getName() {
+        return player.getName();
+    }
     public UUID id() {
         return player.getUniqueId();
     }
