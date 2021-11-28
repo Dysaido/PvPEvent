@@ -80,6 +80,9 @@ public class Settings {
     @Config.Options(path = "command.message", name = "list")
     public static String COMMAND_LIST_MESSAGE = "&fYou perform this command to list saved events";
 
+    @Config.Options(path = "command.message", name = "stop")
+    public static String COMMAND_STOP_MESSAGE = "&fYou perform this command to stop event";
+
     @Config.Options(path = "settings.count", name = "waiting")
     public static int WAITING = 30;
 
