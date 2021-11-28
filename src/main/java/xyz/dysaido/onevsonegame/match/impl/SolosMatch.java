@@ -80,13 +80,17 @@ public class SolosMatch extends BaseMatch {
     @Override
     public void nextRound() {
         this.round++;
-        Format.broadcast(Settings.NEXT_ROUND.replace("{round}", String.valueOf(round)));
+        String text = Settings.NEXT_ROUND;
         Pair<MatchPlayer, MatchPlayer> opponents = this.queue.randomizedSolosOpponents();
         Bukkit.getServer().getPluginManager().callEvent(new SoloGameNextRoundEvent(this, opponents));
         MatchPlayer damager = opponents.getKey();
         MatchPlayer victim = opponents.getValue();
+        text = text.replace("{player1}", damager.getName());
+        text = text.replace("{player2}", victim.getName());
+        text = text.replace("{round}", String.valueOf(round));
         queue.addFight(damager).setup(ring.getSpawn1());
         queue.addFight(victim).setup(ring.getSpawn2());
+        Format.broadcast(text);
     }
 
     @Override
