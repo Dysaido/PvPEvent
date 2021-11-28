@@ -17,6 +17,7 @@ import xyz.dysaido.onevsonegame.OneVSOneGame;
 import xyz.dysaido.onevsonegame.event.GamePlayerLoseEvent;
 import xyz.dysaido.onevsonegame.match.model.MatchPlayer;
 import xyz.dysaido.onevsonegame.match.model.PlayerState;
+import xyz.dysaido.onevsonegame.setting.Settings;
 import xyz.dysaido.onevsonegame.util.Logger;
 
 import java.util.Arrays;
@@ -93,7 +94,7 @@ public class MatchListener implements Listener {
             Player player = (Player) event.getWhoClicked();
             if (match.getQueue().contains(player)) {
                 MatchPlayer matchPlayer = match.getQueue().findByPlayer(player);
-                if (matchPlayer.getState() == PlayerState.QUEUE || matchPlayer.getState() == PlayerState.SPECTATOR) {
+                if (Settings.INVENTORY_FREEZE && matchPlayer.getState() == PlayerState.QUEUE || matchPlayer.getState() == PlayerState.SPECTATOR) {
                     Logger.debug(TAG, "InventoryClick - Queued player do not authorized to use own inventory");
                     event.setCancelled(true);
                 }
