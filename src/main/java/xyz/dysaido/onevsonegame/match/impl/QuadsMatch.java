@@ -8,7 +8,7 @@ import xyz.dysaido.onevsonegame.ring.Ring;
 public class QuadsMatch extends BaseMatch {
 
     public QuadsMatch(OneVSOneGame plugin, Ring ring) {
-        super("TeamsMatch", plugin, ring);
+        super("QuadsMatch", plugin, ring);
     }
 
     @Override
