@@ -15,7 +15,7 @@ public class Settings {
     public static String EVENT_NOT_AVAILABLE_MESSAGE = "&cEvent not available!";
 
     @Config.Options(path = "message", name = "nextround")
-    public static String NEXT_ROUND = "&bRound {round}";
+    public static String NEXT_ROUND = "&bRound {round} &7: &b{player1} &7vs &b{player2}";
 
     @Config.Options(path = "message", name = "waiting")
     public static String WAITING_MESSAGE = "&7Join for event &b{second} sec";

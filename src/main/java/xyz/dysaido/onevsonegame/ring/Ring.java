@@ -2,6 +2,7 @@ package xyz.dysaido.onevsonegame.ring;
 
 import org.bukkit.Location;
 import xyz.dysaido.onevsonegame.kit.Kit;
+import xyz.dysaido.onevsonegame.match.MatchType;
 
 public class Ring {
     private final String mName;
@@ -53,5 +54,8 @@ public class Ring {
         return mKit;
     }
 
+    public MatchType getMatchType() {
+        return MatchType.SOLOS;
+    }
 
 }
