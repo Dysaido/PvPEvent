@@ -19,9 +19,9 @@ import xyz.dysaido.onevsonegame.util.Pair;
 import java.util.Objects;
 import java.util.Optional;
 
-public class SoloMatch extends BaseMatch {
+public class SolosMatch extends BaseMatch {
 
-    public SoloMatch(OneVSOneGame plugin, Ring ring) {
+    public SolosMatch(OneVSOneGame plugin, Ring ring) {
         super("SoloMatch", plugin, ring);
     }
 

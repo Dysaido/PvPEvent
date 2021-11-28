@@ -1,7 +1,7 @@
 package xyz.dysaido.onevsonegame.match;
 
 import xyz.dysaido.onevsonegame.OneVSOneGame;
-import xyz.dysaido.onevsonegame.match.impl.SoloMatch;
+import xyz.dysaido.onevsonegame.match.impl.SolosMatch;
 import xyz.dysaido.onevsonegame.ring.Ring;
 
 import java.util.Optional;
@@ -17,7 +17,7 @@ public class MatchManager {
 
     public BaseMatch createSolo(Ring ring) {
         if (!isNull()) this.match.stop();
-        this.match = new SoloMatch(plugin, ring);
+        this.match = new SolosMatch(plugin, ring);
         this.match.start();
         return match;
 //            throw new RuntimeException("The match has already been created. Please, you have to destroy previous match that you wanna create a new match.");
