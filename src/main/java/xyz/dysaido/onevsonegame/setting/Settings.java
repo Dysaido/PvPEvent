@@ -95,4 +95,7 @@ public class Settings {
     @Config.Options(path = "settings.bool", name = "freeze")
     public static boolean FREEZE = false;
 
+    @Config.Options(path = "settings.bool", name = "inventory-freeze")
+    public static boolean INVENTORY_FREEZE = false;
+
 }
