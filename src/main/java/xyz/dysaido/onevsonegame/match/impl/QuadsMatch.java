@@ -5,9 +5,9 @@ import xyz.dysaido.onevsonegame.OneVSOneGame;
 import xyz.dysaido.onevsonegame.match.BaseMatch;
 import xyz.dysaido.onevsonegame.ring.Ring;
 
-public class TeamsMatch extends BaseMatch {
+public class QuadsMatch extends BaseMatch {
 
-    public TeamsMatch(OneVSOneGame plugin, Ring ring) {
+    public QuadsMatch(OneVSOneGame plugin, Ring ring) {
         super("TeamsMatch", plugin, ring);
     }
 
