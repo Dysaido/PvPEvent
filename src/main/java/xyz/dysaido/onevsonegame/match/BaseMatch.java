@@ -44,8 +44,10 @@ public abstract class BaseMatch extends MatchTask {
 
     public abstract boolean hasFighting();
 
+    public abstract boolean shouldEnd();
+
     public boolean shouldNextRound() {
-        return queue.getPlayersByState(PlayerState.QUEUE).size() > 0 && getState().equals(MatchState.FIGHTING) && !queue.shouldEnd();
+        return queue.getPlayersByState(PlayerState.QUEUE).size() > 0 && getState().equals(MatchState.FIGHTING) && !shouldEnd();
     }
 
     public MatchQueue getQueue() {

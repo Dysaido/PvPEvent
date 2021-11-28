@@ -61,7 +61,7 @@ public class SoloMatch extends BaseMatch {
                 Format.broadcastClickable(Settings.WAITING_MESSAGE.replace("{second}", String.valueOf(waiting)));
                 waiting--;
                 if (waiting == 0) {
-                    if (queue.shouldEnd()) {
+                    if (shouldEnd()) {
                         state = MatchState.ENDING;
                     } else {
                         Format.broadcast(Settings.EVENT_JOIN_FINISHED_MESSAGE);
@@ -89,7 +89,7 @@ public class SoloMatch extends BaseMatch {
                         Format.broadcast(Settings.EVENT_WINNER_MESSAGE.replace("{player}", internal.getPlayer().getName()));
                         internal.reset(ring.getWorldSpawn(), PlayerState.WINNER);
                     });
-                    if (queue.shouldEnd()) {
+                    if (shouldEnd()) {
                         state = MatchState.ENDING;
                     }
                 }
@@ -130,5 +130,10 @@ public class SoloMatch extends BaseMatch {
     @Override
     public boolean shouldNextRound() {
         return queue.getPlayersByState(PlayerState.FIGHT).size() <= 1 && super.shouldNextRound();
+    }
+
+    @Override
+    public boolean shouldEnd() {
+        return queue.getPlayersByState(PlayerState.WINNER).size() == 1 || queue.getMatchPlayers().size() <= 1;
     }
 }

@@ -65,10 +65,6 @@ public class MatchQueue {
         return opponent = new Pair<>(player1, player2);
     }
 
-    public boolean shouldEnd() {
-        return getPlayersByState(PlayerState.WINNER).size() == 1 || players.size() <= 1;
-    }
-
     public List<MatchPlayer> getPlayersByState(PlayerState state) {
         Objects.requireNonNull(state);
         return players.stream().filter(internal -> internal.getState().equals(state)).collect(Collectors.toList());
