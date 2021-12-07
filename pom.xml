@@ -7,7 +7,7 @@
     <groupId>xyz.dysaido</groupId>
     <artifactId>OneVSOneGame</artifactId>
 <!--    <version>1.0.6-SNAPSHOT</version>-->
-    <version>1.0.6-PRE2</version>
+    <version>1.0.6-pre3</version>
     <packaging>jar</packaging>
 
     <name>OneVSOneGame</name>
