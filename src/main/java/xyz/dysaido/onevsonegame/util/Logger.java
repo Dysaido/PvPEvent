@@ -9,7 +9,7 @@ public final class Logger {
     private final static int INFORMATION = 1;
     private final static int WARNING = 2;
     private final static int ERROR = 3;
-    private final static String TAG = "[1v1Game]";
+    private final static String TAG = "[Event]";
 
     private Logger() {}
 
