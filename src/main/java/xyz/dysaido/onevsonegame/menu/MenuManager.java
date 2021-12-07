@@ -1,24 +1,24 @@
 package xyz.dysaido.onevsonegame.menu;
 
 import xyz.dysaido.onevsonegame.OneVSOneGame;
-import xyz.dysaido.onevsonegame.menu.impl.EventsMenu;
-import xyz.dysaido.onevsonegame.menu.impl.MainMenu;
+import xyz.dysaido.onevsonegame.inventory.BaseInventory;
+import xyz.dysaido.onevsonegame.inventory.row.InventoryRow;
 
 public class MenuManager {
 
-    private final MainMenu mainMenu;
-    private final EventsMenu eventsMenu;
+    private final BaseInventory mainMenu;
+    private final BaseInventory eventsMenu;
 
     public MenuManager(OneVSOneGame plugin) {
-        this.mainMenu = new MainMenu(plugin);
-        this.eventsMenu = new EventsMenu(plugin);
+        this.mainMenu = InventoryRow.SIX.createInventory("&4&lEvent plugin");
+        this.eventsMenu = InventoryRow.SIX.createInventory("&4&lManagement");
     }
 
-    public MainMenu getMainMenu() {
+    public BaseInventory getMainMenu() {
         return mainMenu;
     }
 
-    public EventsMenu getEventsMenu() {
+    public BaseInventory getEventsMenu() {
         return eventsMenu;
     }
 }

@@ -28,8 +28,8 @@ public final class OneVSOneGame extends JavaPlugin {
     private EventCommand eventCommand;
     private Config config;
     private ServerVersion serverVersion;
-    private MainMenu mainMenu;
     private MenuManager menuManager;
+
     public static OneVSOneGame getInstance() {
         synchronized (OneVSOneGame.class) {
             return instance;
