@@ -4,20 +4,18 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.player.PlayerCommandPreprocessEvent;
-import org.bukkit.event.player.PlayerKickEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.inventory.Inventory;
-import xyz.dysaido.onevsonegame.menu.BaseInventory;
 import xyz.dysaido.onevsonegame.OneVSOneGame;
 import xyz.dysaido.onevsonegame.event.GamePlayerLoseEvent;
 import xyz.dysaido.onevsonegame.match.model.MatchPlayer;
 import xyz.dysaido.onevsonegame.match.model.PlayerState;
 import xyz.dysaido.onevsonegame.setting.Settings;
+import xyz.dysaido.onevsonegame.util.Format;
 import xyz.dysaido.onevsonegame.util.Logger;
 
 import java.util.Arrays;
@@ -25,11 +23,21 @@ import java.util.List;
 
 public class MatchListener implements Listener {
 
+    private static final String TAG = "Listener";
     private final OneVSOneGame plugin;
     private final List<String> commands = Arrays.asList("event", "event:event");
-    private static final String TAG = "Listener";
+
     public MatchListener(OneVSOneGame plugin) {
         this.plugin = plugin;
+    }
+
+    @EventHandler(priority = EventPriority.HIGH)
+    public void onPlayerJoin(PlayerJoinEvent event) {
+        Player player = event.getPlayer();
+        if (player.isOp() && plugin.hasNewVersion()) {
+            player.sendMessage(Format.colored("&3Update available, please check spigot website!"));
+            player.sendMessage(Format.colored("&3Here: &1&ohttps://www.spigotmc.org/resources/1v1-event.97786/"));
+        }
     }
 
     @EventHandler
@@ -81,15 +89,6 @@ public class MatchListener implements Listener {
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
-        Inventory inventory = event.getClickedInventory() != null ? event.getClickedInventory() : event.getInventory();
-        if (inventory != null && inventory.getHolder() instanceof BaseInventory) {
-            Logger.debug(TAG, "InventoryClick - getInventory().getHolder()");
-            ((BaseInventory) inventory.getHolder()).onClick(event);
-            event.setCancelled(true);
-        } else if (event.getView().getTopInventory().getHolder() instanceof BaseInventory) {
-            Logger.debug(TAG, "InventoryClick - getView().getTopInventory().getHolder()");
-            event.setCancelled(true);
-        }
         plugin.getMatchManager().getMatch().ifPresent(match -> {
             Player player = (Player) event.getWhoClicked();
             if (match.getQueue().contains(player)) {
