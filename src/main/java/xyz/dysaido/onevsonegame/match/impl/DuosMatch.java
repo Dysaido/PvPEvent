@@ -10,11 +10,15 @@ import xyz.dysaido.onevsonegame.match.model.PlayerState;
 import xyz.dysaido.onevsonegame.ring.Ring;
 import xyz.dysaido.onevsonegame.setting.Settings;
 import xyz.dysaido.onevsonegame.util.Format;
+import xyz.dysaido.onevsonegame.util.MatchHelper;
 import xyz.dysaido.onevsonegame.util.Pair;
 
 import java.util.Optional;
 
 public class DuosMatch extends BaseMatch {
+
+    private Pair<MatchPlayer, MatchPlayer> duo1;
+    private Pair<MatchPlayer, MatchPlayer> duo2;
 
     public DuosMatch(OneVSOneGame plugin, Ring ring) {
         super("DuosMatch", plugin, ring);
@@ -44,16 +48,14 @@ public class DuosMatch extends BaseMatch {
                 }
                 break;
             case FIGHTING:
+                //TODO: modifying
                 if (shouldNextRound()) {
-                    Optional<MatchPlayer> matchPlayer = queue.getPlayersByState(PlayerState.FIGHT).stream().findFirst();
-                    matchPlayer.ifPresent(internal -> internal.reset(ring.getLobby(), PlayerState.QUEUE));
+                    queue.getPlayersByState(PlayerState.FIGHT).forEach(player -> player.reset(ring.getLobby(), PlayerState.QUEUE));
                     nextRound();
                 } else if (queue.getPlayersByState(PlayerState.QUEUE).size() == 0 && !hasFighting()) {
-                    Optional<MatchPlayer> matchPlayer = queue.getPlayersByState(PlayerState.FIGHT).stream().findFirst();
-                    matchPlayer.ifPresent(internal -> {
-                        Bukkit.getServer().getPluginManager().callEvent(new SoloGamePlayerWinEvent(this, internal));
-                        Format.broadcast(Settings.EVENT_WINNER_MESSAGE.replace("{player}", internal.getPlayer().getName()));
-                        internal.reset(ring.getWorldSpawn(), PlayerState.WINNER);
+                    queue.getPlayersByState(PlayerState.FIGHT).forEach(player -> {
+                        Format.broadcast(Settings.EVENT_WINNER_MESSAGE.replace("{player}", player.getPlayer().getName()));
+                        player.reset(ring.getWorldSpawn(), PlayerState.WINNER);
                     });
                     if (shouldEnd()) {
                         state = MatchState.ENDING;
@@ -83,8 +85,8 @@ public class DuosMatch extends BaseMatch {
         String text = Settings.NEXT_ROUND;
         Pair<Pair<MatchPlayer, MatchPlayer>, Pair<MatchPlayer, MatchPlayer>> opponents = this.queue.randomizedDuosOpponents();
         // Bukkit.getServer().getPluginManager().callEvent(new SoloGameNextRoundEvent(this, opponents));
-        Pair<MatchPlayer, MatchPlayer> duo1 = opponents.getKey();
-        Pair<MatchPlayer, MatchPlayer> duo2 = opponents.getValue();
+        duo1 = opponents.getKey();
+        duo2 = opponents.getValue();
         queue.addFight(duo1.getKey()).setup(ring.getSpawn1());
         queue.addFight(duo1.getValue()).setup(ring.getSpawn1());
         queue.addFight(duo2.getKey()).setup(ring.getSpawn2());
@@ -97,12 +99,13 @@ public class DuosMatch extends BaseMatch {
 
     @Override
     public boolean hasFighting() {
-        return queue.getPlayersByState(PlayerState.FIGHT).size() >= 2;
+        return MatchHelper.hasFighting(duo1, duo2);
     }
 
     @Override
     public boolean shouldNextRound() {
-        return queue.getPlayersByState(PlayerState.FIGHT).size() <= 1 && super.shouldNextRound();
+        if (duo1 == null || duo2 == null) return super.shouldNextRound();
+        return MatchHelper.shouldNextRound(duo1, duo2) && super.shouldNextRound();
     }
 
     @Override

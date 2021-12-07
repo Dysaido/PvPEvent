@@ -3,6 +3,7 @@ package xyz.dysaido.onevsonegame.match;
 import org.bukkit.entity.Player;
 import xyz.dysaido.onevsonegame.match.model.MatchPlayer;
 import xyz.dysaido.onevsonegame.match.model.PlayerState;
+import xyz.dysaido.onevsonegame.util.MatchHelper;
 import xyz.dysaido.onevsonegame.util.Pair;
 
 import java.util.*;
@@ -56,8 +57,8 @@ public class MatchQueue {
 
     public Pair<MatchPlayer, MatchPlayer> randomizedSolosOpponents() {
         MatchPlayer player1, player2;
+        List<MatchPlayer> queues = getPlayersByState(PlayerState.QUEUE);
         do {
-            List<MatchPlayer> queues = getPlayersByState(PlayerState.QUEUE);
             player1 = queues.get(random.nextInt(queues.size()));
             player2 = queues.get(random.nextInt(queues.size()));
         } while (player1 == player2);
@@ -70,12 +71,10 @@ public class MatchQueue {
         do {
             player1 = queues.get(random.nextInt(queues.size()));
             player2 = queues.get(random.nextInt(queues.size()));
-        } while (player1 == player2);
-        Pair<MatchPlayer, MatchPlayer> pair1 = new Pair<>(player1, player2);
-        do {
             player3 = queues.get(random.nextInt(queues.size()));
             player4 = queues.get(random.nextInt(queues.size()));
-        } while (player3 == player4 && pair1.getKey() == player3 && pair1.getValue() == player3 && pair1.getKey() == player4 && pair1.getValue() == player4);
+        } while (MatchHelper.notEqual(player1, player2, player3, player4));
+        Pair<MatchPlayer, MatchPlayer> pair1 = new Pair<>(player1, player2);
         Pair<MatchPlayer, MatchPlayer> pair2 = new Pair<>(player3, player4);
         return new Pair<>(pair1, pair2);
     }
