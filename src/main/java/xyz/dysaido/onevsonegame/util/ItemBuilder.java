@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 
 public class ItemBuilder {
 
-    private ItemStack item;
+    private final ItemStack item;
 
     public ItemBuilder(ItemStack item) {
         this.item = item;
