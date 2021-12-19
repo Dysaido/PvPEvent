@@ -1,4 +1,5 @@
 name: OneVSOneGame
+website: https://www.spigotmc.org/resources/1v1-event.97786/
 version: '${project.version}'
 main: xyz.dysaido.onevsonegame.OneVSOneGame
 load: STARTUP
