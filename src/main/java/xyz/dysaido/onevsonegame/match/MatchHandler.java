@@ -16,19 +16,22 @@ public class MatchManager {
         this.plugin = plugin;
     }
 
+    public boolean create(MatchType type, Ring ring) {
+        if (isNull()) {
+            this.match = type.createMatch(plugin, ring);
+            this.match.start();
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     public BaseMatch createSolos(Ring ring) {
         if (!isNull()) this.match.stop();
         this.match = new SolosMatch(plugin, ring);
         this.match.start();
         return match;
 //            throw new RuntimeException("The match has already been created. Please, you have to destroy previous match that you wanna create a new match.");
-    }
-
-    public BaseMatch createDuos(Ring ring) {
-        if (!isNull()) this.match.stop();
-        this.match = new DuosMatch(plugin, ring);
-        this.match.start();
-        return match;
     }
 
     public Optional<BaseMatch> getMatch() {

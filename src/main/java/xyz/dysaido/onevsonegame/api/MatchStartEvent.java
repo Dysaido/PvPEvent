@@ -1,22 +1,18 @@
-package xyz.dysaido.onevsonegame.event;
+package xyz.dysaido.onevsonegame.api;
 
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 import xyz.dysaido.onevsonegame.match.BaseMatch;
-import xyz.dysaido.onevsonegame.match.model.MatchPlayer;
-import xyz.dysaido.onevsonegame.util.Pair;
 
-public class SoloGameNextRoundEvent extends Event implements Cancellable {
+public class MatchStartEvent extends Event implements Cancellable {
 
     private static final HandlerList HANDLER_LIST = new HandlerList();
     private final BaseMatch match;
-    private final Pair<MatchPlayer, MatchPlayer> opponents;
     private boolean cancel;
 
-    public SoloGameNextRoundEvent(BaseMatch match, Pair<MatchPlayer, MatchPlayer> opponents) {
+    public MatchStartEvent(BaseMatch match) {
         this.match = match;
-        this.opponents = opponents;
     }
 
     public static HandlerList getHandlerList() {
@@ -42,7 +38,4 @@ public class SoloGameNextRoundEvent extends Event implements Cancellable {
         return match;
     }
 
-    public Pair<MatchPlayer, MatchPlayer> getOpponents() {
-        return opponents;
-    }
 }
