@@ -132,7 +132,10 @@ public class MatchListener implements Listener {
                 event.getDrops().clear();
                 event.setDeathMessage(null);
                 Logger.debug(TAG, "PlayerDeath, MatchPlayer: " + matchPlayer.getPlayer().getName());
-                matchPlayer.reset(match.getRing().getLobby(), true);
+                Bukkit.getScheduler().runTaskLater(plugin, () -> {
+                    victim.spigot().respawn();
+                    matchPlayer.reset(match.getRing().getLobby(), true);
+                }, 10L);
             }
         }
     }

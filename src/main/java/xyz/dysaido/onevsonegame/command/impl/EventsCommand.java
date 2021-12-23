@@ -7,6 +7,7 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.util.StringUtil;
 import xyz.dysaido.onevsonegame.OneVSOneGame;
 import xyz.dysaido.onevsonegame.arena.Arena;
+import xyz.dysaido.onevsonegame.arena.ArenaManager;
 import xyz.dysaido.onevsonegame.command.BaseCommand;
 import xyz.dysaido.onevsonegame.match.MatchHandler;
 import xyz.dysaido.onevsonegame.match.MatchState;
@@ -47,6 +48,18 @@ public class EventsCommand extends BaseCommand {
     public void handle(CommandSender sender, String label, String[] args) {
         if (args.length != 0) {
             switch (args[0].toLowerCase(Locale.ROOT)) {
+                case "delete":
+                    ArenaManager arenaManager = plugin.getArenaManager();
+                    if (args.length > 1) {
+                        Arena arena = arenaManager.get(args[1]);
+                        if (arena != null) {
+                            arenaManager.remove(arena);
+                            sender.sendMessage(Format.colored("&aSuccessful arena delete!"));
+                        } else {
+                            sender.sendMessage(Format.colored("&cThe arena is not available!"));
+                        }
+                    }
+                    break;
                 case "stop":
                     plugin.getMatchHandler().getMatch().ifPresent(baseMatch -> {
                         baseMatch.setState(MatchState.ENDING);
@@ -167,17 +180,16 @@ public class EventsCommand extends BaseCommand {
                     break;
                 case "host":
                     if (args.length > 1) {
-                        String name = args[1];
-                        Arena arena = plugin.getArenaManager().get(name);
+                        Arena arena = plugin.getArenaManager().get(args[1]);
                         if (arena != null) {
                             MatchHandler handler = plugin.getMatchHandler();
                             if (handler.host(MatchType.SOLOS, arena)) {
-                                sender.sendMessage("Successful host");
+                                sender.sendMessage(Format.colored("&aSuccessful host"));
                             } else {
-                                sender.sendMessage("The match has already been created. Please, you have to destroy previous match that you want to create a new match.");
+                                sender.sendMessage(Format.colored("&cThe match has already been created. Please, you have to destroy previous match that you want to create a new match."));
                             }
                         } else {
-                            sender.sendMessage("Couldn't find this event");
+                            sender.sendMessage(Format.colored("&cCouldn't find this event"));
                         }
                     } else {
                         sendHelp(sender);

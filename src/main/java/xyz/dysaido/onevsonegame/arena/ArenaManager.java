@@ -91,6 +91,7 @@ public class ArenaManager {
         if (configuration.isConfigurationSection(name)) {
             configuration.set(name, null);
         }
+        ringConfig.saveFile();
         return arenaMap.remove(name);
     }
 
