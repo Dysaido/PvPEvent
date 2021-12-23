@@ -8,7 +8,6 @@ import xyz.dysaido.onevsonegame.kit.Kit;
 import xyz.dysaido.onevsonegame.match.BaseMatch;
 
 import java.util.Collection;
-import java.util.Objects;
 import java.util.UUID;
 
 public class MatchPlayer {
@@ -36,7 +35,7 @@ public class MatchPlayer {
         this.originalWalkSpeed = player.getWalkSpeed();
         this.backupKit = new Kit(player.getInventory().getContents(), player.getInventory().getArmorContents());
         this.originalGamemode = player.getGameMode();
-        player.teleport(match.getRing().getLobby());
+        player.teleport(match.getArena().getLobby());
     }
 
     public void setup(Location location) {
@@ -48,7 +47,7 @@ public class MatchPlayer {
         for (PotionEffect effect : player.getActivePotionEffects()) {
             player.removePotionEffect(effect.getType());
         }
-        match.getRing().getKit().apply(player);
+        match.getArena().getKit().apply(player);
         player.teleport(location);
     }
 

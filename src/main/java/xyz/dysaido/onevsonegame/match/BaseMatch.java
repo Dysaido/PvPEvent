@@ -99,7 +99,7 @@ public abstract class BaseMatch extends MatchTask {
         return queue;
     }
 
-    public Arena getRing() {
+    public Arena getArena() {
         return arena;
     }
 
