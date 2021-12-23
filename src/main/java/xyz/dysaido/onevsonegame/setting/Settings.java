@@ -47,6 +47,9 @@ public class Settings {
     @Config.Options(path = "settings.count", name = "waiting")
     public static int WAITING = 30;
 
+    @Config.Options(path = "settings.count.waiting", name = "modulo")
+    public static int WAITING_MODULO = 5;
+
     @Config.Options(path = "settings.count", name = "starting")
     public static int STARTING = 5;
 

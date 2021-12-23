@@ -22,7 +22,9 @@ public class SolosMatch extends BaseMatch {
     public void loop() {
         switch (state) {
             case WAITING:
-                Format.broadcastClickable(Settings.WAITING_MESSAGE.replace("{second}", String.valueOf(waiting)));
+                if (waiting % Math.max(Settings.WAITING_MODULO , 1) == 0) {
+                    Format.broadcastClickable(Settings.WAITING_MESSAGE.replace("{second}", String.valueOf(waiting)));
+                }
                 waiting--;
                 if (waiting == 0) {
                     if (shouldEnd()) {
