@@ -3,99 +3,123 @@ package xyz.dysaido.onevsonegame.match;
 import org.bukkit.entity.Player;
 import xyz.dysaido.onevsonegame.match.model.MatchPlayer;
 import xyz.dysaido.onevsonegame.match.model.PlayerState;
-import xyz.dysaido.onevsonegame.util.MatchHelper;
-import xyz.dysaido.onevsonegame.util.Pair;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class MatchQueue {
-
-    private final Random random = new Random();
-    private final List<MatchPlayer> players = new ArrayList<>();
-    private final BaseMatch match;
+public class MatchQueue<P extends MatchPlayer> {
+    private final Queue<P> pendingQueue;
+    private final Set<P> fighters;
 
     public MatchQueue(BaseMatch match) {
-        this.match = match;
+        this.pendingQueue = new LinkedList<>();
+        int size = 0;
+        switch (match.type) {
+            case SOLOS:
+                size = 2;
+                break;
+            case DUOS:
+                size = 4;
+                break;
+            case QUADS:
+                size = 8;
+                break;
+        }
+        this.fighters = new HashSet<>(size);
     }
 
-    public MatchPlayer addMatchPlayer(MatchPlayer player) {
+    public void addQueue(P player) {
         Objects.requireNonNull(player);
-        if (!players.contains(player)) players.add(player);
-        addQueue(player);
-        return player;
+        synchronized (this.pendingQueue) {
+            player.setState(PlayerState.QUEUE);
+            if (containsQueue(player.getPlayer())) return;
+            this.pendingQueue.add(player);
+        }
     }
 
-    public MatchPlayer removeMatchPlayer(MatchPlayer player) {
+    public void offerQueue(P player) {
         Objects.requireNonNull(player);
-        players.remove(player);
-        return player;
+        synchronized (this.pendingQueue) {
+            player.setState(PlayerState.QUEUE);
+            if (containsQueue(player.getPlayer())) return;
+            this.pendingQueue.offer(player);
+        }
     }
 
-    public MatchPlayer addQueue(MatchPlayer player) {
+    public void removeQueue(P player) {
         Objects.requireNonNull(player);
-        player.setState(PlayerState.QUEUE);
-        return player;
+        synchronized (this.pendingQueue) {
+            player.setState(null);
+            this.pendingQueue.remove(player);
+        }
     }
 
-    public MatchPlayer addFight(MatchPlayer player) {
+    public void addFighter(P player) {
         Objects.requireNonNull(player);
-        player.setState(PlayerState.FIGHT);
-        return player;
+        synchronized (this.fighters) {
+            player.setState(PlayerState.FIGHT);
+            this.fighters.add(player);
+        }
     }
 
-    public MatchPlayer addSpectator(MatchPlayer player) {
+    public void removeFighter(P player) {
         Objects.requireNonNull(player);
-        player.setState(PlayerState.SPECTATOR);
-        return player;
+        synchronized (this.fighters) {
+            player.setState(null);
+            this.fighters.remove(player);
+        }
     }
 
-    public MatchPlayer findByPlayer(Player player) {
+    public P pull() {
+        synchronized (this.pendingQueue) {
+            if (!this.pendingQueue.isEmpty()) {
+                return this.pendingQueue.remove();
+            } else {
+                return null;
+            }
+        }
+    }
+
+    public boolean containsQueue(Player player) {
         Objects.requireNonNull(player);
-        return players.stream().filter(internal -> internal.getPlayer().equals(player)).findAny().orElse(null);
+        synchronized (this.pendingQueue) {
+            return pendingQueue.stream().map(MatchPlayer::getPlayer).anyMatch(internal -> internal.equals(player));
+        }
     }
 
-    public Pair<MatchPlayer, MatchPlayer> randomizedSolosOpponents() {
-        MatchPlayer player1, player2;
-        List<MatchPlayer> queues = getPlayersByState(PlayerState.QUEUE);
-        do {
-            player1 = queues.get(random.nextInt(queues.size()));
-            player2 = queues.get(random.nextInt(queues.size()));
-        } while (player1 == player2);
-        return new Pair<>(player1, player2);
+    public boolean containsFighter(Player player) {
+        Objects.requireNonNull(player);
+        synchronized (this.fighters) {
+            return fighters.stream().map(MatchPlayer::getPlayer).anyMatch(internal -> internal.equals(player));
+        }
     }
 
-    public Pair<Pair<MatchPlayer, MatchPlayer>, Pair<MatchPlayer, MatchPlayer>> randomizedDuosOpponents() {
-        MatchPlayer player1, player2, player3, player4;
-        List<MatchPlayer> queues = getPlayersByState(PlayerState.QUEUE);
-        do {
-            player1 = queues.get(random.nextInt(queues.size()));
-            player2 = queues.get(random.nextInt(queues.size()));
-            player3 = queues.get(random.nextInt(queues.size()));
-            player4 = queues.get(random.nextInt(queues.size()));
-        } while (MatchHelper.notEqual(player1, player2, player3, player4));
-        Pair<MatchPlayer, MatchPlayer> pair1 = new Pair<>(player1, player2);
-        Pair<MatchPlayer, MatchPlayer> pair2 = new Pair<>(player3, player4);
-        return new Pair<>(pair1, pair2);
+    public P findQueueByName(String name) {
+        Objects.requireNonNull(name);
+        synchronized (this.pendingQueue) {
+            return this.pendingQueue.stream().filter(p -> p.getName().equals(name)).findFirst().orElse(null);
+        }
     }
 
-    public List<MatchPlayer> getPlayersByState(PlayerState state) {
+    public P findFighterByName(String name) {
+        Objects.requireNonNull(name);
+        synchronized (this.fighters) {
+            return this.fighters.stream().filter(p -> p.getName().equals(name)).findFirst().orElse(null);
+        }
+    }
+
+    public List<MatchPlayer> getFightersByState(PlayerState state) {
         Objects.requireNonNull(state);
-        return players.stream().filter(internal -> internal.getState().equals(state)).collect(Collectors.toList());
+        synchronized (this.fighters) {
+            return this.fighters.stream().filter(player -> player.getState().equals(state)).collect(Collectors.toList());
+        }
     }
 
-    public boolean contains(Player player) {
-        Objects.requireNonNull(player);
-        return players.stream().map(MatchPlayer::getPlayer).anyMatch(internal -> internal.equals(player));
+    public Queue<P> getPendingQueue() {
+        return pendingQueue;
     }
 
-    public boolean contains(MatchPlayer player) {
-        Objects.requireNonNull(player);
-        return players.contains(player);
+    public Set<P> getFighters() {
+        return fighters;
     }
-
-    public Collection<MatchPlayer> getMatchPlayers() {
-        return Collections.unmodifiableList(players);
-    }
-
 }

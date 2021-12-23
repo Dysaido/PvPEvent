@@ -8,6 +8,7 @@ import xyz.dysaido.onevsonegame.kit.Kit;
 import xyz.dysaido.onevsonegame.match.BaseMatch;
 
 import java.util.Collection;
+import java.util.Objects;
 import java.util.UUID;
 
 public class MatchPlayer {
@@ -61,28 +62,33 @@ public class MatchPlayer {
         frozen = false;
     }
 
-    public void reset(Location location, PlayerState state) {
-        this.state = state;
-        if (player.isDead()) {
-            this.lose = true;
-//            player.spigot().respawn();
+    public void reset(Location location, boolean lose) {
+        this.lose = lose;
+        if (lose) {
+            match.getQueue().removeFighter(this);
+        } else {
+            match.getQueue().removeFighter(this);
+            match.getQueue().offerQueue(this);
         }
-        player.setHealth(originalHealth);
-        player.setFoodLevel(originalFoodLevel);
-        player.setFireTicks(originalFireTicks);
-        player.setWalkSpeed(originalWalkSpeed);
-        player.setGameMode(originalGamemode);
-        backupKit.apply(player);
-        for (PotionEffect effect : player.getActivePotionEffects()) {
-            player.removePotionEffect(effect.getType());
+        synchronized (player) {
+            player.setHealth(originalHealth);
+            player.setFoodLevel(originalFoodLevel);
+            player.setFireTicks(originalFireTicks);
+            player.setWalkSpeed(originalWalkSpeed);
+            player.setGameMode(originalGamemode);
+            backupKit.apply(player);
+            for (PotionEffect effect : player.getActivePotionEffects()) {
+                player.removePotionEffect(effect.getType());
+            }
+            originalPotionEffects.forEach(player::addPotionEffect);
+            player.teleport(location);
         }
-        originalPotionEffects.forEach(player::addPotionEffect);
-        player.teleport(location);
     }
 
     public String getName() {
         return player.getName();
     }
+
     public UUID id() {
         return player.getUniqueId();
     }

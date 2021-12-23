@@ -7,12 +7,12 @@ import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.Arrays;
 import java.util.Objects;
 
 public class Reflection {
-
-    public static final FinalFieldSetter FFS;
     public static final String VERSION = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
+    public static final FinalFieldSetter FFS;
 
     static {
         FinalFieldSetter inner;
@@ -24,56 +24,87 @@ public class Reflection {
         FFS = inner;
     }
 
-    public static Method getMethod(Class<?> clazz, String name, int params) {
+    public static Method getMethod(Class<?> clazz, String name, Class<?> returnType, Class<?>... params) {
         do {
-            for (Method method : clazz.getDeclaredMethods()) {
-                if (method.getName().equals(name) && (method.getParameterTypes().length == params)) {
-                    return accessible(method);
+            for (final Method method : clazz.getDeclaredMethods()) {
+                if ((name == null || method.getName().equals(name))
+                        && (returnType == null || method.getReturnType().equals(returnType))
+                        && Arrays.equals(method.getParameterTypes(), params)) {
+                    return setAccessible(method);
                 }
             }
         } while ((clazz = clazz.getSuperclass()) != null);
-        throw new RuntimeException("Can't find method " + name + " with params length " + params + " in class " + clazz + " or it's superclasses");
+        throw new RuntimeException("Can't find method " + name + " with params " + Arrays.toString(params) + " in class " + clazz + " or it's superclasses");
     }
 
     public static Field getField(Class<?> clazz, String name) {
         do {
             for (Field field : clazz.getDeclaredFields()) {
                 if (field.getName().equals(name)) {
-                    return accessible(field);
+                    return setAccessible(field);
                 }
             }
         } while ((clazz = clazz.getSuperclass()) != null);
         throw new RuntimeException("Can't find field " + name + " in class " + clazz + " or it's superclasses");
     }
 
-    public static <T> T getObject(Object object, Field field, Class<T> type) {
+    public static Field getField(Class<?> target, Class<?> fieldType) {
+        return getField(target, null, fieldType);
+    }
+
+    public static Field getField(Class<?> clazz, String name, Class<?> fieldType) {
+        do {
+            for (Field field : clazz.getDeclaredFields()) {
+                if ((name == null || field.getName().equals(name)) && fieldType.isAssignableFrom(field.getType())) {
+                    return setAccessible(field);
+                }
+            }
+        } while ((clazz = clazz.getSuperclass()) != null);
+        throw new RuntimeException("Can't find field " + name + " in class " + clazz + " or it's superclasses");
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T> T fetch(Object object, Field field) {
         try {
-            return type.cast(accessible(field).get(object));
-        } catch (ReflectiveOperationException e) {
-            throw new RuntimeException(e);
+            return (T) setAccessible(field).get(object);
+        } catch (IllegalAccessException e) {
+            throw new IllegalArgumentException(e);
         }
     }
 
-    public static void setField(Object object, String fieldName, Class<?> clazz, Object value) {
+    public static void setField(Object holder, String name, Class<?> parent, Object value) {
         try {
-            Field field = accessible(clazz.getDeclaredField(fieldName));
+            Field field = setAccessible(parent.getDeclaredField(name));
             if (Modifier.isFinal(field.getModifiers())) {
-                FFS.set(object, field, value);
+                FFS.set(holder, field, value);
             } else {
-                field.set(object, value);
+                field.set(holder, value);
             }
         } catch (Throwable e) {
             e.printStackTrace();
         }
     }
 
-    public static <T extends AccessibleObject> T accessible(T object) {
+    public static void setField(Object holder, Field field, Object value) {
+        try {
+            setAccessible(field);
+            if (Modifier.isFinal(field.getModifiers())) {
+                FFS.set(holder, field, value);
+            } else {
+                field.set(holder, value);
+            }
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static <T extends AccessibleObject> T setAccessible(T object) {
         object.setAccessible(true);
         return object;
     }
 
     @FunctionalInterface
-    public static interface FinalFieldSetter {
+    public interface FinalFieldSetter {
 
         void set(Object holder, Field field, Object value);
 
@@ -85,7 +116,7 @@ public class Reflection {
         public void set(Object holder, Field field, Object value) {
             try {
                 Field modifiers = Field.class.getDeclaredField("modifiers");
-                accessible(modifiers).setInt(field, field.getModifiers() & ~Modifier.FINAL);
+                setAccessible(modifiers).setInt(field, field.getModifiers() & ~Modifier.FINAL);
                 field.set(holder, value);
             } catch (ReflectiveOperationException e) {
                 throw new RuntimeException(e);
@@ -97,7 +128,7 @@ public class Reflection {
         private final Unsafe unsafe;
 
         private FinalFieldSetterUnsafeImpl() throws ReflectiveOperationException {
-            Field field = accessible(Unsafe.class.getDeclaredField("theUnsafe"));
+            Field field = setAccessible(Unsafe.class.getDeclaredField("theUnsafe"));
             unsafe = (Unsafe) field.get(null);
         }
 

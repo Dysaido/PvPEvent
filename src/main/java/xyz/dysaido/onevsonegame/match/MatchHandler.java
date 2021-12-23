@@ -1,50 +1,44 @@
 package xyz.dysaido.onevsonegame.match;
 
+import org.bukkit.Bukkit;
 import xyz.dysaido.onevsonegame.OneVSOneGame;
-import xyz.dysaido.onevsonegame.match.impl.DuosMatch;
-import xyz.dysaido.onevsonegame.match.impl.SolosMatch;
-import xyz.dysaido.onevsonegame.ring.Ring;
+import xyz.dysaido.onevsonegame.api.MatchStartEvent;
+import xyz.dysaido.onevsonegame.api.MatchStopEvent;
+import xyz.dysaido.onevsonegame.arena.Arena;
 
 import java.util.Optional;
 
-public class MatchManager {
+public class MatchHandler {
 
     private final OneVSOneGame plugin;
-    private volatile BaseMatch match;
+    private BaseMatch match;
 
-    public MatchManager(OneVSOneGame plugin) {
+    public MatchHandler(OneVSOneGame plugin) {
         this.plugin = plugin;
     }
 
-    public boolean create(MatchType type, Ring ring) {
+    public boolean host(MatchType type, Arena ring) {
         if (isNull()) {
             this.match = type.createMatch(plugin, ring);
+            Bukkit.getServer().getPluginManager().callEvent(new MatchStartEvent(match));
             this.match.start();
             return true;
-        } else {
-            return false;
         }
+        return false;
     }
 
-    public BaseMatch createSolos(Ring ring) {
-        if (!isNull()) this.match.stop();
-        this.match = new SolosMatch(plugin, ring);
-        this.match.start();
-        return match;
-//            throw new RuntimeException("The match has already been created. Please, you have to destroy previous match that you wanna create a new match.");
+    private boolean isNull() {
+        return this.match == null;
     }
 
     public Optional<BaseMatch> getMatch() {
-        return Optional.ofNullable(match);
+        return Optional.ofNullable(this.match);
     }
 
     public void destroy() {
+        Bukkit.getServer().getPluginManager().callEvent(new MatchStopEvent(this.match));
         this.match.stop();
         this.match = null;
-    }
-
-    public boolean isNull() {
-        return match == null;
     }
 
 }

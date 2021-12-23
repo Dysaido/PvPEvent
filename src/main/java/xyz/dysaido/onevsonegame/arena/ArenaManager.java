@@ -1,6 +1,5 @@
-package xyz.dysaido.onevsonegame.ring;
+package xyz.dysaido.onevsonegame.arena;
 
-import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.inventory.ItemStack;
@@ -12,12 +11,12 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-public class RingManager {
-    private final Map<String, Ring> arenaMap = new HashMap<>();
-    private final static String TAG = "RingManager";
+public class ArenaManager {
+    private final Map<String, Arena> arenaMap = new HashMap<>();
+    private final static String TAG = "ArenaManager";
     private final FileManager ringConfig;
     private boolean loaded = false;
-    public RingManager(FileManager fileManager) {
+    public ArenaManager(FileManager fileManager) {
         this.ringConfig = fileManager;
     }
 
@@ -32,7 +31,7 @@ public class RingManager {
             String spawn2 = section.getString("spawn2");
             ItemStack[] contents = section.getList("contents").toArray(new ItemStack[0]);
             ItemStack[] armor = section.getList("armor").toArray(new ItemStack[0]);
-            RingCache cache = new RingCache(name);
+            ArenaCache cache = new ArenaCache(name);
             cache.setSpawn(LocationSerializer.deserialize(worldspawn));
             cache.setSpawn1(LocationSerializer.deserialize(spawn1));
             cache.setSpawn2(LocationSerializer.deserialize(spawn2));
@@ -41,21 +40,21 @@ public class RingManager {
             cache.setArmor(armor);
             arenaMap.computeIfAbsent(name, s -> {
                 Logger.debug("RingManager", cache.toString());
-                return new Ring(cache);
+                return new Arena(cache);
             });
         }
         loaded = true;
     }
 
-    public void save(RingCache ringCache) {
+    public void save(ArenaCache arenaCache) {
         FileConfiguration configuration = ringConfig.getFile();
-        String name = ringCache.getName();
-        String worldspawn = LocationSerializer.serialize(ringCache.getSpawn());
-        String lobby = LocationSerializer.serialize(ringCache.getLobby());
-        String spawn1 = LocationSerializer.serialize(ringCache.getSpawn1());
-        String spawn2 = LocationSerializer.serialize(ringCache.getSpawn2());
-        ItemStack[] contents = ringCache.getContents();
-        ItemStack[] armor = ringCache.getArmor();
+        String name = arenaCache.getName();
+        String worldspawn = LocationSerializer.serialize(arenaCache.getSpawn());
+        String lobby = LocationSerializer.serialize(arenaCache.getLobby());
+        String spawn1 = LocationSerializer.serialize(arenaCache.getSpawn1());
+        String spawn2 = LocationSerializer.serialize(arenaCache.getSpawn2());
+        ItemStack[] contents = arenaCache.getContents();
+        ItemStack[] armor = arenaCache.getArmor();
         if (!configuration.isConfigurationSection(name)) {
             ConfigurationSection section = configuration.createSection(name);
             section.set("worldspawn", worldspawn);
@@ -70,24 +69,24 @@ public class RingManager {
         load();
     }
 
-    public Ring get(String name) {
+    public Arena get(String name) {
         if (!loaded) load();
         return arenaMap.get(name);
     }
 
-    public Ring add(Ring ring) {
-        return arenaMap.computeIfPresent(ring.getName(),(s, internalRing) -> {
+    public Arena add(Arena arena) {
+        return arenaMap.computeIfPresent(arena.getName(),(s, internalRing) -> {
             Logger.warning(TAG, String.format("You can't make an ring that already exists (%s)", s));
             return internalRing;
         });
 //        return arenaMap.putIfAbsent(ring.getName(), ring);
     }
 
-    public Ring remove(Ring ring) {
-        return remove(ring.getName());
+    public Arena remove(Arena arena) {
+        return remove(arena.getName());
     }
 
-    public Ring remove(String name) {
+    public Arena remove(String name) {
         FileConfiguration configuration = ringConfig.getFile();
         if (configuration.isConfigurationSection(name)) {
             configuration.set(name, null);
@@ -95,7 +94,7 @@ public class RingManager {
         return arenaMap.remove(name);
     }
 
-    public Collection<Ring> getRings() {
+    public Collection<Arena> getArenas() {
         if (!loaded) load();
         return arenaMap.values();
     }

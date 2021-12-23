@@ -1,57 +1,57 @@
-package xyz.dysaido.onevsonegame.ring;
+package xyz.dysaido.onevsonegame.arena;
 
 import org.bukkit.Location;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.Arrays;
 
-public class RingCache {
-    private final String mName;
+public class ArenaCache {
+    private final String name;
     private ItemStack[] contents;
     private ItemStack[] armor;
-    private Location mSpawn;
-    private Location mLobby;
-    private Location mSpawn1;
-    private Location mSpawn2;
+    private Location spawn;
+    private Location lobby;
+    private Location spawn1;
+    private Location spawn2;
 
-    public RingCache(String name) {
-        this.mName = name;
+    public ArenaCache(String name) {
+        this.name = name;
     }
 
     public String getName() {
-        return mName;
+        return name;
     }
 
     public Location getSpawn() {
-        return mSpawn;
+        return spawn;
     }
 
     public void setSpawn(Location mSpawn) {
-        this.mSpawn = mSpawn;
+        this.spawn = mSpawn;
     }
 
     public Location getLobby() {
-        return mLobby;
+        return lobby;
     }
 
     public void setLobby(Location mLobby) {
-        this.mLobby = mLobby;
+        this.lobby = mLobby;
     }
 
     public Location getSpawn1() {
-        return mSpawn1;
+        return spawn1;
     }
 
     public void setSpawn1(Location mSpawn1) {
-        this.mSpawn1 = mSpawn1;
+        this.spawn1 = mSpawn1;
     }
 
     public Location getSpawn2() {
-        return mSpawn2;
+        return spawn2;
     }
 
     public void setSpawn2(Location mSpawn2) {
-        this.mSpawn2 = mSpawn2;
+        this.spawn2 = mSpawn2;
     }
 
     public ItemStack[] getArmor() {
@@ -72,14 +72,14 @@ public class RingCache {
 
     @Override
     public String toString() {
-        return "RingCache{" +
-                "name='" + mName + '\'' +
-                ", contents='" + Arrays.toString(contents) + '\'' +
-                ", armor='" + Arrays.toString(armor) + '\'' +
-                ", spawn=" + mSpawn +
-                ", lobby=" + mLobby +
-                ", spawn1=" + mSpawn1 +
-                ", spawn2=" + mSpawn2 +
+        return "ArenaCache{" +
+                "name='" + name + '\'' +
+                ", contents=" + Arrays.toString(contents) +
+                ", armor=" + Arrays.toString(armor) +
+                ", spawn=" + spawn +
+                ", lobby=" + lobby +
+                ", spawn1=" + spawn1 +
+                ", spawn2=" + spawn2 +
                 '}';
     }
 }

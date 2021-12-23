@@ -3,12 +3,13 @@ package xyz.dysaido.onevsonegame.match.impl;
 import org.bukkit.entity.Player;
 import xyz.dysaido.onevsonegame.OneVSOneGame;
 import xyz.dysaido.onevsonegame.match.BaseMatch;
-import xyz.dysaido.onevsonegame.ring.Ring;
+import xyz.dysaido.onevsonegame.arena.Arena;
+import xyz.dysaido.onevsonegame.match.MatchType;
 
 public class QuadsMatch extends BaseMatch {
 
-    public QuadsMatch(OneVSOneGame plugin, Ring ring) {
-        super("QuadsMatch", plugin, ring);
+    public QuadsMatch(OneVSOneGame plugin, Arena arena) {
+        super(plugin, arena, MatchType.QUADS);
     }
 
     @Override

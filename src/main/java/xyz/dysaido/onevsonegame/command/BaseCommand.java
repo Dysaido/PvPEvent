@@ -1,123 +1,70 @@
 package xyz.dysaido.onevsonegame.command;
 
-import com.google.common.collect.ImmutableList;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.permissions.Permissible;
+import org.bukkit.util.StringUtil;
 import xyz.dysaido.onevsonegame.OneVSOneGame;
 import xyz.dysaido.onevsonegame.util.Format;
-import xyz.dysaido.onevsonegame.util.Logger;
 
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
-public abstract class BaseCommand<P extends JavaPlugin> extends Command {
+public abstract class BaseCommand extends Command {
 
-    protected final P plugin;
-    private final Map<String, SubAdapter> commandsMap = new HashMap<>();
-    private String seeHelpPermission = "";
-    private Map<String, BaseCommand<P>> loadedCommands = new HashMap<>();
-    public static <T extends BaseCommand<?>> T getCommand(Class<T> clazz) {
+    protected final OneVSOneGame plugin;
 
-        return null;
-    }
-
-    public BaseCommand(P plugin, String name, String description, String usage, List<String> aliases) {
-        super(name, Format.colored(description), Format.colored(usage), aliases);
+    public BaseCommand(OneVSOneGame plugin, String name) {
+        super(name);
         this.plugin = plugin;
     }
 
-    public void loadCommands() {
-        Arrays.stream(getClass().getDeclaredClasses()).parallel().filter(SubAdapter.class::isAssignableFrom).forEach(clazz -> {
-            try {
-                registerCommand(clazz.asSubclass(SubAdapter.class).getDeclaredConstructor().newInstance());
-            } catch (ReflectiveOperationException e) {
-                throw new RuntimeException("Cannot load commands");
-            }
-        });
+    public BaseCommand(OneVSOneGame plugin, String name, String description, String usageMessage, List<String> aliases) {
+        super(name, description, usageMessage, aliases);
+        this.plugin = plugin;
+    }
+
+    private static boolean isCommandSender(Permissible permissible) {
+        return permissible instanceof CommandSender;
     }
 
     @Override
     public boolean execute(CommandSender sender, String label, String[] args) {
-        Stream<SubAdapter> stream = commandsMap.values().stream();
-        stream.sorted(Comparator.comparing(SubAdapter::getName)).forEach(adapter -> {
-            if (args.length > 0) {
-                if (args[0].equalsIgnoreCase(adapter.name) || adapter.aliases.contains(args[0])) {
-                    if (sender instanceof Player) {
-                        if (adapter.onlyConsole) {
-                            sender.sendMessage(MESSAGE.ONLY_CONSOLE.format());
-                            return;
-                        }
-                        if (adapter.onlyOp && !sender.isOp()) {
-                            sender.sendMessage(MESSAGE.NO_PERMISSION.format());
-                            return;
-                        }
-                        if (adapter.permission.length() > 0) {
-                            if (!sender.hasPermission(adapter.permission)) {
-                                sender.sendMessage(MESSAGE.NO_PERMISSION.format());
-                                return;
-                            }
-                        }
-                    } else {
-                        if (adapter.onlyPlayer) {
-                            sender.sendMessage(MESSAGE.ONLY_PLAYER.format());
-                            return;
-                        }
-                    }
-                    List<String> list = new ArrayList<>(Arrays.asList(args));
-                    list.remove(0);
-                    adapter.execute(sender, list.toArray(new String[0]));
-                }
-            } else {
-                if (canSeeHelp(sender)) {
-                    sendHelp(adapter, sender);
-                } else {
-                    sender.sendMessage(MESSAGE.NO_PERMISSION.format());
-                }
-            }
-        });
-        return true;
+        if (getPermission() != null && !sender.hasPermission(getPermission())) {
+            sender.sendMessage(Format.colored(getPermissionMessage()));
+            return false;
+        }
+        this.handle(sender, label, args);
+        return false;
     }
 
-    protected static void sendHelp(SubAdapter adapter, CommandSender sender) {
-        String permission = adapter.permission.length() > 0 ? adapter.permission : "none";
-        String description = adapter.description;
-        sender.sendMessage(Format.colored("&7" + adapter.usage + " &f" + description + " &7(&a" + permission + "&7)"));
+    public abstract void handle(CommandSender sender, String label, String[] args);
 
+    protected void sendStaffMessage(String message) {
+        Set<Permissible> subscriptions = Bukkit.getPluginManager().getPermissionSubscriptions("event.broadcast.admin");
+        subscriptions.stream().filter(BaseCommand::isCommandSender).map(CommandSender.class::cast).forEach(sender -> sender.sendMessage(message));
     }
 
     @Override
-    public List<String> tabComplete(CommandSender sender, String alias, String[] args) {
-        if (args.length == 1) {
-            return commandsMap.values()
-                    .parallelStream()
-                    .map(SubAdapter::getName)
-                    .filter(name -> name.toLowerCase(Locale.ROOT).startsWith(args[0].toLowerCase(Locale.ROOT)))
-                    .collect(Collectors.toList());
-        } else if (args.length >= 2) {
-            return super.tabComplete(sender, alias, args);
+    public List<String> tabComplete(CommandSender sender, String alias, String[] args) throws IllegalArgumentException {
+        Player player = sender instanceof Player ? (Player) sender : null;
+        ArrayList<String> list = new ArrayList<>();
+        for (Player player1 : sender.getServer().getOnlinePlayers()) {
+            String name = player1.getName();
+            if (player == null || player.canSee(player1)) {
+                if (args.length != 0) {
+                    if (StringUtil.startsWithIgnoreCase(name, args[args.length - 1])) {
+                        list.add(name);
+                    }
+                }
+            }
         }
-        return ImmutableList.of();
-    }
-
-    public void registerCommand(SubAdapter command) {
-        Logger.information("BaseCommand", "Loaded command : " + command.getName());
-        commandsMap.put(command.getName(), command);
-    }
-
-    public void unregisterCommand(SubAdapter command) {
-        commandsMap.remove(command.getName());
-    }
-
-    public void setSeeHelpPermission(String permission) {
-        this.seeHelpPermission = permission;
-    }
-
-    public boolean canSeeHelp(CommandSender sender) {
-        return !seeHelpPermission.isEmpty() && sender.hasPermission(seeHelpPermission);
+        list.sort(String.CASE_INSENSITIVE_ORDER);
+        return list;
     }
 
     public enum MESSAGE {
@@ -136,68 +83,4 @@ public abstract class BaseCommand<P extends JavaPlugin> extends Command {
         }
 
     }
-
-    protected abstract static class SubAdapter {
-        protected final OneVSOneGame plugin = JavaPlugin.getPlugin(OneVSOneGame.class);
-        private final String name;
-        private final String usage;
-        private final String permission;
-        private final List<String> aliases;
-        private String description;
-        private final boolean onlyPlayer;
-        private final boolean onlyConsole;
-        private final boolean onlyOp;
-
-        public SubAdapter() {
-            if (getClass().isAnnotationPresent(SubCommand.class)) {
-                SubCommand subCommand = getClass().getAnnotation(SubCommand.class);
-                name = subCommand.name();
-                usage = subCommand.usage();
-                permission = subCommand.permission();
-                aliases = Arrays.asList(subCommand.aliases());
-                description = subCommand.description();
-                onlyPlayer = subCommand.onlyPlayer();
-                onlyConsole = subCommand.onlyConsole();
-                onlyOp = subCommand.onlyOp();
-            } else {
-                throw new RuntimeException("You must to add SubCommand.class annotation");
-            }
-
-        }
-
-        protected abstract void execute(CommandSender sender, String[] args);
-
-        public String getName() {
-            return name;
-        }
-
-        public String getUsage() {
-            return usage;
-        }
-
-        public String getPermission() {
-            return permission;
-        }
-
-        public List<String> getAliases() {
-            return aliases;
-        }
-
-        public void setDescription(String description) {
-            this.description = description;
-        }
-
-        public String getDescription() {
-            return description;
-        }
-
-        public boolean isOnlyPlayer() {
-            return onlyPlayer;
-        }
-
-        public boolean isOnlyConsole() {
-            return onlyConsole;
-        }
-    }
-
 }

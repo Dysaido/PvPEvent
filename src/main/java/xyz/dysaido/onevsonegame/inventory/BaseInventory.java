@@ -31,6 +31,7 @@ public class BaseInventory implements InventoryHolder {
         this.row = row;
     }
 
+    @SuppressWarnings("unchecked")
     public static <Param extends BaseInventory> Param getCurrent(Player player) {
         Objects.requireNonNull(player);
         InventoryView view = player.getOpenInventory();

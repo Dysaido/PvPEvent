@@ -1,24 +1,21 @@
 package xyz.dysaido.onevsonegame.match.impl;
 
-import org.bukkit.Bukkit;
 import xyz.dysaido.onevsonegame.OneVSOneGame;
-import xyz.dysaido.onevsonegame.event.SoloGameNextRoundEvent;
-import xyz.dysaido.onevsonegame.event.SoloGamePlayerWinEvent;
 import xyz.dysaido.onevsonegame.match.BaseMatch;
 import xyz.dysaido.onevsonegame.match.MatchState;
+import xyz.dysaido.onevsonegame.match.MatchType;
 import xyz.dysaido.onevsonegame.match.model.MatchPlayer;
 import xyz.dysaido.onevsonegame.match.model.PlayerState;
-import xyz.dysaido.onevsonegame.ring.Ring;
+import xyz.dysaido.onevsonegame.arena.Arena;
 import xyz.dysaido.onevsonegame.setting.Settings;
 import xyz.dysaido.onevsonegame.util.Format;
-import xyz.dysaido.onevsonegame.util.Pair;
 
 import java.util.Optional;
 
 public class SolosMatch extends BaseMatch {
 
-    public SolosMatch(OneVSOneGame plugin, Ring ring) {
-        super("SoloMatch", plugin, ring);
+    public SolosMatch(OneVSOneGame plugin, Arena arena) {
+        super(plugin, arena, MatchType.SOLOS);
     }
 
     @Override
@@ -46,15 +43,15 @@ public class SolosMatch extends BaseMatch {
                 break;
             case FIGHTING:
                 if (shouldNextRound()) {
-                    Optional<MatchPlayer> matchPlayer = queue.getPlayersByState(PlayerState.FIGHT).stream().findFirst();
-                    matchPlayer.ifPresent(internal -> internal.reset(ring.getLobby(), PlayerState.QUEUE));
+                    Optional<MatchPlayer> matchPlayer = queue.getFighters().stream().findFirst();
+                    matchPlayer.ifPresent(internal -> internal.reset(arena.getLobby(), false));
                     nextRound();
-                } else if (queue.getPlayersByState(PlayerState.QUEUE).size() == 0 && !hasFighting()) {
-                    Optional<MatchPlayer> matchPlayer = queue.getPlayersByState(PlayerState.FIGHT).stream().findFirst();
+                } else if (queue.getPendingQueue().size() == 0 && !hasFighting()) {
+                    Optional<MatchPlayer> matchPlayer = queue.getFighters().stream().findFirst();
                     matchPlayer.ifPresent(internal -> {
-                        Bukkit.getServer().getPluginManager().callEvent(new SoloGamePlayerWinEvent(this, internal));
                         Format.broadcast(Settings.EVENT_WINNER_MESSAGE.replace("{player}", internal.getPlayer().getName()));
-                        internal.reset(ring.getWorldSpawn(), PlayerState.WINNER);
+                        internal.reset(arena.getWorldSpawn(), false);
+                        internal.setState(PlayerState.WINNER);
                     });
                     if (shouldEnd()) {
                         state = MatchState.ENDING;
@@ -66,14 +63,14 @@ public class SolosMatch extends BaseMatch {
                 ending--;
                 if (ending == 0) {
                     Format.broadcast(Settings.EVENT_ENDED_MESSAGE);
-                    queue.getPlayersByState(PlayerState.SPECTATOR).stream().map(MatchPlayer::getPlayer).forEach(player -> {
-                        player.teleport(ring.getWorldSpawn());
+                    queue.getPendingQueue().forEach(player -> {
+                        player.reset(arena.getWorldSpawn(), false);
                     });
                     state = MatchState.END;
                 }
                 break;
             default:
-                plugin.getMatchManager().destroy();
+                plugin.getMatchHandler().destroy();
         }
     }
 
@@ -81,30 +78,35 @@ public class SolosMatch extends BaseMatch {
     public void nextRound() {
         this.round++;
         String text = Settings.NEXT_ROUND;
-        Pair<MatchPlayer, MatchPlayer> opponents = this.queue.randomizedSolosOpponents();
-        Bukkit.getServer().getPluginManager().callEvent(new SoloGameNextRoundEvent(this, opponents));
-        MatchPlayer damager = opponents.getKey();
-        MatchPlayer victim = opponents.getValue();
+
+        MatchPlayer damager = queue.pull();
+        MatchPlayer victim = queue.pull();
+
         text = text.replace("{player1}", damager.getName());
         text = text.replace("{player2}", victim.getName());
         text = text.replace("{round}", String.valueOf(round));
-        queue.addFight(damager).setup(ring.getSpawn1());
-        queue.addFight(victim).setup(ring.getSpawn2());
+
+        damager.setup(arena.getSpawn1());
+        victim.setup(arena.getSpawn2());
+
+        queue.addFighter(damager);
+        queue.addFighter(victim);
+
         Format.broadcast(text);
     }
 
     @Override
     public boolean hasFighting() {
-        return queue.getPlayersByState(PlayerState.FIGHT).size() == 2;
+        return queue.getFightersByState(PlayerState.FIGHT).size() == 2;
     }
 
     @Override
     public boolean shouldNextRound() {
-        return queue.getPlayersByState(PlayerState.FIGHT).size() <= 1 && super.shouldNextRound();
+        return queue.getFighters().size() <= 1 && super.shouldNextRound();
     }
 
     @Override
     public boolean shouldEnd() {
-        return queue.getPlayersByState(PlayerState.WINNER).size() == 1 || queue.getMatchPlayers().size() <= 1;
+        return queue.getFightersByState(PlayerState.WINNER).size() == 1 || queue.getPendingQueue().size() + queue.getFighters().size() <= 1;
     }
 }
