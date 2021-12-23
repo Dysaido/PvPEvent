@@ -62,6 +62,9 @@ public class Settings {
     @Config.Options(path = "settings.bool", name = "inventory-freeze")
     public static boolean INVENTORY_FREEZE = false;
 
+    @Config.Options(path = "command.permission", name = "events")
+    public static String COMMAND_EDITOR_PERMISSION = "event.command.editor";
+
     @Config.Options(path = "command.help", name = "event")
     public static List<String> COMMAND_HELP_EVENT = Collections.singletonList("\n" +
             "&6&lEvent Commands\n" +

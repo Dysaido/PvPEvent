@@ -52,6 +52,8 @@ public class EventCommand extends BaseCommand {
                         sender.sendMessage(MESSAGE.ONLY_PLAYER.format());
                     }
                     break;
+                default:
+                    sendHelp(sender);
             }
         } else {
             sendHelp(sender);

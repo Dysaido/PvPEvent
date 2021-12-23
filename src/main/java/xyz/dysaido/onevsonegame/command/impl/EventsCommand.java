@@ -39,7 +39,7 @@ public class EventsCommand extends BaseCommand {
 
     public EventsCommand(OneVSOneGame plugin) {
         super(plugin, "events");
-        setPermission("event.command.editor");
+        setPermission(Settings.COMMAND_EDITOR_PERMISSION);
         setPermissionMessage(MESSAGE.NO_PERMISSION.format());
     }
 
@@ -63,6 +63,8 @@ public class EventsCommand extends BaseCommand {
                     if (sender instanceof Player) {
                         Player player = (Player) sender;
                         MenuManager.getInstance().getMainMenu().open(player);
+                    } else {
+                        sender.sendMessage(MESSAGE.ONLY_PLAYER.format());
                     }
                     break;
                 case "reload":
@@ -78,6 +80,8 @@ public class EventsCommand extends BaseCommand {
                         } else {
                             sendHelp(sender);
                         }
+                    } else {
+                        sender.sendMessage(MESSAGE.ONLY_PLAYER.format());
                     }
                     break;
                 case "lobby":
@@ -89,6 +93,8 @@ public class EventsCommand extends BaseCommand {
                             arenaCache.setLobby(player.getLocation());
                             player.sendMessage("Lobby");
                         }
+                    } else {
+                        sender.sendMessage(MESSAGE.ONLY_PLAYER.format());
                     }
                     break;
                 case "spawn":
@@ -100,6 +106,8 @@ public class EventsCommand extends BaseCommand {
                             arenaCache.setSpawn(player.getLocation());
                             player.sendMessage("Spawn");
                         }
+                    } else {
+                        sender.sendMessage(MESSAGE.ONLY_PLAYER.format());
                     }
                     break;
                 case "spawn1":
@@ -111,6 +119,8 @@ public class EventsCommand extends BaseCommand {
                             arenaCache.setSpawn1(player.getLocation());
                             player.sendMessage("Spawn1");
                         }
+                    } else {
+                        sender.sendMessage(MESSAGE.ONLY_PLAYER.format());
                     }
                     break;
                 case "spawn2":
@@ -122,6 +132,8 @@ public class EventsCommand extends BaseCommand {
                             arenaCache.setSpawn2(player.getLocation());
                             player.sendMessage("Spawn2");
                         }
+                    } else {
+                        sender.sendMessage(MESSAGE.ONLY_PLAYER.format());
                     }
                     break;
                 case "inventory":
@@ -135,6 +147,8 @@ public class EventsCommand extends BaseCommand {
                             arenaCache.setArmor(inventory.getArmorContents());
                             player.sendMessage("Inventory");
                         }
+                    } else {
+                        sender.sendMessage(MESSAGE.ONLY_PLAYER.format());
                     }
                     break;
                 case "save":
@@ -147,6 +161,8 @@ public class EventsCommand extends BaseCommand {
                             arenaCache = null;
                             player.sendMessage("Save");
                         }
+                    } else {
+                        sender.sendMessage(MESSAGE.ONLY_PLAYER.format());
                     }
                     break;
                 case "host":
@@ -167,6 +183,8 @@ public class EventsCommand extends BaseCommand {
                         sendHelp(sender);
                     }
                     break;
+                default:
+                    sendHelp(sender);
             }
         } else {
             sendHelp(sender);
