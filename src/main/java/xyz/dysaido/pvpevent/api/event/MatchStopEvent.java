@@ -1,17 +1,17 @@
-package xyz.dysaido.onevsonegame.api;
+package xyz.dysaido.pvpevent.api;
 
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
-import xyz.dysaido.onevsonegame.match.BaseMatch;
+import xyz.dysaido.pvpevent.match.BaseMatch;
 
-public class MatchStartEvent extends Event implements Cancellable {
+public class MatchStopEvent extends Event implements Cancellable {
 
     private static final HandlerList HANDLER_LIST = new HandlerList();
     private final BaseMatch match;
     private boolean cancel;
 
-    public MatchStartEvent(BaseMatch match) {
+    public MatchStopEvent(BaseMatch match) {
         this.match = match;
     }
 

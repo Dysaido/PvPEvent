@@ -1,22 +1,18 @@
-package xyz.dysaido.onevsonegame.api;
+package xyz.dysaido.pvpevent.api;
 
-import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
-import xyz.dysaido.onevsonegame.match.BaseMatch;
+import xyz.dysaido.pvpevent.match.BaseMatch;
 
-public class MatchLeaveEvent extends Event implements Cancellable {
+public class MatchStartEvent extends Event implements Cancellable {
 
     private static final HandlerList HANDLER_LIST = new HandlerList();
     private final BaseMatch match;
-    private final Player player;
-    private boolean duringFight;
     private boolean cancel;
 
-    public MatchLeaveEvent(BaseMatch match, Player player) {
+    public MatchStartEvent(BaseMatch match) {
         this.match = match;
-        this.player = player;
     }
 
     public static HandlerList getHandlerList() {
@@ -42,15 +38,4 @@ public class MatchLeaveEvent extends Event implements Cancellable {
         return match;
     }
 
-    public Player getPlayer() {
-        return player;
-    }
-
-    public boolean isDuringFight() {
-        return duringFight;
-    }
-
-    public void setDuringFight(boolean duringFight) {
-        this.duringFight = duringFight;
-    }
 }
