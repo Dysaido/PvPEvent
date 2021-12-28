@@ -1,4 +1,4 @@
-package xyz.dysaido.onevsonegame.command;
+package xyz.dysaido.pvpevent.command;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -7,8 +7,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permissible;
 import org.bukkit.util.StringUtil;
-import xyz.dysaido.onevsonegame.OneVSOneGame;
-import xyz.dysaido.onevsonegame.util.Format;
+import xyz.dysaido.pvpevent.PvPEvent;
+import xyz.dysaido.pvpevent.util.Format;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,14 +16,14 @@ import java.util.Set;
 
 public abstract class BaseCommand extends Command {
 
-    protected final OneVSOneGame plugin;
+    protected final PvPEvent plugin;
 
-    public BaseCommand(OneVSOneGame plugin, String name) {
+    public BaseCommand(PvPEvent plugin, String name) {
         super(name);
         this.plugin = plugin;
     }
 
-    public BaseCommand(OneVSOneGame plugin, String name, String description, String usageMessage, List<String> aliases) {
+    public BaseCommand(PvPEvent plugin, String name, String description, String usageMessage, List<String> aliases) {
         super(name, description, usageMessage, aliases);
         this.plugin = plugin;
     }

@@ -5,12 +5,12 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>xyz.dysaido</groupId>
-    <artifactId>OneVSOneGame</artifactId>
+    <artifactId>PvPEvent</artifactId>
 <!--    <version>1.0.6-SNAPSHOT</version>-->
-    <version>1.0.6-pre4</version>
+    <version>1.0.6-pre5</version>
     <packaging>jar</packaging>
 
-    <name>OneVSOneGame</name>
+    <name>PvPEvent</name>
 
     <description>This is a game plugin for your server. You can make some arena and in those the players play an 1v1
         game.

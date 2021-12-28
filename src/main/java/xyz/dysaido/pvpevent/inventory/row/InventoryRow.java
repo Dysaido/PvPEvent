@@ -1,6 +1,6 @@
-package xyz.dysaido.onevsonegame.inventory.row;
+package xyz.dysaido.pvpevent.inventory.row;
 
-import xyz.dysaido.onevsonegame.inventory.BaseInventory;
+import xyz.dysaido.pvpevent.inventory.BaseInventory;
 
 import java.util.function.BiFunction;
 

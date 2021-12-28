@@ -1,4 +1,4 @@
-package xyz.dysaido.onevsonegame.util;
+package xyz.dysaido.pvpevent.util;
 
 import com.google.common.base.Charsets;
 import org.bukkit.configuration.file.FileConfiguration;

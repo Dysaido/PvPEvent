@@ -1,4 +1,4 @@
-package xyz.dysaido.onevsonegame.inventory;
+package xyz.dysaido.pvpevent.inventory;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -8,9 +8,9 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.InventoryView;
-import xyz.dysaido.onevsonegame.inventory.button.Button;
-import xyz.dysaido.onevsonegame.util.ItemBuilder;
-import xyz.dysaido.onevsonegame.util.Logger;
+import xyz.dysaido.pvpevent.inventory.button.Button;
+import xyz.dysaido.pvpevent.util.ItemBuilder;
+import xyz.dysaido.pvpevent.util.Logger;
 
 import java.util.HashMap;
 import java.util.Map;

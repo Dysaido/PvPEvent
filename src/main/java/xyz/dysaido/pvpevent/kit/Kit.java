@@ -1,4 +1,4 @@
-package xyz.dysaido.onevsonegame.kit;
+package xyz.dysaido.pvpevent.kit;
 
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;

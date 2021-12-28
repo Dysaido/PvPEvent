@@ -1,4 +1,4 @@
-package xyz.dysaido.onevsonegame.util;
+package xyz.dysaido.pvpevent.util;
 
 public enum ServerVersion {
     v1_7_R4,

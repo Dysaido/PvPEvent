@@ -1,19 +1,19 @@
-package xyz.dysaido.onevsonegame.menu;
+package xyz.dysaido.pvpevent.menu;
 
-import xyz.dysaido.onevsonegame.OneVSOneGame;
-import xyz.dysaido.onevsonegame.inventory.BaseInventory;
-import xyz.dysaido.onevsonegame.inventory.button.Button;
-import xyz.dysaido.onevsonegame.inventory.row.InventoryRow;
-import xyz.dysaido.onevsonegame.arena.ArenaManager;
-import xyz.dysaido.onevsonegame.util.Format;
-import xyz.dysaido.onevsonegame.util.ItemBuilder;
-import xyz.dysaido.onevsonegame.util.Materials;
+import xyz.dysaido.pvpevent.PvPEvent;
+import xyz.dysaido.pvpevent.inventory.BaseInventory;
+import xyz.dysaido.pvpevent.inventory.button.Button;
+import xyz.dysaido.pvpevent.inventory.row.InventoryRow;
+import xyz.dysaido.pvpevent.arena.ArenaManager;
+import xyz.dysaido.pvpevent.util.Format;
+import xyz.dysaido.pvpevent.util.ItemBuilder;
+import xyz.dysaido.pvpevent.util.Materials;
 
 public class MenuManager {
 
     private final BaseInventory mainMenu;
     private final BaseInventory eventsMenu;
-    private final OneVSOneGame plugin = OneVSOneGame.getInstance();
+    private final PvPEvent plugin = PvPEvent.getInstance();
     private volatile boolean loaded = false;
 
     private static MenuManager instance;

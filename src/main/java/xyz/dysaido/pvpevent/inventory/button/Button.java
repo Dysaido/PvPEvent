@@ -1,7 +1,7 @@
-package xyz.dysaido.onevsonegame.inventory.button;
+package xyz.dysaido.pvpevent.inventory.button;
 
 import org.bukkit.entity.Player;
-import xyz.dysaido.onevsonegame.util.ItemBuilder;
+import xyz.dysaido.pvpevent.util.ItemBuilder;
 
 import java.util.Objects;
 import java.util.function.Consumer;

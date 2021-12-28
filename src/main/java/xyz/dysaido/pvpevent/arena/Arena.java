@@ -1,7 +1,7 @@
-package xyz.dysaido.onevsonegame.arena;
+package xyz.dysaido.pvpevent.arena;
 
 import org.bukkit.Location;
-import xyz.dysaido.onevsonegame.kit.Kit;
+import xyz.dysaido.pvpevent.kit.Kit;
 
 public class Arena {
     private final String name;

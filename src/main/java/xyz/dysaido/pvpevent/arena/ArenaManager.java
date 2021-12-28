@@ -1,11 +1,11 @@
-package xyz.dysaido.onevsonegame.arena;
+package xyz.dysaido.pvpevent.arena;
 
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.inventory.ItemStack;
-import xyz.dysaido.onevsonegame.util.FileManager;
-import xyz.dysaido.onevsonegame.util.LocationSerializer;
-import xyz.dysaido.onevsonegame.util.Logger;
+import xyz.dysaido.pvpevent.util.FileManager;
+import xyz.dysaido.pvpevent.util.LocationSerializer;
+import xyz.dysaido.pvpevent.util.Logger;
 
 import java.util.Collection;
 import java.util.HashMap;

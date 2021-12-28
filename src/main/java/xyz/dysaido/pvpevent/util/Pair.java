@@ -1,4 +1,4 @@
-package xyz.dysaido.onevsonegame.util;
+package xyz.dysaido.pvpevent.util;
 
 public class Pair<K, V> {
 

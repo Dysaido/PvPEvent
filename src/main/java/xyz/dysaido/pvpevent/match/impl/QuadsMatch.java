@@ -1,14 +1,14 @@
-package xyz.dysaido.onevsonegame.match.impl;
+package xyz.dysaido.pvpevent.match.impl;
 
 import org.bukkit.entity.Player;
-import xyz.dysaido.onevsonegame.OneVSOneGame;
-import xyz.dysaido.onevsonegame.match.BaseMatch;
-import xyz.dysaido.onevsonegame.arena.Arena;
-import xyz.dysaido.onevsonegame.match.MatchType;
+import xyz.dysaido.pvpevent.PvPEvent;
+import xyz.dysaido.pvpevent.match.BaseMatch;
+import xyz.dysaido.pvpevent.arena.Arena;
+import xyz.dysaido.pvpevent.match.MatchType;
 
 public class QuadsMatch extends BaseMatch {
 
-    public QuadsMatch(OneVSOneGame plugin, Arena arena) {
+    public QuadsMatch(PvPEvent plugin, Arena arena) {
         super(plugin, arena, MatchType.QUADS);
     }
 

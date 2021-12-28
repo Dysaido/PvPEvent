@@ -1,8 +1,8 @@
-package xyz.dysaido.onevsonegame.util;
+package xyz.dysaido.pvpevent.util;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import xyz.dysaido.onevsonegame.setting.Settings;
+import xyz.dysaido.pvpevent.setting.Settings;
 
 public final class Logger {
     private final static int DEBUG = 0;

@@ -1,4 +1,4 @@
-package xyz.dysaido.pvpevent.api;
+package xyz.dysaido.pvpevent.api.event;
 
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;

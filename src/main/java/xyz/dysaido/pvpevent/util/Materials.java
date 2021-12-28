@@ -1,7 +1,7 @@
-package xyz.dysaido.onevsonegame.util;
+package xyz.dysaido.pvpevent.util;
 
 import org.bukkit.Material;
-import xyz.dysaido.onevsonegame.OneVSOneGame;
+import xyz.dysaido.pvpevent.PvPEvent;
 
 import java.util.Arrays;
 import java.util.Objects;
@@ -23,7 +23,7 @@ public class Materials {
 
     private static Material get(String name) {
         Material material;
-        if (OneVSOneGame.getInstance().getServerVersion().afterEquals(ServerVersion.v1_13_R1) && (material = Material.getMaterial("LEGACY_" + name)) != null) {
+        if (PvPEvent.getInstance().getServerVersion().afterEquals(ServerVersion.v1_13_R1) && (material = Material.getMaterial("LEGACY_" + name)) != null) {
             return material;
         }
         return Material.getMaterial(name);

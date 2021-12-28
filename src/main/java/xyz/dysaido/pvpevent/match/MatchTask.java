@@ -1,16 +1,16 @@
-package xyz.dysaido.onevsonegame.match;
+package xyz.dysaido.pvpevent.match;
 
 import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitTask;
-import xyz.dysaido.onevsonegame.OneVSOneGame;
+import xyz.dysaido.pvpevent.PvPEvent;
 
 public abstract class MatchTask {
 
     private final String name;
-    protected final OneVSOneGame plugin;
+    protected final PvPEvent plugin;
     private BukkitTask task;
 
-    public MatchTask(String name, OneVSOneGame plugin) {
+    public MatchTask(String name, PvPEvent plugin) {
         this.name = name;
         this.plugin = plugin;
     }

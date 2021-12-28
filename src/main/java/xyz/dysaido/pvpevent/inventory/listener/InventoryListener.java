@@ -1,10 +1,10 @@
-package xyz.dysaido.onevsonegame.inventory.listener;
+package xyz.dysaido.pvpevent.inventory.listener;
 
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
-import xyz.dysaido.onevsonegame.inventory.BaseInventory;
+import xyz.dysaido.pvpevent.inventory.BaseInventory;
 
 public class InventoryListener implements Listener {
 

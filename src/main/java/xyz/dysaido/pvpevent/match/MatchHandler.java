@@ -1,19 +1,19 @@
-package xyz.dysaido.onevsonegame.match;
+package xyz.dysaido.pvpevent.match;
 
 import org.bukkit.Bukkit;
-import xyz.dysaido.onevsonegame.OneVSOneGame;
-import xyz.dysaido.onevsonegame.api.MatchStartEvent;
-import xyz.dysaido.onevsonegame.api.MatchStopEvent;
-import xyz.dysaido.onevsonegame.arena.Arena;
+import xyz.dysaido.pvpevent.PvPEvent;
+import xyz.dysaido.pvpevent.api.event.MatchStartEvent;
+import xyz.dysaido.pvpevent.api.event.MatchStopEvent;
+import xyz.dysaido.pvpevent.arena.Arena;
 
 import java.util.Optional;
 
 public class MatchHandler {
 
-    private final OneVSOneGame plugin;
+    private final PvPEvent plugin;
     private BaseMatch match;
 
-    public MatchHandler(OneVSOneGame plugin) {
+    public MatchHandler(PvPEvent plugin) {
         this.plugin = plugin;
     }
 

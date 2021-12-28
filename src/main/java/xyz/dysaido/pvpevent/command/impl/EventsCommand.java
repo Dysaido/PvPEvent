@@ -1,21 +1,21 @@
-package xyz.dysaido.onevsonegame.command.impl;
+package xyz.dysaido.pvpevent.command.impl;
 
 import com.google.common.collect.ImmutableList;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.util.StringUtil;
-import xyz.dysaido.onevsonegame.OneVSOneGame;
-import xyz.dysaido.onevsonegame.arena.Arena;
-import xyz.dysaido.onevsonegame.arena.ArenaManager;
-import xyz.dysaido.onevsonegame.command.BaseCommand;
-import xyz.dysaido.onevsonegame.match.MatchHandler;
-import xyz.dysaido.onevsonegame.match.MatchState;
-import xyz.dysaido.onevsonegame.match.MatchType;
-import xyz.dysaido.onevsonegame.menu.MenuManager;
-import xyz.dysaido.onevsonegame.arena.ArenaCache;
-import xyz.dysaido.onevsonegame.setting.Settings;
-import xyz.dysaido.onevsonegame.util.Format;
+import xyz.dysaido.pvpevent.PvPEvent;
+import xyz.dysaido.pvpevent.arena.Arena;
+import xyz.dysaido.pvpevent.arena.ArenaManager;
+import xyz.dysaido.pvpevent.command.BaseCommand;
+import xyz.dysaido.pvpevent.match.MatchHandler;
+import xyz.dysaido.pvpevent.match.MatchState;
+import xyz.dysaido.pvpevent.match.MatchType;
+import xyz.dysaido.pvpevent.menu.MenuManager;
+import xyz.dysaido.pvpevent.arena.ArenaCache;
+import xyz.dysaido.pvpevent.setting.Settings;
+import xyz.dysaido.pvpevent.util.Format;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -38,7 +38,7 @@ public class EventsCommand extends BaseCommand {
             "host"
     );
 
-    public EventsCommand(OneVSOneGame plugin) {
+    public EventsCommand(PvPEvent plugin) {
         super(plugin, "events");
         setPermission(Settings.COMMAND_EDITOR_PERMISSION);
         setPermissionMessage(MESSAGE.NO_PERMISSION.format());

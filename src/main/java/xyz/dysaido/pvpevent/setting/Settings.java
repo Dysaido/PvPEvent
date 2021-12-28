@@ -1,4 +1,6 @@
-package xyz.dysaido.onevsonegame.setting;
+package xyz.dysaido.pvpevent.setting;
+
+import xyz.dysaido.pvpevent.api.config.Config;
 
 import java.util.Collections;
 import java.util.List;
@@ -47,8 +49,8 @@ public class Settings {
     @Config.Options(path = "settings.count", name = "waiting")
     public static int WAITING = 30;
 
-    @Config.Options(path = "settings.count.waiting", name = "modulo")
-    public static int WAITING_MODULO = 5;
+    @Config.Options(path = "settings.count", name = "waiting-modulo")
+    public static int WAITING_MODULO = 2;
 
     @Config.Options(path = "settings.count", name = "starting")
     public static int STARTING = 5;

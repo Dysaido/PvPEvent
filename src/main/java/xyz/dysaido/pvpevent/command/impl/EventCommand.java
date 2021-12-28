@@ -1,14 +1,14 @@
-package xyz.dysaido.onevsonegame.command.impl;
+package xyz.dysaido.pvpevent.command.impl;
 
 import com.google.common.collect.ImmutableList;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.util.StringUtil;
-import xyz.dysaido.onevsonegame.OneVSOneGame;
-import xyz.dysaido.onevsonegame.command.BaseCommand;
-import xyz.dysaido.onevsonegame.match.BaseMatch;
-import xyz.dysaido.onevsonegame.setting.Settings;
-import xyz.dysaido.onevsonegame.util.Format;
+import xyz.dysaido.pvpevent.PvPEvent;
+import xyz.dysaido.pvpevent.command.BaseCommand;
+import xyz.dysaido.pvpevent.match.BaseMatch;
+import xyz.dysaido.pvpevent.setting.Settings;
+import xyz.dysaido.pvpevent.util.Format;
 
 import java.util.*;
 
@@ -16,7 +16,7 @@ public class EventCommand extends BaseCommand {
 
     private final List<String> arguments = Arrays.asList("join", "leave");
 
-    public EventCommand(OneVSOneGame plugin) {
+    public EventCommand(PvPEvent plugin) {
         super(plugin, "event");
     }
 

@@ -1,4 +1,4 @@
-package xyz.dysaido.pvpevent.setting;
+package xyz.dysaido.pvpevent.api.config;
 
 import org.bukkit.plugin.java.JavaPlugin;
 import xyz.dysaido.pvpevent.util.Logger;

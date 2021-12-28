@@ -1,125 +1,83 @@
-package xyz.dysaido.onevsonegame.match;
+package xyz.dysaido.pvpevent.match;
 
 import org.bukkit.entity.Player;
-import xyz.dysaido.onevsonegame.match.model.MatchPlayer;
-import xyz.dysaido.onevsonegame.match.model.PlayerState;
+import xyz.dysaido.pvpevent.match.model.Participant;
+import xyz.dysaido.pvpevent.util.Pair;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Random;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-public class MatchQueue<P extends MatchPlayer> {
-    private final Queue<P> pendingQueue;
-    private final Set<P> fighters;
+import static xyz.dysaido.pvpevent.match.model.Participant.State;
 
+public class MatchQueue<P extends Participant> {
+    private final List<P> participants = new CopyOnWriteArrayList<>();
+    private final Random random = new Random();
     public MatchQueue(BaseMatch match) {
-        this.pendingQueue = new LinkedList<>();
-        int size = 0;
-        switch (match.type) {
-            case SOLOS:
-                size = 2;
-                break;
-            case DUOS:
-                size = 4;
-                break;
-            case QUADS:
-                size = 8;
-                break;
-        }
-        this.fighters = new HashSet<>(size);
+//        this.pendingQueue = new LinkedList<>();
+//        int size = 0;
+//        switch (match.type) {
+//            case SOLOS:
+//                size = 2;
+//                break;
+//            case DUOS:
+//                size = 4;
+//                break;
+//            case QUADS:
+//                size = 8;
+//                break;
+//        }
+//        this.fighters = new HashSet<>(size);
     }
 
-    public void addQueue(P player) {
+    public void addParticipant(P participant) {
+        Objects.requireNonNull(participant);
+        participant.setState(State.QUEUE);
+        if (contains(participant.getPlayer())) return;
+        this.participants.add(participant);
+    }
+
+    public void removeParticipant(P participant) {
+        Objects.requireNonNull(participant);
+        participant.setState(null);
+        this.participants.remove(participant);
+    }
+
+    public Pair<P, P> randomizedSolosOpponents() {
+        AtomicInteger atomicInteger = new AtomicInteger(0);
+        Map<Integer, P> queues = getParticipantsByState(State.QUEUE)
+                .collect(Collectors.toMap(x -> atomicInteger.getAndIncrement(), Function.identity()));
+        P p1, p2;
+        do {
+            p1 = queues.get(random.nextInt(queues.size()));
+            p2 = queues.get(random.nextInt(queues.size()));
+        } while (p1 == p2);
+        return new Pair<>(p1, p2);
+    }
+
+    public boolean contains(Player player) {
         Objects.requireNonNull(player);
-        synchronized (this.pendingQueue) {
-            player.setState(PlayerState.QUEUE);
-            if (containsQueue(player.getPlayer())) return;
-            this.pendingQueue.add(player);
-        }
+        return participants.stream().map(Participant::getPlayer).anyMatch(internal -> internal.equals(player));
     }
 
-    public void offerQueue(P player) {
-        Objects.requireNonNull(player);
-        synchronized (this.pendingQueue) {
-            player.setState(PlayerState.QUEUE);
-            if (containsQueue(player.getPlayer())) return;
-            this.pendingQueue.offer(player);
-        }
-    }
-
-    public void removeQueue(P player) {
-        Objects.requireNonNull(player);
-        synchronized (this.pendingQueue) {
-            player.setState(null);
-            this.pendingQueue.remove(player);
-        }
-    }
-
-    public void addFighter(P player) {
-        Objects.requireNonNull(player);
-        synchronized (this.fighters) {
-            player.setState(PlayerState.FIGHT);
-            this.fighters.add(player);
-        }
-    }
-
-    public void removeFighter(P player) {
-        Objects.requireNonNull(player);
-        synchronized (this.fighters) {
-            player.setState(null);
-            this.fighters.remove(player);
-        }
-    }
-
-    public P pull() {
-        synchronized (this.pendingQueue) {
-            if (!this.pendingQueue.isEmpty()) {
-                return this.pendingQueue.remove();
-            } else {
-                return null;
-            }
-        }
-    }
-
-    public boolean containsQueue(Player player) {
-        Objects.requireNonNull(player);
-        synchronized (this.pendingQueue) {
-            return pendingQueue.stream().map(MatchPlayer::getPlayer).anyMatch(internal -> internal.equals(player));
-        }
-    }
-
-    public boolean containsFighter(Player player) {
-        Objects.requireNonNull(player);
-        synchronized (this.fighters) {
-            return fighters.stream().map(MatchPlayer::getPlayer).anyMatch(internal -> internal.equals(player));
-        }
-    }
-
-    public P findQueueByName(String name) {
+    public P findParticipantByName(String name) {
         Objects.requireNonNull(name);
-        synchronized (this.pendingQueue) {
-            return this.pendingQueue.stream().filter(p -> p.getName().equals(name)).findFirst().orElse(null);
-        }
+        return this.participants.stream().filter(p -> p.getName().equals(name)).findFirst().orElse(null);
     }
 
-    public P findFighterByName(String name) {
-        Objects.requireNonNull(name);
-        synchronized (this.fighters) {
-            return this.fighters.stream().filter(p -> p.getName().equals(name)).findFirst().orElse(null);
-        }
-    }
-
-    public List<MatchPlayer> getFightersByState(PlayerState state) {
+    public Stream<P> getParticipantsByState(State state) {
         Objects.requireNonNull(state);
-        synchronized (this.fighters) {
-            return this.fighters.stream().filter(player -> player.getState().equals(state)).collect(Collectors.toList());
-        }
+        return this.participants.stream().filter(player -> player.getState().equals(state));
     }
 
-    public Queue<P> getPendingQueue() {
-        return pendingQueue;
+    public List<P> getParticipants() {
+        return participants;
     }
 
-    public Set<P> getFighters() {
-        return fighters;
-    }
 }

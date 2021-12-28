@@ -1,39 +1,32 @@
-package xyz.dysaido.onevsonegame;
+package xyz.dysaido.pvpevent;
 
 import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.plugin.java.JavaPlugin;
-import xyz.dysaido.onevsonegame.command.CommandDispatcher;
-import xyz.dysaido.onevsonegame.inventory.listener.InventoryListener;
-import xyz.dysaido.onevsonegame.listener.MatchListener;
-import xyz.dysaido.onevsonegame.match.MatchHandler;
-import xyz.dysaido.onevsonegame.arena.ArenaManager;
-import xyz.dysaido.onevsonegame.setting.Config;
-import xyz.dysaido.onevsonegame.setting.Settings;
-import xyz.dysaido.onevsonegame.util.FileManager;
-import xyz.dysaido.onevsonegame.util.Logger;
-import xyz.dysaido.onevsonegame.util.Reflection;
-import xyz.dysaido.onevsonegame.util.ServerVersion;
+import xyz.dysaido.pvpevent.command.CommandDispatcher;
+import xyz.dysaido.pvpevent.inventory.listener.InventoryListener;
+import xyz.dysaido.pvpevent.listener.MatchListener;
+import xyz.dysaido.pvpevent.match.MatchHandler;
+import xyz.dysaido.pvpevent.arena.ArenaManager;
+import xyz.dysaido.pvpevent.api.config.Config;
+import xyz.dysaido.pvpevent.setting.Settings;
+import xyz.dysaido.pvpevent.util.FileManager;
+import xyz.dysaido.pvpevent.util.Logger;
+import xyz.dysaido.pvpevent.util.Reflection;
+import xyz.dysaido.pvpevent.util.ServerVersion;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.lang.reflect.Field;
-import java.net.URL;
-import java.util.Scanner;
-import java.util.function.Consumer;
 
-public final class OneVSOneGame extends JavaPlugin {
+public final class PvPEvent extends JavaPlugin {
     private static final String TAG = "MAIN";
-    private static OneVSOneGame instance;
-    private final String pluginVersion = getDescription().getVersion();
+    private static PvPEvent instance;
     private FileManager ringConfig;
     private ArenaManager arenaManager;
     private MatchHandler matchHandler;
     private Config config;
     private ServerVersion serverVersion;
-    private boolean newUpdate = false;
 
-    public static OneVSOneGame getInstance() {
-        synchronized (OneVSOneGame.class) {
+    public static PvPEvent getInstance() {
+        synchronized (PvPEvent.class) {
             return instance;
         }
     }
@@ -41,9 +34,6 @@ public final class OneVSOneGame extends JavaPlugin {
     @Override
     public void onEnable() {
         instance = this;
-        getVersion(s -> {
-            if (!pluginVersion.equals(s)) newUpdate = true;
-        });
         serverVersion = ServerVersion.valueOf(Reflection.VERSION);
         ringConfig = new FileManager(this, "rings");
         config = new Config(this);
@@ -54,24 +44,6 @@ public final class OneVSOneGame extends JavaPlugin {
         CommandDispatcher.enable(this);
         getServer().getPluginManager().registerEvents(new InventoryListener(), this);
         getServer().getPluginManager().registerEvents(new MatchListener(this), this);
-    }
-
-    public boolean hasNewVersion() {
-        return newUpdate;
-    }
-
-    public void getVersion(final Consumer<String> consumer) {
-        int resourceId = 97786;
-        getServer().getScheduler().runTaskAsynchronously(this, () -> {
-            try (InputStream inputStream = new URL("https://api.spigotmc.org/legacy/update.php?resource=" + resourceId).openStream();
-                 Scanner scanner = new Scanner(inputStream)) {
-                if (scanner.hasNext()) {
-                    consumer.accept(scanner.next());
-                }
-            } catch (IOException exception) {
-                getLogger().info("Unable to check for updates: " + exception.getMessage());
-            }
-        });
     }
 
     @Override
@@ -85,7 +57,7 @@ public final class OneVSOneGame extends JavaPlugin {
     public void onDisable() {
         instance = null;
         CommandDispatcher.getInstance().unregisterAll();
-        Logger.information(TAG, "1v1Event plugin was disabled");
+        Logger.information(TAG, "PvPEvent plugin was disabled");
     }
 
     public SimpleCommandMap getCommandMap() {

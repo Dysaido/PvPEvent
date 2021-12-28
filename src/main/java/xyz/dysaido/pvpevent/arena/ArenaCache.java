@@ -1,4 +1,4 @@
-package xyz.dysaido.onevsonegame.arena;
+package xyz.dysaido.pvpevent.arena;
 
 import org.bukkit.Location;
 import org.bukkit.inventory.ItemStack;

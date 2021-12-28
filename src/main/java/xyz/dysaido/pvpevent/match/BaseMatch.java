@@ -1,21 +1,23 @@
-package xyz.dysaido.onevsonegame.match;
+package xyz.dysaido.pvpevent.match;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import xyz.dysaido.onevsonegame.OneVSOneGame;
-import xyz.dysaido.onevsonegame.api.MatchJoinEvent;
-import xyz.dysaido.onevsonegame.api.MatchLeaveEvent;
-import xyz.dysaido.onevsonegame.arena.Arena;
-import xyz.dysaido.onevsonegame.match.model.MatchPlayer;
-import xyz.dysaido.onevsonegame.setting.Settings;
-import xyz.dysaido.onevsonegame.util.Format;
+import xyz.dysaido.pvpevent.PvPEvent;
+import xyz.dysaido.pvpevent.api.event.MatchJoinEvent;
+import xyz.dysaido.pvpevent.api.event.MatchLeaveEvent;
+import xyz.dysaido.pvpevent.arena.Arena;
+import xyz.dysaido.pvpevent.match.model.Participant;
+import xyz.dysaido.pvpevent.setting.Settings;
+import xyz.dysaido.pvpevent.util.Format;
 
 import java.util.Objects;
+
+import static xyz.dysaido.pvpevent.match.model.Participant.*;
 
 public abstract class BaseMatch extends MatchTask {
 
     protected final Arena arena;
-    protected final MatchQueue<MatchPlayer> queue;
+    protected final MatchQueue<Participant> queue;
     protected final MatchType type;
     protected volatile MatchState state = MatchState.WAITING;
     protected int round = 0;
@@ -26,7 +28,7 @@ public abstract class BaseMatch extends MatchTask {
     protected int starting = Settings.STARTING;
     protected int ending = Settings.ENDING;
 
-    public BaseMatch(OneVSOneGame plugin, Arena arena, MatchType type) {
+    public BaseMatch(PvPEvent plugin, Arena arena, MatchType type) {
         super(arena.getName(), plugin);
         this.arena = arena;
         this.type = type;
@@ -42,13 +44,13 @@ public abstract class BaseMatch extends MatchTask {
         }
     }
 
-    public void join(Player player) {
+    public synchronized void join(Player player) {
         Objects.requireNonNull(player);
         if (waiting > 0) {
-            if (!queue.containsQueue(player)) {
-                MatchPlayer matchPlayer = new MatchPlayer(this, player);
+            if (!queue.contains(player)) {
+                Participant participant = new Participant(this, player);
                 Bukkit.getServer().getPluginManager().callEvent(new MatchJoinEvent(this, player));
-                queue.addQueue(matchPlayer);
+                queue.addParticipant(participant);
                 Format.broadcast(Settings.JOIN_MESSAGE.replace("{player}", player.getName()));
             } else {
                 player.sendMessage(Format.colored(Settings.ALREADY_JOINED_MESSAGE));
@@ -58,27 +60,21 @@ public abstract class BaseMatch extends MatchTask {
         }
     }
 
-    public void leave(Player player) {
+    public synchronized void leave(Player player) {
         Objects.requireNonNull(player);
-        if (queue.containsQueue(player)) {
-            MatchPlayer matchPlayer = queue.findQueueByName(player.getName());
-            matchPlayer.reset(arena.getWorldSpawn(), false);
-
+        if (queue.contains(player)) {
+            Participant participant = queue.findParticipantByName(player.getName());
             MatchLeaveEvent matchLeaveEvent = new MatchLeaveEvent(this, player);
-            matchLeaveEvent.setDuringFight(false);
-            Bukkit.getServer().getPluginManager().callEvent(matchLeaveEvent);
-
-            queue.removeQueue(matchPlayer);
-            Format.broadcast(Settings.LEAVE_MESSAGE.replace("{player}", player.getName()));
-        } else if (queue.containsFighter(player)) {
-            MatchPlayer matchPlayer = queue.findFighterByName(player.getName());
-            matchPlayer.reset(arena.getWorldSpawn(), true);
-
-            MatchLeaveEvent matchLeaveEvent = new MatchLeaveEvent(this, player);
-            matchLeaveEvent.setDuringFight(true);
-            Bukkit.getServer().getPluginManager().callEvent(matchLeaveEvent);
-
-            queue.removeFighter(matchPlayer);
+            if (participant.getState().equals(State.FIGHT)) {
+                matchLeaveEvent.setDuringFight(true);
+                Bukkit.getServer().getPluginManager().callEvent(matchLeaveEvent);
+                participant.reset(arena.getWorldSpawn(), true);
+            } else {
+                matchLeaveEvent.setDuringFight(false);
+                Bukkit.getServer().getPluginManager().callEvent(matchLeaveEvent);
+                participant.reset(arena.getWorldSpawn(), false);
+            }
+            queue.removeParticipant(participant);
             Format.broadcast(Settings.LEAVE_MESSAGE.replace("{player}", player.getName()));
         }
     }
@@ -89,13 +85,15 @@ public abstract class BaseMatch extends MatchTask {
 
     public abstract boolean hasFighting();
 
-    public abstract boolean shouldEnd();
-
-    public boolean shouldNextRound() {
-        return queue.getPendingQueue().size() > 0 && getState().equals(MatchState.FIGHTING) && !shouldEnd();
+    public boolean shouldEnd() {
+        return !queue.getParticipantsByState(State.QUEUE).findAny().isPresent();
     }
 
-    public MatchQueue<MatchPlayer> getQueue() {
+    public boolean shouldNextRound() {
+        return getState().equals(MatchState.FIGHTING) && !shouldEnd();
+    }
+
+    public MatchQueue<Participant> getQueue() {
         return queue;
     }
 

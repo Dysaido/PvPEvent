@@ -1,12 +1,12 @@
-package xyz.dysaido.onevsonegame.command;
+package xyz.dysaido.pvpevent.command;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandMap;
 import org.bukkit.command.SimpleCommandMap;
-import xyz.dysaido.onevsonegame.OneVSOneGame;
-import xyz.dysaido.onevsonegame.command.impl.EventCommand;
-import xyz.dysaido.onevsonegame.command.impl.EventsCommand;
-import xyz.dysaido.onevsonegame.util.Reflection;
+import xyz.dysaido.pvpevent.PvPEvent;
+import xyz.dysaido.pvpevent.command.impl.EventCommand;
+import xyz.dysaido.pvpevent.command.impl.EventsCommand;
+import xyz.dysaido.pvpevent.util.Reflection;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
@@ -21,7 +21,7 @@ public class CommandDispatcher {
         return instance;
     }
 
-    private CommandDispatcher(OneVSOneGame plugin) {
+    private CommandDispatcher(PvPEvent plugin) {
         this.commandMap = plugin.getCommandMap();
 
         register(new EventCommand(plugin));
@@ -29,7 +29,7 @@ public class CommandDispatcher {
 
     }
 
-    public static void enable(OneVSOneGame plugin) {
+    public static void enable(PvPEvent plugin) {
         if (instance == null) {
             instance = new CommandDispatcher(plugin);
         } else {

@@ -1,4 +1,4 @@
-package xyz.dysaido.onevsonegame.util;
+package xyz.dysaido.pvpevent.util;
 
 import org.bukkit.Bukkit;
 import sun.misc.Unsafe;

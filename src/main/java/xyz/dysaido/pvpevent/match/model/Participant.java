@@ -1,16 +1,16 @@
-package xyz.dysaido.onevsonegame.match.model;
+package xyz.dysaido.pvpevent.match.model;
 
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
-import xyz.dysaido.onevsonegame.kit.Kit;
-import xyz.dysaido.onevsonegame.match.BaseMatch;
+import xyz.dysaido.pvpevent.kit.Kit;
+import xyz.dysaido.pvpevent.match.BaseMatch;
 
 import java.util.Collection;
 import java.util.UUID;
 
-public class MatchPlayer {
+public class Participant {
 
     private final Collection<PotionEffect> originalPotionEffects;
     private final double originalHealth;
@@ -21,11 +21,11 @@ public class MatchPlayer {
     private final Kit backupKit;
     private final Player player;
     private final BaseMatch match;
-    private PlayerState state = PlayerState.QUEUE;
+    private volatile State state = State.QUEUE;
     private boolean lose = false;
     private boolean frozen = false;
 
-    public MatchPlayer(BaseMatch match, Player player) {
+    public Participant(BaseMatch match, Player player) {
         this.match = match;
         this.player = player;
         this.originalPotionEffects = player.getActivePotionEffects();
@@ -38,7 +38,8 @@ public class MatchPlayer {
         player.teleport(match.getArena().getLobby());
     }
 
-    public void setup(Location location) {
+    public synchronized void setup(Location location) {
+        state = State.FIGHT;
         player.setHealth(player.getMaxHealth());
         player.setFoodLevel(20);
         player.setFireTicks(0);
@@ -61,27 +62,24 @@ public class MatchPlayer {
         frozen = false;
     }
 
-    public void reset(Location location, boolean lose) {
+    public synchronized void reset(Location location, boolean lose) {
         this.lose = lose;
         if (lose) {
-            match.getQueue().removeFighter(this);
+            state = State.SPECTATOR;
         } else {
-            match.getQueue().removeFighter(this);
-            match.getQueue().offerQueue(this);
+            state = State.QUEUE;
         }
-        synchronized (player) {
-            player.setHealth(originalHealth);
-            player.setFoodLevel(originalFoodLevel);
-            player.setFireTicks(originalFireTicks);
-            player.setWalkSpeed(originalWalkSpeed);
-            player.setGameMode(originalGamemode);
-            backupKit.apply(player);
-            for (PotionEffect effect : player.getActivePotionEffects()) {
-                player.removePotionEffect(effect.getType());
-            }
-            originalPotionEffects.forEach(player::addPotionEffect);
-            player.teleport(location);
+        player.setHealth(originalHealth);
+        player.setFoodLevel(originalFoodLevel);
+        player.setFireTicks(originalFireTicks);
+        player.setWalkSpeed(originalWalkSpeed);
+        player.setGameMode(originalGamemode);
+        backupKit.apply(player);
+        for (PotionEffect effect : player.getActivePotionEffects()) {
+            player.removePotionEffect(effect.getType());
         }
+        originalPotionEffects.forEach(player::addPotionEffect);
+        player.teleport(location);
     }
 
     public String getName() {
@@ -100,11 +98,11 @@ public class MatchPlayer {
         return match;
     }
 
-    public PlayerState getState() {
+    public State getState() {
         return state;
     }
 
-    public void setState(PlayerState state) {
+    public void setState(State state) {
         this.state = state;
     }
 
@@ -134,5 +132,9 @@ public class MatchPlayer {
 
     public boolean isFrozen() {
         return frozen;
+    }
+
+    public enum State {
+        QUEUE, FIGHT, SPECTATOR, WINNER
     }
 }
