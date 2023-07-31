@@ -146,7 +146,7 @@ public abstract class AbstractMatch implements Match {
                             .replace("{second}", String.valueOf(times))
                             .replace("{present}", present)
                             .replace("{arena}", arena.getIdentifier())
-                            .replace("{kit}", playerKit.getName());
+                            .replace("{kit}", arena.getKitName());
                     BukkitHelper.broadcastClickable(text);
                 }, this::onStartTask);
 
@@ -163,7 +163,7 @@ public abstract class AbstractMatch implements Match {
                     .replace("{second}", String.valueOf(times))
                     .replace("{present}", present)
                     .replace("{arena}", arena.getIdentifier())
-                    .replace("{kit}", playerKit.getName());
+                    .replace("{kit}", arena.getKitName());
             BukkitHelper.broadcast(text);
         }, this::nextRound);
     }

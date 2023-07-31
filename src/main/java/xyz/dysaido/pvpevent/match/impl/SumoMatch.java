@@ -40,10 +40,12 @@ public class SumoMatch extends AbstractMatch {
 
             user1.getPlayer().teleport(arena.getPos1());
             user1.setFreeze(true);
-            playerKit.accept(user1.getPlayer());
             user2.getPlayer().teleport(arena.getPos2());
             user2.setFreeze(true);
-            playerKit.accept(user2.getPlayer());
+            if (playerKit != null) {
+                playerKit.accept(user1.getPlayer());
+                playerKit.accept(user2.getPlayer());
+            }
 
             this.round++;
             Bukkit.getPluginManager().callEvent(new SumoNextRoundEvent(this, round, user1, user2));

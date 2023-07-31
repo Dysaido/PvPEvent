@@ -20,7 +20,7 @@ public class Settings extends Config {
             "meow :3"
     })
     @Final
-    public String VERSION = "1.2.0-pre2";
+    public String VERSION = "1.2.0-pre3";
     @Comment("If you want to see some information from this plugin, turn on this!")
     public boolean DEBUG = false;
     @Create
