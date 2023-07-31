@@ -5,13 +5,13 @@ import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 import xyz.dysaido.pvpevent.match.AbstractMatch;
 
-public class MatchStartEvent extends Event implements Cancellable {
+public class MatchDestroyEvent extends Event implements Cancellable {
 
     private static final HandlerList HANDLER_LIST = new HandlerList();
     private final AbstractMatch match;
     private boolean cancel;
 
-    public MatchStartEvent(AbstractMatch match) {
+    public MatchDestroyEvent(AbstractMatch match) {
         this.match = match;
     }
 

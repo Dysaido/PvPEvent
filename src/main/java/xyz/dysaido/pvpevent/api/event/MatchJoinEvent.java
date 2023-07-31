@@ -4,16 +4,17 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
-import xyz.dysaido.pvpevent.match.BaseMatch;
+import xyz.dysaido.pvpevent.match.AbstractMatch;
+import xyz.dysaido.pvpevent.match.Participant;
 
 public class MatchJoinEvent extends Event implements Cancellable {
 
     private static final HandlerList HANDLER_LIST = new HandlerList();
-    private final BaseMatch match;
-    private final Player player;
+    private final AbstractMatch match;
+    private final Participant player;
     private boolean cancel;
 
-    public MatchJoinEvent(BaseMatch match, Player player) {
+    public MatchJoinEvent(AbstractMatch match, Participant player) {
         this.match = match;
         this.player = player;
     }
@@ -37,11 +38,11 @@ public class MatchJoinEvent extends Event implements Cancellable {
         return HANDLER_LIST;
     }
 
-    public BaseMatch getMatch() {
+    public AbstractMatch getMatch() {
         return match;
     }
 
-    public Player getPlayer() {
+    public Participant getPlayer() {
         return player;
     }
 }

@@ -2,14 +2,14 @@ package xyz.dysaido.pvpevent.util;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import xyz.dysaido.pvpevent.setting.Settings;
+import xyz.dysaido.pvpevent.config.Settings;
 
 public final class Logger {
     private final static int DEBUG = 0;
     private final static int INFORMATION = 1;
     private final static int WARNING = 2;
     private final static int ERROR = 3;
-    private final static String TAG = "[Event]";
+    private final static String TAG = "[PvPEvent]";
 
     private Logger() {}
 
@@ -32,7 +32,7 @@ public final class Logger {
     private static void println(int priority, String tag, String message) {
         switch (priority) {
             case DEBUG:
-                if (Settings.DEBUG) sendMessage(ChatColor.DARK_GREEN, " [" + tag + "] : " + message);
+                if (Settings.IMP.DEBUG) sendMessage(ChatColor.DARK_GREEN, " (DEBUG) [" + tag + "] : " + message);
                 break;
             case INFORMATION:
                 sendMessage(ChatColor.BLUE, " [" + tag + "] : " + message);
