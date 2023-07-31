@@ -103,33 +103,10 @@ public abstract class AbstractMatch implements Match {
             participantsByUUD.put(identifier, participant);
             statusByUUID.put(identifier, ParticipantStatus.SPECTATE);
             player.sendMessage(BukkitHelper.colorize(Settings.IMP.MESSAGE.BASE_SPECTATE_SUCCESS));
+//            player.setFlying();
+//            player.setAllowFlight();
         } else {
             player.sendMessage(BukkitHelper.colorize(Settings.IMP.MESSAGE.BASE_SPECTATE_JOINED));
-        }
-    }
-
-    @Override
-    public void onDeath(UUID identifier, PlayerDeathEvent event) {
-        if (statusByUUID.get(identifier) == ParticipantStatus.FIGHTING) {
-            Participant victim = participantsByUUD.get(identifier);
-            event.getDrops().clear();
-            event.setDeathMessage(null);
-
-            statusByUUID.put(identifier, ParticipantStatus.SPECTATE);
-            Participant winner = getFighting().get(0);
-            winner.getPlayer().teleport(arena.getLobby());
-            statusByUUID.put(winner.getIdentifier(), ParticipantStatus.QUEUE);
-
-            String text = Settings.IMP.MESSAGE.MATCH_DEATH_TEXT
-                    .replace("{victim}", victim.getName())
-                    .replace("{winner}", winner.getName());
-            BukkitHelper.broadcast(text);
-
-            nextRound();
-            Bukkit.getScheduler().runTaskLater(pvpEvent.getPlugin(), () -> {
-                victim.getPlayer().spigot().respawn();
-                victim.getPlayer().teleport(arena.getLobby());
-            }, 10L);
         }
     }
 
@@ -168,6 +145,20 @@ public abstract class AbstractMatch implements Match {
         }, this::nextRound);
     }
 
+    @Override
+    public void onDestroy() {
+        Bukkit.getPluginManager().callEvent(new MatchDestroyEvent(this));
+        this.state = MatchState.INACTIVE;
+
+        onStopTask();
+
+        this.participantsByUUD.values().forEach(Participant::setOriginalsOfPlayer);
+        this.participantsByUUD.clear();
+        this.statusByUUID.clear();
+        this.matchListener.unload();
+        this.pvpEvent = null;
+    }
+
     protected BukkitTask syncTaskFactory(final long times, final long countdownModulo, Consumer<Long> counter, Runnable executor) {
         return new BukkitRunnable() {
 
@@ -190,15 +181,6 @@ public abstract class AbstractMatch implements Match {
                 }
             }
         }.runTaskTimer(pvpEvent.getPlugin(), 0L, 1L);
-    }
-
-    @Override
-    public void onDestroy() {
-        Bukkit.getPluginManager().callEvent(new MatchDestroyEvent(this));
-        onStopTask();
-        this.state = MatchState.INACTIVE;
-        this.matchListener.unload();
-        this.pvpEvent = null;
     }
 
     @Override

@@ -1,6 +1,7 @@
 package xyz.dysaido.pvpevent.match.impl;
 
 import org.bukkit.Bukkit;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import xyz.dysaido.pvpevent.PvPEventPlugin;
 import xyz.dysaido.pvpevent.api.event.sumo.SumoNextRoundEvent;
 import xyz.dysaido.pvpevent.config.Settings;
@@ -11,6 +12,7 @@ import xyz.dysaido.pvpevent.model.Arena;
 import xyz.dysaido.pvpevent.util.BukkitHelper;
 
 import java.util.List;
+import java.util.UUID;
 
 public class SumoMatch extends AbstractMatch {
     
@@ -18,6 +20,31 @@ public class SumoMatch extends AbstractMatch {
 
     public SumoMatch(PvPEventPlugin pvpEvent, String present, Arena arena) {
         super(pvpEvent, present, arena);
+    }
+
+    @Override
+    public void onDeath(UUID identifier, PlayerDeathEvent event) {
+        if (statusByUUID.get(identifier) == ParticipantStatus.FIGHTING) {
+            Participant victim = participantsByUUD.get(identifier);
+            event.getDrops().clear();
+            event.setDeathMessage(null);
+
+            statusByUUID.put(identifier, ParticipantStatus.SPECTATE);
+            Participant winner = getFighting().get(0);
+            winner.getPlayer().teleport(arena.getLobby());
+            statusByUUID.put(winner.getIdentifier(), ParticipantStatus.QUEUE);
+
+            String text = Settings.IMP.MESSAGE.MATCH_DEATH_TEXT
+                    .replace("{victim}", victim.getName())
+                    .replace("{winner}", winner.getName());
+            BukkitHelper.broadcast(text);
+
+            nextRound();
+            Bukkit.getScheduler().runTaskLater(pvpEvent.getPlugin(), () -> {
+                victim.getPlayer().spigot().respawn();
+                victim.getPlayer().teleport(arena.getLobby());
+            }, 10L);
+        }
     }
 
     @Override
