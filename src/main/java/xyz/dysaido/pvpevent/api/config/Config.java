@@ -24,6 +24,9 @@ import java.util.logging.Level;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+/**
+ * @link https://github.com/Leymooo/BungeeCord/blob/master/proxy/src/main/java/ru/leymooo/botfilter/config/Config.java
+ */
 public class Config {
 
     public Config() {
