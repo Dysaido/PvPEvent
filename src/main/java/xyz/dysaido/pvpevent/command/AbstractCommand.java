@@ -5,21 +5,20 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.util.StringUtil;
-
 import xyz.dysaido.pvpevent.PvPEventPlugin;
-import xyz.dysaido.pvpevent.model.Arena;
+import xyz.dysaido.pvpevent.config.Settings;
 import xyz.dysaido.pvpevent.util.BukkitHelper;
 import xyz.dysaido.pvpevent.util.Logger;
 
 import java.util.*;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 public abstract class AbstractCommand extends Command {
 
     private static final String TAG = "CommandManager";
     protected final PvPEventPlugin pvpEvent;
     protected final Map<String, SubCommand<CommandSender>> subcommands = new HashMap<>();
+
     public AbstractCommand(PvPEventPlugin pvpEvent, String name) {
         super(name);
         this.pvpEvent = pvpEvent;
@@ -73,7 +72,7 @@ public abstract class AbstractCommand extends Command {
     }
 
     protected boolean isAuthorized(CommandSender sender, SubCommand<CommandSender> subcommand) {
-        return sender.hasPermission(subcommand.getPerm()) || sender.isOp() || sender.hasPermission("event.command.admin");
+        return sender.hasPermission(subcommand.getPerm()) || sender.isOp() || sender.hasPermission(Settings.IMP.PERMISSION.COMMAND_ADMIN);
     }
 
     @Override
@@ -82,9 +81,19 @@ public abstract class AbstractCommand extends Command {
             return StringUtil.copyPartialMatches(args[0], subcommands.keySet(), new ArrayList<>(subcommands.size()));
         } else {
             if (args.length == 2) {
-                if (args[0].equalsIgnoreCase("host")) {
+                String subcommand = args[0].toLowerCase();
+                if (subcommand.equals("host")
+                        || subcommand.equals("editarena")
+                        || subcommand.equals("earena")
+                        || subcommand.equals("deletearena")
+                        || subcommand.equals("autoset")) {
                     List<String> arenas = new ArrayList<>(pvpEvent.getArenaManager().getAll().keySet());
                     return StringUtil.copyPartialMatches(args[1], arenas, new ArrayList<>(arenas.size()));
+                } else if (subcommand.equals("editkit")
+                        || subcommand.equals("ekit")
+                        || subcommand.equals("deletekit")) {
+                    List<String> kits = new ArrayList<>(pvpEvent.getKitManager().getAll().keySet());
+                    return StringUtil.copyPartialMatches(args[1], kits, new ArrayList<>(kits.size()));
                 }
                 return super.tabComplete(sender, alias, args);
             }
