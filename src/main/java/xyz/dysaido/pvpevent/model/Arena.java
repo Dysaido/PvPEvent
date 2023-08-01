@@ -12,7 +12,7 @@ public class Arena implements Model<String, Arena> {
     private String kitName;
     private int capacity = 30;
     private int queueCountdown = 10;
-    private int fightCountdown = 5;
+    private int fightCountdown = 3;
 
     public Arena(String identifier) {
         this.identifier = identifier;
