@@ -2,6 +2,7 @@ package xyz.dysaido.pvpevent.match.impl;
 
 import org.bukkit.Bukkit;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.jetbrains.annotations.NotNull;
 import xyz.dysaido.pvpevent.PvPEventPlugin;
 import xyz.dysaido.pvpevent.api.event.sumo.SumoNextRoundEvent;
 import xyz.dysaido.pvpevent.config.Settings;
@@ -13,9 +14,10 @@ import xyz.dysaido.pvpevent.util.BukkitHelper;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class SumoMatch extends AbstractMatch {
-    
+
     protected int round = 0;
 
     public SumoMatch(PvPEventPlugin pvpEvent, String present, Arena arena) {
@@ -65,6 +67,9 @@ public class SumoMatch extends AbstractMatch {
             statusByUUID.put(user1.getIdentifier(), ParticipantStatus.FIGHTING);
             statusByUUID.put(user2.getIdentifier(), ParticipantStatus.FIGHTING);
 
+            this.round++;
+            Bukkit.getPluginManager().callEvent(new SumoNextRoundEvent(this, round, user1, user2));
+
             user1.getPlayer().teleport(arena.getPos1());
             user1.setFreeze(true);
             user2.getPlayer().teleport(arena.getPos2());
@@ -73,33 +78,26 @@ public class SumoMatch extends AbstractMatch {
                 playerKit.accept(user1.getPlayer());
                 playerKit.accept(user2.getPlayer());
             }
+            Runnable runnable = getRunnable(user1, user2);
+            int freezeTimes = arena.getFightCountdown();
+            if (freezeTimes < 3) {
+                runnable.run();
+            } else {
+                int modulo = Math.max(Settings.IMP.COUNTDOWN.SUMO_NEXTROUND_MODULO, 1);
+                this.task = syncTaskFactory(freezeTimes, modulo,
+                        times -> {
 
-            this.round++;
-            Bukkit.getPluginManager().callEvent(new SumoNextRoundEvent(this, round, user1, user2));
-
-            Participant finalUser = user2;
-            this.task = syncTaskFactory(arena.getFightCountdown(), 1,
-                    times -> {
-
-                        String text = Settings.IMP.MESSAGE.SUMO_NEXTROUND_COUNTDOWN_TEXT
-                                .replace("{second}", String.valueOf(times));
-                        BukkitHelper.broadcast(text);
-                    }, () -> {
-                        user1.setFreeze(false);
-                        finalUser.setFreeze(false);
-
-                        String text = Settings.IMP.MESSAGE.SUMO_NEXTROUND_SUCCESS_TEXT
-                                .replace("{round}", String.valueOf(round))
-                                .replace("{user1}", user1.getName())
-                                .replace("{user2}", finalUser.getName());
-                        BukkitHelper.broadcast(text);
-                    });
+                            String text = Settings.IMP.MESSAGE.SUMO_NEXTROUND_COUNTDOWN_TEXT
+                                    .replace("{second}", String.valueOf(times));
+                            BukkitHelper.broadcast(text);
+                        }, runnable);
+            }
         } else {
             if (!queueUsers.isEmpty() && round != 0) {
                 Participant participant = queueUsers.get(0);
                 String text = Settings.IMP.MESSAGE.SUMO_NEXTROUND_WITH_WINNER_TEXT
-                                .replace("{user}", participant.getName())
-                                .replace("{present}", present);
+                        .replace("{user}", participant.getName())
+                        .replace("{present}", present);
                 BukkitHelper.broadcast(text);
             } else {
                 String text = Settings.IMP.MESSAGE.SUMO_NEXTROUND_WITHOUT_WINNER_TEXT
@@ -108,5 +106,18 @@ public class SumoMatch extends AbstractMatch {
             }
             onDestroy();
         }
+    }
+
+    private Runnable getRunnable(Participant user1, Participant user2) {
+        return () -> {
+            user1.setFreeze(false);
+            user2.setFreeze(false);
+
+            String text = Settings.IMP.MESSAGE.SUMO_NEXTROUND_SUCCESS_TEXT
+                    .replace("{round}", String.valueOf(round))
+                    .replace("{user1}", user1.getName())
+                    .replace("{user2}", user2.getName());
+            BukkitHelper.broadcast(text);
+        };
     }
 }

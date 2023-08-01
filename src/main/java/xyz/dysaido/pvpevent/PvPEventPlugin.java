@@ -1,6 +1,7 @@
 package xyz.dysaido.pvpevent;
 
 import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -22,6 +23,7 @@ import xyz.dysaido.pvpevent.util.NumericParser;
 import java.io.File;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class PvPEventPlugin implements PvPEvent {
 
@@ -70,19 +72,53 @@ public class PvPEventPlugin implements PvPEvent {
         return mainMatch != null && mainMatch.getState() != MatchState.INACTIVE;
     }
 
-    //event.command.default
-    //event.command.host
-    //event.command.admin
+    private void sendEventCommandsHelp(CommandSender sender) {
+        String eventTitle = Settings.IMP.COMMAND.EVENT_TITLE;
+        sender.sendMessage(BukkitHelper.colorize(eventTitle));
+        sender.sendMessage(BukkitHelper.colorize("&r"));
+
+        String eventJoin = Settings.IMP.COMMAND.EVENT_JOIN;
+        sender.sendMessage(BukkitHelper.colorize(eventJoin));
+
+        String eventLeave = Settings.IMP.COMMAND.EVENT_LEAVE;
+        sender.sendMessage(BukkitHelper.colorize(eventLeave));
+
+        String eventSpectate = Settings.IMP.COMMAND.EVENT_SPECTATE;
+        sender.sendMessage(BukkitHelper.colorize(eventSpectate));
+
+        String eventView = Settings.IMP.COMMAND.EVENT_VIEW;
+        sender.sendMessage(BukkitHelper.colorize(eventView));
+
+        String eventHelp = Settings.IMP.COMMAND.EVENT_HELP;
+        sender.sendMessage(BukkitHelper.colorize(eventHelp));
+    }
+
+    private static final List<String> MSG_STAFF_HELP = Stream.of("\n" +
+            "&c&lPvPEvent Staff Commands\n" +
+            "&r" +
+            "&5/event autoset&4(BETA) &d[arena-name] <broadcast> <command> <schedule> \n" +
+            "&5/event host &d[arena-name] <broadcast>\n" +
+            "&5/event createarena &d[arena-name]\n" +
+            "&5/event editarena &d[arena-name] <save|setlobby|setpos1|setpos2|setkit|setcapacity|setqueuecountdown(second)|setfightcountdown(second)>\n" +
+            "&5/event deletearena&4(BETA) &d[arena-name]\n" +
+
+            "&5/event createkit &d[kit-name]\n" +
+            "&5/event editkit &d[kit-name] setinventory (who executes the command, his inventory will be saved)\n" +
+            "&5/event deletekit&4(BETA) &d[kit-name]\n" +
+
+            "&5/event stop\n" +
+            "&5/event reload &dreload this configs and some options\n" +
+            "&5/event kick&4(BETA) &d[user] <reason>\n" +
+            "&5/event ban&4(BETA) &d[user] <reason>\n" +
+            "&5/event unban&4(BETA) &d[user]\n"
+    ).map(BukkitHelper::colorize).collect(Collectors.toList());
+
     private void registerCommands() {
         parentCommand.register("", SubCommand::new)
-                .setCommand((sender, args) -> {
-                   Settings.IMP.COMMAND.MSG_HELP.stream().map(BukkitHelper::colorize).forEach(sender::sendMessage);
-                })
+                .setCommand((sender, args) -> sendEventCommandsHelp(sender))
                 .setPerm(Settings.IMP.PERMISSION.COMMAND_DEFAULT);
         parentCommand.register("help", SubCommand::new)
-                .setCommand((sender, args) -> {
-                    Settings.IMP.COMMAND.MSG_HELP_ADMIN.stream().map(BukkitHelper::colorize).forEach(sender::sendMessage);
-                })
+                .setCommand((sender, args) -> MSG_STAFF_HELP.forEach(sender::sendMessage))
                 .setAlias("?")
                 .setPerm(Settings.IMP.PERMISSION.COMMAND_HELP);
         parentCommand.register("join", SubCommand::new)
@@ -134,8 +170,8 @@ public class PvPEventPlugin implements PvPEvent {
                                                         .skip(1)
                                                         .reduce((t, u) -> t + " " + u)
                                                         .orElse("");
-
-                                this.mainMatch = new SumoMatch(this, presentMsg, arena).onCreate(this, 5);
+                                int modulo = Math.max(Settings.IMP.COUNTDOWN.BASE_CREATE_MODULO, 1);
+                                this.mainMatch = new SumoMatch(this, presentMsg, arena).onCreate(this, modulo);
                             } else {
                                 sender.sendMessage(ChatColor.RED + String.format("%s wasn't saved by anyone!", arenaName));
                             }
@@ -216,7 +252,7 @@ public class PvPEventPlugin implements PvPEvent {
 
                                 player.sendMessage(ChatColor.GREEN + "Kit modified!");
                             } else {
-                                Settings.IMP.COMMAND.MSG_HELP_ADMIN.stream().map(BukkitHelper::colorize).forEach(sender::sendMessage);
+                                MSG_STAFF_HELP.forEach(sender::sendMessage);
                             }
                         }
                     } else {
@@ -274,7 +310,7 @@ public class PvPEventPlugin implements PvPEvent {
                                     if (args.length == 3) {
                                         String capacity = args[2];
                                         if (NumericParser.ensureInteger(capacity)) {
-                                            arena.setCapacity(Integer.parseInt(capacity));
+                                            arena.setCapacity(Math.max(Integer.parseInt(capacity), 1));
                                             player.sendMessage(ChatColor.GREEN + String.format("%s has been set for capacity!", capacity));
                                         } else {
                                             player.sendMessage(ChatColor.RED + "This is not integer!");
@@ -287,7 +323,7 @@ public class PvPEventPlugin implements PvPEvent {
                                     if (args.length == 3) {
                                         String queueCountdown = args[2];
                                         if (NumericParser.ensureInteger(queueCountdown)) {
-                                            arena.setQueueCountdown(Integer.parseInt(queueCountdown));
+                                            arena.setQueueCountdown(Math.max(Integer.parseInt(queueCountdown), 10));
                                             player.sendMessage(ChatColor.GREEN + String.format("%s has been set for queue countdown!", queueCountdown));
                                         } else {
                                             player.sendMessage(ChatColor.RED + "This is not integer!");
@@ -310,7 +346,7 @@ public class PvPEventPlugin implements PvPEvent {
                                     }
                                     break;
                                 default:
-                                    Settings.IMP.COMMAND.MSG_HELP_ADMIN.stream().map(BukkitHelper::colorize).forEach(sender::sendMessage);
+                                    MSG_STAFF_HELP.forEach(sender::sendMessage);
                                     break;
 
                             }

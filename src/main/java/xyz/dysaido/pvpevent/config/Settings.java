@@ -13,14 +13,12 @@ public class Settings extends Config {
     public static final Settings IMP = new Settings();
 
     @Comment({
-            "PvPEvent - This is an 1v1 game plugin for your server. You can make some arena and in those the players play an 1v1 game",
-            "@Author: Dysaido",
+            "PvPEvent - This is a 1v1 game plugin for your server. You can create arenas where players can engage in 1v1 matches.",
             "@Discord: dysaido",
-            "@Github: https://github.com/Dysaido",
-            "meow :3"
+            "@Github: https://github.com/Dysaido/PvPEvent"
     })
     @Final
-    public String VERSION = "1.2.0-pre3";
+    public String VERSION = "1.2.0-pre4";
     @Comment("If you want to see some information from this plugin, turn on this!")
     public boolean DEBUG = false;
     @Create
@@ -29,6 +27,8 @@ public class Settings extends Config {
     public COMMAND COMMAND;
     @Create 
     public MESSAGE MESSAGE;
+    @Create
+    public COUNTDOWN COUNTDOWN;
 
     public void reload(File file) {
         Logger.debug("Settings", "Reload all field from settings configuration class and load from parent file");
@@ -67,18 +67,79 @@ public class Settings extends Config {
     }
 
     @Comment({
-            "Event's permissions",
-            "Admin permission event.command.admin",
-            "Executing the command during the event: event.command.perform"
+            "Event's permissions"
     })
     public static class PERMISSION {
+        @Final
+        @Comment({
+                "Enables command execution during 1v1 matches.",
+                "Not modifiable!"
+        })
+        public String COMMAND_PERFORM = "event.command.perform";
+
+        @Final
+        @Comment({
+                "Enables all commands available in the plugin.",
+                "Not modifiable!"
+        })
+        public String COMMAND_ADMIN = "event.command.admin";
+
+        @Final
+        @Comment({
+                "Enables command execution for default players.",
+                "/event join/leave/spectate.",
+                "Not modifiable!"
+        })
         public String COMMAND_DEFAULT = "event.command.default";
+
+        @Final
+        @Comment({
+                "Enables listing of admin commands.",
+                "Not modifiable!"
+        })
         public String COMMAND_HELP = "event.command.help";
+
+        @Final
+        @Comment({
+                "Enables starting a PvP event.",
+                "Not modifiable!"
+        })
         public String COMMAND_HOST = "event.command.host";
+
+        @Final
+        @Comment({
+                "Enables creating and modifying arenas.",
+                "When you modify an arena, it's important to remember to save the changes afterward using /event editarena [name] save, as it will not save to the config file otherwise!",
+                "Not modifiable!"
+        })
         public String COMMAND_ARENA = "event.command.arena";
+
+        @Final
+        @Comment({
+                "Enables creating and modifying kits.",
+                "Not modifiable!"
+        })
         public String COMMAND_KIT = "event.command.kit";
+
+        @Final
+        @Comment({
+                "Enables stopping a running event.",
+                "Not modifiable!"
+        })
         public String COMMAND_STOP = "event.command.stop";
+
+        @Final
+        @Comment({
+                "Enables reloading the plugin.",
+                "Not modifiable!"
+        })
         public String COMMAND_RELOAD = "event.command.reload";
+
+        @Final
+        @Comment({
+                "Enables the plugin's punishment handling system.",
+                "Not modifiable!"
+        })
         public String COMMAND_PUNISHMENT = "event.command.punishment";
     }
 
@@ -86,32 +147,46 @@ public class Settings extends Config {
     public static class COMMAND {
 
         public String DEFAULT_NO_EVENT = "&cThere isn't any event!";
-        @Comment("Help for default users")
-        public List<String> MSG_HELP = Collections.singletonList("\n" +
-                "&6&lEvent Commands\n" +
-                "&e/event join - type to join\n" +
-                "&e/event leave - type to leave\n" +
-                "&e/event spectate - type to spectate\n" +
-                "&e/event view (gui)\n" +
-                "&e/event help - admin commands\n"
-        );
 
-        @Comment("Help for member of staff team")
-        public List<String> MSG_HELP_ADMIN = Collections.singletonList("\n" +
-                "&5&lAdmin Commands\n" +
-                "&d/event autoset <arena> <bc> <command> <schedule> \n" +
-                "&d/event host <arena> <bc-present-text>\n" +
-                "&d/event createarena <name>\n" +
-                "&d/event createkit <name>\n" +
-                "&d/event view (gui)\n" +
-                "&d/event edit-kit <name> setinventory (who executes the command, his inventory will be saved)\n" +
-                "&d/event edit-arena <name> <save|setlobby|setpos1|setpos2|setkit|setcapacity|setqueuecountdown(second)|setfightcountdown(second)>\n" +
-                "&d/event delete-arena <name>\n" +
-                "&d/event stop\n" +
-                "&d/event reload - reload this configs and some options\n" +
-                "&d/event kick <user> <reason>\n" +
-                "&d/event ban <user> <reason>\n" +
-                "&d/event unban <user>\n"
-        );
+        @Comment("Help for default users")
+        public String EVENT_TITLE = "&6&lEvent Commands";
+        public String EVENT_JOIN = "&e/event join";
+        public String EVENT_LEAVE = "&e/event leave";
+        public String EVENT_SPECTATE = "&e/event spectate";
+        public String EVENT_VIEW = "&e/event view (gui)";
+        public String EVENT_HELP = "&e/event help - admin commands";
     }
+
+    @Comment({
+            "Countdown settings",
+            "!!!IMPORTANT!!!",
+            "\tIf the QueueCountdown value is less than 10, it will be set to 10, as what kind of event would it be if you had no time to join?",
+            "\tIf the FightCountdown value is less than 3, it will immediately start the next round! This can be used to control how long players are frozen."
+    })
+    public static class COUNTDOWN {
+        @Comment({
+                "This controls how many times the intermediary text should be displayed.",
+                "!!!Cannot be less than 1!!!",
+                "Condition: QueueTimes % 2 == 0"
+        })
+        public int BASE_CREATE_MODULO = 2;
+        @Comment({
+                "This controls the countdown to the start.",
+                "If it's less than three, the PvP event starts immediately."
+        })
+        public int BASE_START_TIMES = 3;
+        @Comment({
+                "This controls how many times the intermediary text should be displayed.",
+                "!!!Cannot be less than 1!!!",
+                "Condition: StartTimes % 2 == 0"
+        })
+        public int BASE_START_MODULO = 1;
+        @Comment({
+                "This controls how many times the intermediary text should be displayed.",
+                "!!!Cannot be less than 1!!!",
+                "Condition: FightTimes % 2 == 0"
+        })
+        public int SUMO_NEXTROUND_MODULO = 1;
+    }
+
 }

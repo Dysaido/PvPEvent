@@ -4,4 +4,4 @@ version: '${project.version}'
 main: xyz.dysaido.pvpevent.PvPEventLoader
 load: STARTUP
 author: Dysaido
-description: This is an 1v1 game plugin for your server. You can make some arena and in those the players play an 1v1 game.
+description: This is a 1v1 game plugin for your server. You can create arenas where players can engage in 1v1 matches.

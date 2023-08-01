@@ -1,10 +1,8 @@
 package xyz.dysaido.pvpevent.listener;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
@@ -18,7 +16,6 @@ import xyz.dysaido.pvpevent.config.Settings;
 import xyz.dysaido.pvpevent.match.AbstractMatch;
 import xyz.dysaido.pvpevent.match.Participant;
 import xyz.dysaido.pvpevent.match.ParticipantStatus;
-import xyz.dysaido.pvpevent.util.BukkitHelper;
 import xyz.dysaido.pvpevent.util.Logger;
 
 import java.util.Arrays;
@@ -55,7 +52,7 @@ public class MatchListener extends EventListener {
         Player player = event.getPlayer();
         if (match.hasParticipant(player.getUniqueId())) {
             String message = event.getMessage().split(" ")[0].toLowerCase();
-            if (!player.hasPermission("event.command.perform") && isCommandWhitelisted(message)) {
+            if (!player.hasPermission(Settings.IMP.PERMISSION.COMMAND_PERFORM) && isCommandWhitelisted(message)) {
                 event.setCancelled(true);
                 player.sendMessage("/event leave");
             }

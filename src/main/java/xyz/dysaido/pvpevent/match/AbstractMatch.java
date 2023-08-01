@@ -50,6 +50,10 @@ public abstract class AbstractMatch implements Match {
         return participantsByUUD.containsKey(identifier);
     }
 
+    public ParticipantStatus getParticipantStatus(UUID identifier) {
+        return statusByUUID.get(identifier);
+    }
+
     @Override
     public void join(UUID identifier) {
         Player player = Bukkit.getServer().getPlayer(identifier);
@@ -117,7 +121,9 @@ public abstract class AbstractMatch implements Match {
         this.state = MatchState.QUEUE;
         this.matchListener.load();
 
-        this.task = syncTaskFactory(arena.getQueueCountdown(), modulo,
+        int arenaQueueTimes = Math.max(arena.getQueueCountdown(), 10);
+
+        this.task = syncTaskFactory(arenaQueueTimes, modulo,
                 times -> {
                     String text = Settings.IMP.MESSAGE.COUNTDOWN_QUEUE
                             .replace("{second}", String.valueOf(times))
@@ -135,14 +141,26 @@ public abstract class AbstractMatch implements Match {
         this.state = MatchState.ACTIVE;
         Bukkit.getPluginManager().callEvent(new MatchStartEvent(this));
 
-        this.task = syncTaskFactory(3, 1, times -> {
+        int cnfTimes = Settings.IMP.COUNTDOWN.BASE_START_TIMES;
+        if (cnfTimes < 3) {
             String text = Settings.IMP.MESSAGE.COUNTDOWN_START
-                    .replace("{second}", String.valueOf(times))
+                    .replace("{second}", String.valueOf(1))
                     .replace("{present}", present)
                     .replace("{arena}", arena.getIdentifier())
                     .replace("{kit}", arena.getKitName());
             BukkitHelper.broadcast(text);
-        }, this::nextRound);
+            nextRound();
+        } else {
+            int modulo = Math.max(Settings.IMP.COUNTDOWN.BASE_START_MODULO, 1);
+            this.task = syncTaskFactory(cnfTimes, modulo, times -> {
+                String text = Settings.IMP.MESSAGE.COUNTDOWN_START
+                        .replace("{second}", String.valueOf(times))
+                        .replace("{present}", present)
+                        .replace("{arena}", arena.getIdentifier())
+                        .replace("{kit}", arena.getKitName());
+                BukkitHelper.broadcast(text);
+            }, this::nextRound);
+        }
     }
 
     @Override
