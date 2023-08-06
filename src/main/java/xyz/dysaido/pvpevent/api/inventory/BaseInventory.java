@@ -8,8 +8,8 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.InventoryView;
-import xyz.dysaido.pvpevent.util.Logger;
 import xyz.dysaido.pvpevent.api.inventory.button.Button;
+import xyz.dysaido.pvpevent.util.Logger;
 
 import java.util.HashMap;
 import java.util.Map;

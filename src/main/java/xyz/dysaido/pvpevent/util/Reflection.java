@@ -1,6 +1,9 @@
 package xyz.dysaido.pvpevent.util;
 
-import java.lang.reflect.*;
+import java.lang.reflect.AccessibleObject;
+import java.lang.reflect.Field;
+import java.lang.reflect.Member;
+import java.lang.reflect.Modifier;
 
 public class Reflection {
 

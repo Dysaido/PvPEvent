@@ -1,7 +1,6 @@
 package xyz.dysaido.pvpevent.api.inventory;
 
 import org.bukkit.Material;
-import xyz.dysaido.pvpevent.util.ServerVersion;
 
 import java.util.Arrays;
 import java.util.Objects;
