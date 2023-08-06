@@ -359,7 +359,7 @@ public class PvPEventPlugin implements PvPEvent {
                 .setPerm(Settings.IMP.PERMISSION.COMMAND_ARENA);
         parentCommand.register(CommandInfo.CREATEKIT, SubCommand::new)
                 .setCommand((sender, args) -> {
-                    if (args.length == 2) {
+                    if (args.length == 1) {
                         String name = args[0].toLowerCase(Locale.ROOT);
                         if (kitManager.isLoaded(name)) {
                             sender.sendMessage(ChatColor.RED + "This kit has been registrated!");
