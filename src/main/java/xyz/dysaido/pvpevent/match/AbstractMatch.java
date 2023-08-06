@@ -114,7 +114,7 @@ public abstract class AbstractMatch implements Match<UUID> {
     }
 
     @Override
-    public Match onCreate(PvPEvent pvpEvent, int modulo) {
+    public Match<UUID> onCreate(PvPEvent pvpEvent, int modulo) {
         this.pvpEvent = pvpEvent;
 
         this.state = MatchState.QUEUE;

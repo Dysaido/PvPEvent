@@ -1,17 +1,19 @@
 package xyz.dysaido.pvpevent.command;
 
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
+import xyz.dysaido.pvpevent.util.BukkitHelper;
 import xyz.dysaido.pvpevent.util.Logger;
 
 public class SubCommand<S extends CommandSender> {
 
-    private final String name;
-    private CommandTask<S> command = (sender, args) -> {};
+    private final CommandInfo info;
+    private CommandTask<S> command = (sender, args) -> true;
     private String alias = "";
     private String perm = "";
 
-    public SubCommand(String name) {
-        this.name = name;
+    public SubCommand(CommandInfo info) {
+        this.info = info;
     }
 
     public SubCommand<S> setCommand(CommandTask<S> task) {
@@ -21,8 +23,10 @@ public class SubCommand<S extends CommandSender> {
 
     void execute(S sender, String[] args) {
         if (command != null) {
-            Logger.debug(name, String.format("perm: %s, alias: %s, executing...", perm, alias));
-            command.apply(sender, args);
+            Logger.debug(info.getName(), String.format("perm: %s, alias: %s, executing...", perm, alias));
+            if (!command.apply(sender, args)) {
+                sender.sendMessage(BukkitHelper.colorize(String.format("%s &5- %s", info.getUsage(), info.getDescription())));
+            }
         }
     }
 
@@ -36,7 +40,7 @@ public class SubCommand<S extends CommandSender> {
     }
 
     public String getName() {
-        return name;
+        return info.getName();
     }
 
     public String getPerm() {

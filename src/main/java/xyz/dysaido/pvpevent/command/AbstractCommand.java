@@ -26,13 +26,14 @@ public abstract class AbstractCommand extends Command {
         this.pvpEvent = pvpEvent;
     }
 
-    public SubCommand<CommandSender> register(String name, Function<String, SubCommand<CommandSender>> event) {
+    public SubCommand<CommandSender> register(CommandInfo info, Function<CommandInfo, SubCommand<CommandSender>> event) {
+        String name = info.getName();
         if (this.subcommands.containsKey(name)) {
             Logger.error(TAG, String.format("RegisterError - MainCommand: %s, subcommand: %s", getName(), name));
             throw new RuntimeException("You cannot register same command that registered");
         } else {
             Logger.debug(TAG, String.format("Register - MainCommand: %s, subcommand: %s", getName(), name));
-            SubCommand<CommandSender> subcommand = event.apply(name);
+            SubCommand<CommandSender> subcommand = event.apply(info);
             this.subcommands.put(name.toLowerCase(), subcommand);
             return subcommand;
         }
@@ -53,7 +54,7 @@ public abstract class AbstractCommand extends Command {
         String arrToStr = String.join(" ", args).toLowerCase();
         Optional<Map.Entry<String, SubCommand<CommandSender>>> matchedCommand =
                 subcommands.entrySet().stream()
-                        .filter(entry -> !entry.getKey().equals(""))
+                        .filter(entry -> !entry.getKey().isEmpty())
                         .filter(entry -> {
                             String alias = entry.getValue().getAlias();
                             boolean aliasCheck = !alias.isEmpty() && arrToStr.startsWith(entry.getValue().getAlias());
@@ -83,35 +84,33 @@ public abstract class AbstractCommand extends Command {
             String argument = args[0];
             String argumentLowered = argument.toLowerCase(Locale.ROOT);
             return Stream.concat(
-                            Stream.of("join", "leave", "spectate", "view", "help"),
-                            sender.hasPermission(Settings.IMP.PERMISSION.COMMAND_ADMIN) ? Stream.of("autoset", "host",
-                                    "createarena", "editarena", "delarena",
-                                    "createkit", "editkit", "delkit",
-                                    "stop", "reload", "kick", "ban", "unban"
-                            ) : Stream.empty()
+                            Stream.of(CommandInfo.getDefaults()),
+                            sender.hasPermission(Settings.IMP.PERMISSION.COMMAND_ADMIN)
+                                    ? Stream.of(CommandInfo.getStaffs()) : Stream.empty()
                     )
+                    .map(CommandInfo::getName)
                     .filter(s -> s.startsWith(argumentLowered))
                     .collect(Collectors.toList());
-            //return StringUtil.copyPartialMatches(args[0], subcommands.keySet(), new ArrayList<>(subcommands.size()));
         } else {
             if (args.length >= 2) {
                 String subcommandLowered = args[0].toLowerCase();
-                if (args.length == 3 && subcommandLowered.equals("editarena")) {
-                    return Stream.of(
-                            "save", "setlobby", "setpos1", "setpos2",
-                                    "setkit", "setcapacity", "setqueuecountdown", "setfightcountdown"
-                            )
-                            .filter(s -> s.startsWith(args[2].toLowerCase(Locale.ROOT)))
-                            .collect(Collectors.toList());
+                if (args.length == 3) {
+                    if (subcommandLowered.equals("editarena")) {
+                        return Stream.of(CommandInfo.EDITARENA.getArguments())
+                                .filter(s -> s.startsWith(args[2].toLowerCase(Locale.ROOT)))
+                                .collect(Collectors.toList());
+                    } else if (subcommandLowered.equals("editkit")) {
+                        return Stream.of(CommandInfo.EDITKIT.getArguments())
+                                .filter(s -> s.startsWith(args[2].toLowerCase(Locale.ROOT)))
+                                .collect(Collectors.toList());
+                    }
                 } else if (subcommandLowered.equals("host")
                         || subcommandLowered.equals("editarena")
-                        || subcommandLowered.equals("earena")
                         || subcommandLowered.equals("delarena")
                         || subcommandLowered.equals("autoset")) {
                     List<String> arenas = new ArrayList<>(pvpEvent.getArenaManager().getAll().keySet());
                     return StringUtil.copyPartialMatches(args[1], arenas, new ArrayList<>(arenas.size()));
                 } else if (subcommandLowered.equals("editkit")
-                        || subcommandLowered.equals("ekit")
                         || subcommandLowered.equals("delkit")) {
                     List<String> kits = new ArrayList<>(pvpEvent.getKitManager().getAll().keySet());
                     return StringUtil.copyPartialMatches(args[1], kits, new ArrayList<>(kits.size()));

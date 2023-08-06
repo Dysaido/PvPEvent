@@ -6,7 +6,7 @@ This project started as a hobby to enhance my own Minecraft server development. 
 
 ## Description
 
-PvPEvent is a compact yet powerful add-on that allows you to host regular PVP events on your Minecraft servers. With PvPEvent, players can engage in intense arena battles or team-based skirmishes (please note that team-based battles are currently unavailable). Moreover, you have the freedom to customize event settings and rewards using the PvPEvent plugin (any tips on rewarding participants, activating commands for winners when the event concludes, etc. are much appreciated!).
+PvPEvent is a compact yet powerful add-on that allows you to host regular PVP events on your Minecraft servers. With PvPEvent, players can engage in intense arena battles or team-based skirmishes (please note that team-based battles are currently unavailable). Moreover, you have the freedom to customize event settings and rewards using the PvPEvent plugin (any tips on rewarding participants, activating info for winners when the event concludes, etc. are much appreciated!).
 
 ## Key Features
 

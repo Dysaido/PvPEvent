@@ -8,6 +8,7 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.plugin.java.JavaPlugin;
 import xyz.dysaido.pvpevent.api.PvPEvent;
 import xyz.dysaido.pvpevent.api.model.Match;
+import xyz.dysaido.pvpevent.command.CommandInfo;
 import xyz.dysaido.pvpevent.command.ParentCommand;
 import xyz.dysaido.pvpevent.command.SubCommand;
 import xyz.dysaido.pvpevent.config.Settings;
@@ -24,7 +25,6 @@ import xyz.dysaido.pvpevent.util.NumericParser;
 import java.io.File;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class PvPEventPlugin implements PvPEvent {
 
@@ -58,10 +58,6 @@ public class PvPEventPlugin implements PvPEvent {
         registerCommands();
     }
 
-//    void test() {
-//        this.mainMatch = new SumoMatch(this, "Apple", arenaManager.getIfPresent("test"))
-//                                .onCreate(this, 10);
-//    }
     public String convertWithStream(Map<?, ?> map) {
         return map.keySet().stream()
                 .map(key -> key + "=" + map.get(key))
@@ -76,7 +72,6 @@ public class PvPEventPlugin implements PvPEvent {
     private void sendEventCommandsHelp(CommandSender sender) {
         String eventTitle = Settings.IMP.COMMAND.EVENT_TITLE;
         sender.sendMessage(BukkitHelper.colorize(eventTitle));
-        sender.sendMessage(BukkitHelper.colorize("&r"));
 
         String eventJoin = Settings.IMP.COMMAND.EVENT_JOIN;
         sender.sendMessage(BukkitHelper.colorize(eventJoin));
@@ -94,71 +89,73 @@ public class PvPEventPlugin implements PvPEvent {
         sender.sendMessage(BukkitHelper.colorize(eventHelp));
     }
 
-    private static final List<String> MSG_STAFF_HELP = Stream.of("\n" +
-            "&c&lPvPEvent Staff Commands\n" +
-            "&r" +
-            "&5/event autoset&4(BETA) &d[arena-name] <broadcast> <command> <schedule> \n" +
-            "&5/event host &d[arena-name] <broadcast>\n" +
-            "&5/event createarena &d[arena-name]\n" +
-            "&5/event editarena &d[arena-name] <save|setlobby|setpos1|setpos2|setkit|setcapacity|setqueuecountdown(second)|setfightcountdown(second)>\n" +
-            "&5/event delarena &d[arena-name]\n" +
-
-            "&5/event createkit &d[kit-name]\n" +
-            "&5/event editkit &d[kit-name] setinventory (who executes the command, his inventory will be saved)\n" +
-            "&5/event delkit &d[kit-name]\n" +
-
-            "&5/event stop\n" +
-            "&5/event reload &dreload this configs and some options\n" +
-            "&5/event kick&4(BETA) &d[user] <reason>\n" +
-            "&5/event ban&4(BETA) &d[user] <reason>\n" +
-            "&5/event unban&4(BETA) &d[user]\n"
-    ).map(BukkitHelper::colorize).collect(Collectors.toList());
+    private static boolean sendStaffMsg(CommandSender sender) {
+        sender.sendMessage(BukkitHelper.colorize("&5PvPEvent Staff Commands"));
+        Arrays.stream(CommandInfo.values()).forEach(info -> {
+            sender.sendMessage(BukkitHelper.colorize(String.format("%s &d- %s", info.getUsage(), info.getDescription())));
+        });
+        return true;
+    }
 
     private void registerCommands() {
-        parentCommand.register("", SubCommand::new)
-                .setCommand((sender, args) -> sendEventCommandsHelp(sender))
-                .setPerm(Settings.IMP.PERMISSION.COMMAND_DEFAULT);
-        parentCommand.register("help", SubCommand::new)
-                .setCommand((sender, args) -> MSG_STAFF_HELP.forEach(sender::sendMessage))
-                .setAlias("?")
-                .setPerm(Settings.IMP.PERMISSION.COMMAND_HELP);
-        parentCommand.register("join", SubCommand::new)
+        parentCommand.register(CommandInfo.NONE, SubCommand::new)
                 .setCommand((sender, args) -> {
-                    if (!(sender instanceof Player)) return;
+                    sendEventCommandsHelp(sender);
+                    return true;
+                })
+                .setPerm(Settings.IMP.PERMISSION.COMMAND_DEFAULT);
+        parentCommand.register(CommandInfo.HELP, SubCommand::new)
+                .setCommand((sender, args) -> sendStaffMsg(sender))
+                .setPerm(Settings.IMP.PERMISSION.COMMAND_HELP);
+        parentCommand.register(CommandInfo.JOIN, SubCommand::new)
+                .setCommand((sender, args) -> {
+                    if (!(sender instanceof Player)) return false;
                     Player player = (Player) sender;
                     if (isActiveMatch()) {
                         mainMatch.join(player.getUniqueId());
                     } else {
                         sender.sendMessage(BukkitHelper.colorize(Settings.IMP.COMMAND.DEFAULT_NO_EVENT));
                     }
+
+                    return true;
                 })
-                .setAlias("j")
                 .setPerm(Settings.IMP.PERMISSION.COMMAND_DEFAULT);
-        parentCommand.register("leave", SubCommand::new)
+        parentCommand.register(CommandInfo.LEAVE, SubCommand::new)
                 .setCommand((sender, args) -> {
-                    if (!(sender instanceof Player)) return;
+                    if (!(sender instanceof Player)) return false;
                     Player player = (Player) sender;
                     if (isActiveMatch()) {
                         mainMatch.leave(player.getUniqueId());
                     } else {
                         sender.sendMessage(BukkitHelper.colorize(Settings.IMP.COMMAND.DEFAULT_NO_EVENT));
                     }
+                    return true;
                 })
-                .setAlias("l")
                 .setPerm(Settings.IMP.PERMISSION.COMMAND_DEFAULT);
-        parentCommand.register("spectate", SubCommand::new)
+        parentCommand.register(CommandInfo.SPECTATE, SubCommand::new)
                 .setCommand((sender, args) -> {
-                    if (!(sender instanceof Player)) return;
+                    if (!(sender instanceof Player)) return false;
                     Player player = (Player) sender;
                     if (isActiveMatch()) {
                         mainMatch.leave(player.getUniqueId());
                     } else {
                         sender.sendMessage(BukkitHelper.colorize(Settings.IMP.COMMAND.DEFAULT_NO_EVENT));
                     }
+                    return true;
                 })
-                .setAlias("sp")
                 .setPerm(Settings.IMP.PERMISSION.COMMAND_DEFAULT);
-        parentCommand.register("host", SubCommand::new)
+        parentCommand.register(CommandInfo.VIEW, SubCommand::new)
+                .setCommand((sender, args) -> {
+                    sender.sendMessage("Arena: ");
+                    sender.sendMessage(ChatColor.AQUA + convertWithStream(arenaManager.getAll()));
+                    sender.sendMessage("Kit: ");
+                    sender.sendMessage(ChatColor.AQUA + convertWithStream(kitManager.getAll()));
+
+                    return false;
+                })
+                .setPerm(Settings.IMP.PERMISSION.COMMAND_DEFAULT);
+
+        parentCommand.register(CommandInfo.HOST, SubCommand::new)
                 .setCommand((sender, args) -> {
                     if (isActiveMatch()) {
                         sender.sendMessage(ChatColor.RED + "You can't create event while another is running!");
@@ -173,126 +170,84 @@ public class PvPEventPlugin implements PvPEvent {
                                                         .orElse("");
                                 int modulo = Math.max(Settings.IMP.COUNTDOWN.BASE_CREATE_MODULO, 1);
                                 this.mainMatch = new SumoMatch(this, presentMsg, arena).onCreate(this, modulo);
+                                return true;
                             } else {
                                 sender.sendMessage(ChatColor.RED + String.format("%s wasn't saved by anyone!", arenaName));
                             }
                             //args[0] args[1]
                             //[name]  [broadcast]
-                        } else {
-                            sender.sendMessage(ChatColor.DARK_PURPLE + "/event host [name] [broadcast]");
                         }
                     }
+                    return false;
                 })
-                .setAlias("h")
                 .setPerm(Settings.IMP.PERMISSION.COMMAND_HOST);
-        parentCommand.register("createarena", SubCommand::new)
+        parentCommand.register(CommandInfo.STOP, SubCommand::new)
                 .setCommand((sender, args) -> {
-                    if (args.length > 0) {
+                    if (isActiveMatch()) {
+                        mainMatch.onDestroy();
+                        sender.sendMessage(ChatColor.GREEN + "Event has been stopped!");
+                        BukkitHelper.broadcast(Settings.IMP.MESSAGE.MATCH_STOP_TEXT.replace("{executor}", sender.getName()));
+                    } else {
+                        sender.sendMessage(ChatColor.RED + "There isn't event!");
+                    }
+                    return true;
+                })
+                .setPerm(Settings.IMP.PERMISSION.COMMAND_STOP);
+        parentCommand.register(CommandInfo.RELOAD, SubCommand::new)
+                .setCommand((sender, args) -> {
+                    reload();
+                    sender.sendMessage(ChatColor.GREEN + "Reload success!");
+                    return true;
+                })
+                .setAlias("rl")
+                .setPerm(Settings.IMP.PERMISSION.COMMAND_RELOAD);
+
+        parentCommand.register(CommandInfo.KICK, SubCommand::new)
+                .setCommand((sender, args) -> {
+                    if (args.length == 1) {
+                        String argument = args[0];
+                        Player player = Bukkit.getServer().getPlayer(argument);
+                        if (player != null && isActiveMatch()) {
+                            UUID identifier = player.getUniqueId();
+                            mainMatch.leave(identifier);
+                            BukkitHelper.broadcast(ChatColor.RED + String.format("%s was kicked from PvPEvent by %s!", argument, sender.getName()));
+                        } else {
+                            sender.sendMessage(ChatColor.RED + String.format("%s didn't join to the event!", argument));
+                        }
+                        return true;
+                    }
+                    return false;
+                })
+                .setPerm(Settings.IMP.PERMISSION.COMMAND_PUNISHMENT);
+        parentCommand.register(CommandInfo.BAN, SubCommand::new)
+                .setCommand((sender, args) -> {
+                    sender.sendMessage("ban");
+                    return false;
+                })
+                .setPerm(Settings.IMP.PERMISSION.COMMAND_PUNISHMENT);
+        parentCommand.register(CommandInfo.UNBAN, SubCommand::new)
+                .setCommand((sender, args) -> {
+                    sender.sendMessage("unban");
+                    return false;
+                })
+                .setPerm(Settings.IMP.PERMISSION.COMMAND_PUNISHMENT);
+
+        parentCommand.register(CommandInfo.CREATEARENA, SubCommand::new)
+                .setCommand((sender, args) -> {
+                    if (args.length == 1) {
                         String name = args[0].toLowerCase(Locale.ROOT);
                         if (arenaManager.isLoaded(name)) {
                             sender.sendMessage(ChatColor.RED + "This arena has been registrated!");
-                            sender.sendMessage(ChatColor.DARK_PURPLE + "/event createarena [name]");
                         } else {
                             Arena arena = arenaManager.getOrMake(name);
                             sender.sendMessage(ChatColor.GREEN + String.format("%s arena has been created!", arena.getIdentifier()));
                         }
-                    } else {
-                        sender.sendMessage(ChatColor.DARK_PURPLE + "/event createarena [name]");
+                        return true;
                     }
+                    return false;
                 })
                 .setPerm(Settings.IMP.PERMISSION.COMMAND_ARENA);
-        parentCommand.register("delarena", SubCommand::new)
-                .setCommand((sender, args) -> {
-                    if (args.length > 0) {
-                        String name = args[0].toLowerCase(Locale.ROOT);
-                        if (!arenaManager.isLoaded(name)) {
-                            sender.sendMessage(ChatColor.RED + "This arena hasn't been registered!");
-                            sender.sendMessage(ChatColor.DARK_PURPLE + "/event delarena [name]");
-                        } else {
-                            Arena arena = arenaManager.remove(name);
-                            sender.sendMessage(ChatColor.GREEN + String.format("%s arena has been deleted!", arena.getIdentifier()));
-                        }
-                    } else {
-                        sender.sendMessage(ChatColor.DARK_PURPLE + "/event delarena [name]");
-                    }
-                })
-                .setPerm(Settings.IMP.PERMISSION.COMMAND_ARENA);
-        parentCommand.register("createkit", SubCommand::new)
-                .setCommand((sender, args) -> {
-                    if (args.length > 0) {
-                        String name = args[0].toLowerCase(Locale.ROOT);
-                        if (kitManager.isLoaded(name)) {
-                            sender.sendMessage(ChatColor.RED + "This kit has been registrated!");
-                            sender.sendMessage(ChatColor.DARK_PURPLE + "/event createkit [name]");
-                        } else {
-                            Kit<Player> kit = kitManager.getOrMake(name);
-                            sender.sendMessage(ChatColor.GREEN + String.format("%s kit has been created!", kit.getName()));
-                        }
-                    } else {
-                        sender.sendMessage(ChatColor.DARK_PURPLE + "/event createkit [name]");
-                    }
-                })
-                .setPerm(Settings.IMP.PERMISSION.COMMAND_KIT);
-        parentCommand.register("delkit", SubCommand::new)
-                .setCommand((sender, args) -> {
-                    if (args.length > 0) {
-                        String name = args[0].toLowerCase(Locale.ROOT);
-                        if (!kitManager.isLoaded(name)) {
-                            sender.sendMessage(ChatColor.RED + "This kit hasn't been registered!");
-                            sender.sendMessage(ChatColor.DARK_PURPLE + "/event createkit [name]");
-                        } else {
-                            Kit<Player> kit = kitManager.remove(name);
-                            sender.sendMessage(ChatColor.GREEN + String.format("%s kit has been deleted!", kit.getName()));
-                        }
-                    } else {
-                        sender.sendMessage(ChatColor.DARK_PURPLE + "/event delkit [name]");
-                    }
-                })
-                .setPerm(Settings.IMP.PERMISSION.COMMAND_KIT);
-        parentCommand.register("view", SubCommand::new)
-                .setCommand((sender, args) -> {
-                    sender.sendMessage("Arena: ");
-                    sender.sendMessage(ChatColor.AQUA + convertWithStream(arenaManager.getAll()));
-                    sender.sendMessage("Kit: ");
-                    sender.sendMessage(ChatColor.AQUA + convertWithStream(kitManager.getAll()));
-                })
-                .setAlias("v")
-                .setPerm(Settings.IMP.PERMISSION.COMMAND_DEFAULT);
-        parentCommand.register("editkit", SubCommand::new)
-                .setCommand((sender, args) -> {
-                    if (args.length > 1) {
-                        String name = args[0].toLowerCase(Locale.ROOT);
-                        if (!kitManager.isLoaded(name)) {
-                            sender.sendMessage(ChatColor.RED + "Kit hasn't been registrated!");
-                            sender.sendMessage(ChatColor.DARK_PURPLE + "/event editkit [name] setinventory");
-                        } else {
-                            if (!(sender instanceof Player)) {
-                                sender.sendMessage(ChatColor.RED+ "You don't have permission to perform this!");
-                                return;
-                            }
-                            Player player = (Player) sender;
-                            Kit<Player> kit = kitManager.getIfPresent(name);
-                            String option = args[1].toLowerCase();
-                            if (option.equals("setinventory")) {
-                                PlayerInventory inventory = player.getInventory();
-
-                                kit.setArmor(inventory.getArmorContents());
-                                kit.setContents(inventory.getContents());
-
-                                kitManager.getSerializer().write();
-
-                                player.sendMessage(ChatColor.GREEN + "Kit modified!");
-                            } else {
-                                MSG_STAFF_HELP.forEach(sender::sendMessage);
-                            }
-                        }
-                    } else {
-                        sender.sendMessage(ChatColor.DARK_PURPLE + "/event editkit [name] setinventory");
-                    }
-                })
-                .setAlias("ekit")
-                .setPerm(Settings.IMP.PERMISSION.COMMAND_KIT);
-        parentCommand.register("editarena", SubCommand::new)
+        parentCommand.register(CommandInfo.EDITARENA, SubCommand::new)
                 .setCommand((sender, args) -> {
                     if (args.length > 1) {
                         String name = args[0].toLowerCase(Locale.ROOT);
@@ -305,7 +260,7 @@ public class PvPEventPlugin implements PvPEvent {
                         } else {
                             if (!(sender instanceof Player)) {
                                 sender.sendMessage(ChatColor.RED+ "You don't have permission to perform this!");
-                                return;
+                                return false;
                             }
                             Player player = (Player) sender;
                             Arena arena = arenaManager.getIfPresent(name);
@@ -377,63 +332,96 @@ public class PvPEventPlugin implements PvPEvent {
                                     }
                                     break;
                                 default:
-                                    MSG_STAFF_HELP.forEach(sender::sendMessage);
-                                    break;
+                                    return sendStaffMsg(sender);
 
                             }
                         }
-                    } else {
-                        sender.sendMessage(ChatColor.DARK_PURPLE + "/event editarena [name] <option>");
+                        return true;
                     }
+                    return false;
                 })
-                .setAlias("earena")
                 .setPerm(Settings.IMP.PERMISSION.COMMAND_ARENA);
-        parentCommand.register("stop", SubCommand::new)
+        parentCommand.register(CommandInfo.DELARENA, SubCommand::new)
                 .setCommand((sender, args) -> {
-                    if (isActiveMatch()) {
-                        mainMatch.onDestroy();
-                        sender.sendMessage(ChatColor.GREEN + "Event has been stopped!");
-                        BukkitHelper.broadcast(Settings.IMP.MESSAGE.MATCH_STOP_TEXT.replace("{executor}", sender.getName()));
-                    } else {
-                        sender.sendMessage(ChatColor.RED + "There isn't event!");
-                    }
-                })
-                .setAlias("s")
-                .setPerm(Settings.IMP.PERMISSION.COMMAND_STOP);
-        parentCommand.register("reload", SubCommand::new)
-                .setCommand((sender, args) -> {
-                    reload();
-                    sender.sendMessage(ChatColor.GREEN + "Reload success!");
-                })
-                .setAlias("rl")
-                .setPerm(Settings.IMP.PERMISSION.COMMAND_RELOAD);
-        parentCommand.register("kick", SubCommand::new)
-                .setCommand((sender, args) -> {
-                    if (args.length > 0) {
-                        String argument = args[0];
-                        Player player = Bukkit.getServer().getPlayer(argument);
-                        if (player != null && isActiveMatch()) {
-                            UUID identifier = player.getUniqueId();
-                            mainMatch.leave(identifier);
-                            BukkitHelper.broadcast(ChatColor.RED + String.format("%s was kicked from PvPEvent by %s!", argument, sender.getName()));
+                    if (args.length == 1) {
+                        String name = args[0].toLowerCase(Locale.ROOT);
+                        if (!arenaManager.isLoaded(name)) {
+                            sender.sendMessage(ChatColor.RED + "This arena hasn't been registered!");
+                            sender.sendMessage(ChatColor.DARK_PURPLE + "/event delarena [name]");
                         } else {
-                            sender.sendMessage(ChatColor.RED + String.format("%s didn't join to the event!", argument));
+                            Arena arena = arenaManager.remove(name);
+                            sender.sendMessage(ChatColor.GREEN + String.format("%s arena has been deleted!", arena.getIdentifier()));
                         }
-                    } else {
-                        sender.sendMessage(ChatColor.DARK_PURPLE + "/event kick [name]");
+                        return true;
                     }
+                    return false;
                 })
-                .setPerm(Settings.IMP.PERMISSION.COMMAND_PUNISHMENT);
-        parentCommand.register("ban", SubCommand::new)
+                .setPerm(Settings.IMP.PERMISSION.COMMAND_ARENA);
+        parentCommand.register(CommandInfo.CREATEKIT, SubCommand::new)
                 .setCommand((sender, args) -> {
-                    sender.sendMessage("ban");
+                    if (args.length == 2) {
+                        String name = args[0].toLowerCase(Locale.ROOT);
+                        if (kitManager.isLoaded(name)) {
+                            sender.sendMessage(ChatColor.RED + "This kit has been registrated!");
+                            sender.sendMessage(ChatColor.DARK_PURPLE + "/event createkit [name]");
+                        } else {
+                            Kit<Player> kit = kitManager.getOrMake(name);
+                            sender.sendMessage(ChatColor.GREEN + String.format("%s kit has been created!", kit.getName()));
+                        }
+                        return true;
+                    }
+                    return false;
                 })
-                .setPerm(Settings.IMP.PERMISSION.COMMAND_PUNISHMENT);
-        parentCommand.register("unban", SubCommand::new)
+                .setPerm(Settings.IMP.PERMISSION.COMMAND_KIT);
+        parentCommand.register(CommandInfo.EDITKIT, SubCommand::new)
                 .setCommand((sender, args) -> {
-                    sender.sendMessage("unban");
+                    if (args.length == 2) {
+                        String name = args[0].toLowerCase(Locale.ROOT);
+                        if (!kitManager.isLoaded(name)) {
+                            sender.sendMessage(ChatColor.RED + "Kit hasn't been registrated!");
+                            sender.sendMessage(ChatColor.DARK_PURPLE + "/event editkit [name] setinventory");
+                        } else {
+                            if (!(sender instanceof Player)) {
+                                sender.sendMessage(ChatColor.RED+ "You don't have permission to perform this!");
+                                return false;
+                            }
+                            Player player = (Player) sender;
+                            Kit<Player> kit = kitManager.getIfPresent(name);
+                            String option = args[1].toLowerCase();
+                            if (option.equals("setinventory")) {
+                                PlayerInventory inventory = player.getInventory();
+
+                                kit.setArmor(inventory.getArmorContents());
+                                kit.setContents(inventory.getContents());
+
+                                kitManager.getSerializer().write();
+
+                                player.sendMessage(ChatColor.GREEN + "Kit modified!");
+                            } else {
+                                return sendStaffMsg(sender);
+                            }
+                        }
+                        return true;
+                    }
+                    return false;
                 })
-                .setPerm(Settings.IMP.PERMISSION.COMMAND_PUNISHMENT);
+                .setPerm(Settings.IMP.PERMISSION.COMMAND_KIT);
+        parentCommand.register(CommandInfo.DELKIT, SubCommand::new)
+                .setCommand((sender, args) -> {
+                    if (args.length == 1) {
+                        String name = args[0].toLowerCase(Locale.ROOT);
+                        if (!kitManager.isLoaded(name)) {
+                            sender.sendMessage(ChatColor.RED + "This kit hasn't been registered!");
+                            sender.sendMessage(ChatColor.DARK_PURPLE + "/event createkit [name]");
+                        } else {
+                            Kit<Player> kit = kitManager.remove(name);
+                            sender.sendMessage(ChatColor.GREEN + String.format("%s kit has been deleted!", kit.getName()));
+                        }
+                        return true;
+                    }
+                    return false;
+                })
+                .setPerm(Settings.IMP.PERMISSION.COMMAND_KIT);
     }
 
     @Override
