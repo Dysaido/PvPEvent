@@ -1,20 +1,21 @@
 package xyz.dysaido.pvpevent;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.plugin.java.JavaPlugin;
 import xyz.dysaido.pvpevent.api.PvPEvent;
+import xyz.dysaido.pvpevent.api.model.Match;
 import xyz.dysaido.pvpevent.command.ParentCommand;
 import xyz.dysaido.pvpevent.command.SubCommand;
 import xyz.dysaido.pvpevent.config.Settings;
 import xyz.dysaido.pvpevent.listener.ConnectionListener;
-import xyz.dysaido.pvpevent.api.model.Match;
+import xyz.dysaido.pvpevent.match.Kit;
 import xyz.dysaido.pvpevent.match.MatchState;
 import xyz.dysaido.pvpevent.match.impl.SumoMatch;
 import xyz.dysaido.pvpevent.model.Arena;
-import xyz.dysaido.pvpevent.match.Kit;
 import xyz.dysaido.pvpevent.model.manager.ArenaManager;
 import xyz.dysaido.pvpevent.model.manager.KitManager;
 import xyz.dysaido.pvpevent.util.BukkitHelper;
@@ -33,7 +34,7 @@ public class PvPEventPlugin implements PvPEvent {
     private final ConnectionListener connectionListener;
     private final ArenaManager arenaManager;
     private final KitManager kitManager;
-    private Match mainMatch;
+    private Match<UUID> mainMatch;
 
     public PvPEventPlugin(JavaPlugin plugin) {
         this.plugin = plugin;
@@ -57,10 +58,10 @@ public class PvPEventPlugin implements PvPEvent {
         registerCommands();
     }
 
-    void test() {
-        this.mainMatch = new SumoMatch(this, "Apple", arenaManager.getIfPresent("test"))
-                                .onCreate(this, 10);
-    }
+//    void test() {
+//        this.mainMatch = new SumoMatch(this, "Apple", arenaManager.getIfPresent("test"))
+//                                .onCreate(this, 10);
+//    }
     public String convertWithStream(Map<?, ?> map) {
         return map.keySet().stream()
                 .map(key -> key + "=" + map.get(key))
@@ -100,11 +101,11 @@ public class PvPEventPlugin implements PvPEvent {
             "&5/event host &d[arena-name] <broadcast>\n" +
             "&5/event createarena &d[arena-name]\n" +
             "&5/event editarena &d[arena-name] <save|setlobby|setpos1|setpos2|setkit|setcapacity|setqueuecountdown(second)|setfightcountdown(second)>\n" +
-            "&5/event deletearena&4(BETA) &d[arena-name]\n" +
+            "&5/event delarena &d[arena-name]\n" +
 
             "&5/event createkit &d[kit-name]\n" +
             "&5/event editkit &d[kit-name] setinventory (who executes the command, his inventory will be saved)\n" +
-            "&5/event deletekit&4(BETA) &d[kit-name]\n" +
+            "&5/event delkit &d[kit-name]\n" +
 
             "&5/event stop\n" +
             "&5/event reload &dreload this configs and some options\n" +
@@ -199,7 +200,22 @@ public class PvPEventPlugin implements PvPEvent {
                         sender.sendMessage(ChatColor.DARK_PURPLE + "/event createarena [name]");
                     }
                 })
-                .setAlias("carena")
+                .setPerm(Settings.IMP.PERMISSION.COMMAND_ARENA);
+        parentCommand.register("delarena", SubCommand::new)
+                .setCommand((sender, args) -> {
+                    if (args.length > 0) {
+                        String name = args[0].toLowerCase(Locale.ROOT);
+                        if (!arenaManager.isLoaded(name)) {
+                            sender.sendMessage(ChatColor.RED + "This arena hasn't been registered!");
+                            sender.sendMessage(ChatColor.DARK_PURPLE + "/event delarena [name]");
+                        } else {
+                            Arena arena = arenaManager.remove(name);
+                            sender.sendMessage(ChatColor.GREEN + String.format("%s arena has been deleted!", arena.getIdentifier()));
+                        }
+                    } else {
+                        sender.sendMessage(ChatColor.DARK_PURPLE + "/event delarena [name]");
+                    }
+                })
                 .setPerm(Settings.IMP.PERMISSION.COMMAND_ARENA);
         parentCommand.register("createkit", SubCommand::new)
                 .setCommand((sender, args) -> {
@@ -216,7 +232,22 @@ public class PvPEventPlugin implements PvPEvent {
                         sender.sendMessage(ChatColor.DARK_PURPLE + "/event createkit [name]");
                     }
                 })
-                .setAlias("ckit")
+                .setPerm(Settings.IMP.PERMISSION.COMMAND_KIT);
+        parentCommand.register("delkit", SubCommand::new)
+                .setCommand((sender, args) -> {
+                    if (args.length > 0) {
+                        String name = args[0].toLowerCase(Locale.ROOT);
+                        if (!kitManager.isLoaded(name)) {
+                            sender.sendMessage(ChatColor.RED + "This kit hasn't been registered!");
+                            sender.sendMessage(ChatColor.DARK_PURPLE + "/event createkit [name]");
+                        } else {
+                            Kit<Player> kit = kitManager.remove(name);
+                            sender.sendMessage(ChatColor.GREEN + String.format("%s kit has been deleted!", kit.getName()));
+                        }
+                    } else {
+                        sender.sendMessage(ChatColor.DARK_PURPLE + "/event delkit [name]");
+                    }
+                })
                 .setPerm(Settings.IMP.PERMISSION.COMMAND_KIT);
         parentCommand.register("view", SubCommand::new)
                 .setCommand((sender, args) -> {
@@ -378,8 +409,19 @@ public class PvPEventPlugin implements PvPEvent {
                 .setPerm(Settings.IMP.PERMISSION.COMMAND_RELOAD);
         parentCommand.register("kick", SubCommand::new)
                 .setCommand((sender, args) -> {
-
-                    sender.sendMessage("kick");
+                    if (args.length > 0) {
+                        String argument = args[0];
+                        Player player = Bukkit.getServer().getPlayer(argument);
+                        if (player != null && isActiveMatch()) {
+                            UUID identifier = player.getUniqueId();
+                            mainMatch.leave(identifier);
+                            BukkitHelper.broadcast(ChatColor.RED + String.format("%s was kicked from PvPEvent by %s!", argument, sender.getName()));
+                        } else {
+                            sender.sendMessage(ChatColor.RED + String.format("%s didn't join to the event!", argument));
+                        }
+                    } else {
+                        sender.sendMessage(ChatColor.DARK_PURPLE + "/event kick [name]");
+                    }
                 })
                 .setPerm(Settings.IMP.PERMISSION.COMMAND_PUNISHMENT);
         parentCommand.register("ban", SubCommand::new)
@@ -409,12 +451,12 @@ public class PvPEventPlugin implements PvPEvent {
     }
 
     @Override
-    public void setMainMatch(Match mainMatch) {
+    public void setMainMatch(Match<UUID> mainMatch) {
         this.mainMatch = mainMatch;
     }
 
     @Override
-    public Optional<Match> getMainMatch() {
+    public Optional<Match<UUID>> getMainMatch() {
         return Optional.ofNullable(mainMatch);
     }
 

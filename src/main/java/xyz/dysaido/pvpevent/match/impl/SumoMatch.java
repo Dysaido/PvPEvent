@@ -2,7 +2,6 @@ package xyz.dysaido.pvpevent.match.impl;
 
 import org.bukkit.Bukkit;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import org.jetbrains.annotations.NotNull;
 import xyz.dysaido.pvpevent.PvPEventPlugin;
 import xyz.dysaido.pvpevent.api.event.sumo.SumoNextRoundEvent;
 import xyz.dysaido.pvpevent.config.Settings;
@@ -14,7 +13,6 @@ import xyz.dysaido.pvpevent.util.BukkitHelper;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class SumoMatch extends AbstractMatch {
 
@@ -42,10 +40,9 @@ public class SumoMatch extends AbstractMatch {
             BukkitHelper.broadcast(text);
 
             nextRound();
-            Bukkit.getScheduler().runTaskLater(pvpEvent.getPlugin(), () -> {
-                victim.getPlayer().spigot().respawn();
-                victim.getPlayer().teleport(arena.getLobby());
-            }, 10L);
+            victim.getPlayer().setHealth(victim.getPlayer().getMaxHealth());
+            victim.getPlayer().setFoodLevel(20);
+            victim.getPlayer().teleport(arena.getLobby());
         }
     }
 

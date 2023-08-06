@@ -7,19 +7,18 @@ import xyz.dysaido.pvpevent.match.Participant;
 import xyz.dysaido.pvpevent.match.ParticipantStatus;
 
 import java.util.Map;
-import java.util.UUID;
 
-public interface Match {
+public interface Match<I> {
 
-    void join(UUID identifier);
+    void join(I identifier);
 
-    void leave(UUID identifier);
+    void leave(I identifier);
 
-    void spectate(UUID identifier);
+    void spectate(I identifier);
 
-    void onDeath(UUID identifier, PlayerDeathEvent event);
+    void onDeath(I identifier, PlayerDeathEvent event);
 
-    Match onCreate(PvPEvent pvpEvent, int modulo);
+    Match<I> onCreate(PvPEvent pvpEvent, int modulo);
 
     void onDestroy();
 
@@ -35,7 +34,7 @@ public interface Match {
 
     MatchState getState();
 
-    Map<UUID, Participant> getParticipantsByUUD();
+    Map<I, Participant> getParticipantsByUUD();
 
-    Map<UUID, ParticipantStatus> getStatusByUUID();
+    Map<I, ParticipantStatus> getStatusByUUID();
 }

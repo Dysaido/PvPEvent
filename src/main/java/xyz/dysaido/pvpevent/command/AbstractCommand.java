@@ -12,6 +12,8 @@ import xyz.dysaido.pvpevent.util.Logger;
 
 import java.util.*;
 import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public abstract class AbstractCommand extends Command {
 
@@ -78,20 +80,39 @@ public abstract class AbstractCommand extends Command {
     @Override
     public List<String> tabComplete(CommandSender sender, String alias, String[] args) throws IllegalArgumentException {
         if (args.length == 1) {
-            return StringUtil.copyPartialMatches(args[0], subcommands.keySet(), new ArrayList<>(subcommands.size()));
+            String argument = args[0];
+            String argumentLowered = argument.toLowerCase(Locale.ROOT);
+            return Stream.concat(
+                            Stream.of("join", "leave", "spectate", "view", "help"),
+                            sender.hasPermission(Settings.IMP.PERMISSION.COMMAND_ADMIN) ? Stream.of("autoset", "host",
+                                    "createarena", "editarena", "delarena",
+                                    "createkit", "editkit", "delkit",
+                                    "stop", "reload", "kick", "ban", "unban"
+                            ) : Stream.empty()
+                    )
+                    .filter(s -> s.startsWith(argumentLowered))
+                    .collect(Collectors.toList());
+            //return StringUtil.copyPartialMatches(args[0], subcommands.keySet(), new ArrayList<>(subcommands.size()));
         } else {
-            if (args.length == 2) {
-                String subcommand = args[0].toLowerCase();
-                if (subcommand.equals("host")
-                        || subcommand.equals("editarena")
-                        || subcommand.equals("earena")
-                        || subcommand.equals("deletearena")
-                        || subcommand.equals("autoset")) {
+            if (args.length >= 2) {
+                String subcommandLowered = args[0].toLowerCase();
+                if (args.length == 3 && subcommandLowered.equals("editarena")) {
+                    return Stream.of(
+                            "save", "setlobby", "setpos1", "setpos2",
+                                    "setkit", "setcapacity", "setqueuecountdown", "setfightcountdown"
+                            )
+                            .filter(s -> s.startsWith(args[2].toLowerCase(Locale.ROOT)))
+                            .collect(Collectors.toList());
+                } else if (subcommandLowered.equals("host")
+                        || subcommandLowered.equals("editarena")
+                        || subcommandLowered.equals("earena")
+                        || subcommandLowered.equals("delarena")
+                        || subcommandLowered.equals("autoset")) {
                     List<String> arenas = new ArrayList<>(pvpEvent.getArenaManager().getAll().keySet());
                     return StringUtil.copyPartialMatches(args[1], arenas, new ArrayList<>(arenas.size()));
-                } else if (subcommand.equals("editkit")
-                        || subcommand.equals("ekit")
-                        || subcommand.equals("deletekit")) {
+                } else if (subcommandLowered.equals("editkit")
+                        || subcommandLowered.equals("ekit")
+                        || subcommandLowered.equals("delkit")) {
                     List<String> kits = new ArrayList<>(pvpEvent.getKitManager().getAll().keySet());
                     return StringUtil.copyPartialMatches(args[1], kits, new ArrayList<>(kits.size()));
                 }

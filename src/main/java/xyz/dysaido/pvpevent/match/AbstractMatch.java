@@ -2,7 +2,6 @@ package xyz.dysaido.pvpevent.match;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import xyz.dysaido.pvpevent.PvPEventPlugin;
@@ -24,7 +23,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-public abstract class AbstractMatch implements Match {
+public abstract class AbstractMatch implements Match<UUID> {
 
     protected final String present;
     protected final Arena arena;
@@ -174,7 +173,6 @@ public abstract class AbstractMatch implements Match {
         this.participantsByUUD.clear();
         this.statusByUUID.clear();
         this.matchListener.unload();
-        this.pvpEvent = null;
     }
 
     protected BukkitTask syncTaskFactory(final long times, final long countdownModulo, Consumer<Long> counter, Runnable executor) {

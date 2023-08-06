@@ -1,13 +1,14 @@
 package xyz.dysaido.pvpevent.api;
 
 import org.bukkit.plugin.java.JavaPlugin;
-import xyz.dysaido.pvpevent.command.ParentCommand;
 import xyz.dysaido.pvpevent.api.model.Match;
+import xyz.dysaido.pvpevent.command.ParentCommand;
 import xyz.dysaido.pvpevent.model.manager.ArenaManager;
 import xyz.dysaido.pvpevent.model.manager.KitManager;
 
 import java.io.File;
 import java.util.Optional;
+import java.util.UUID;
 
 public interface PvPEvent {
 
@@ -17,13 +18,11 @@ public interface PvPEvent {
 
     void disable();
 
-
-
     void reload();
 
-    void setMainMatch(Match mainMatch);
+    void setMainMatch(Match<UUID> mainMatch);
 
-    Optional<Match> getMainMatch();
+    Optional<Match<UUID>> getMainMatch();
 
     boolean hasMainMatch();
 
