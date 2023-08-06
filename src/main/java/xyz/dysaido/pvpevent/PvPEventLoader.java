@@ -1,6 +1,7 @@
 package xyz.dysaido.pvpevent;
 
 import org.bukkit.plugin.java.JavaPlugin;
+import xyz.dysaido.pvpevent.api.PvPEvent;
 import xyz.dysaido.pvpevent.util.Logger;
 
 public final class PvPEventLoader extends JavaPlugin {
@@ -31,7 +32,7 @@ public final class PvPEventLoader extends JavaPlugin {
         this.event = new PvPEventPlugin(this);
     }
 
-    public PvPEventPlugin getPvPEvent() {
+    public PvPEvent getPvPEvent() {
         return event;
     }
 }
