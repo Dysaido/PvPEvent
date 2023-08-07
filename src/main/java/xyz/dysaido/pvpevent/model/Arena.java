@@ -10,6 +10,7 @@ public class Arena implements Model<String, Arena> {
     private Location pos1;
     private Location pos2;
     private String kitName;
+    private int minCapacity = 2;
     private int capacity = 30;
     private int queueCountdown = 10;
     private int fightCountdown = 3;
@@ -34,6 +35,14 @@ public class Arena implements Model<String, Arena> {
 
     public boolean isValidKit() {
         return kitName != null;
+    }
+
+    public void setMinCapacity(int minCapacity) {
+        this.minCapacity = minCapacity;
+    }
+
+    public int getMinCapacity() {
+        return minCapacity;
     }
 
     public void setCapacity(int capacity) {
