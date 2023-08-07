@@ -13,7 +13,7 @@ public enum CommandInfo {
 
     AUTOSET(true, "autoset", "/event autoset [name] [arena] HH:MM [command]",
             "Automatically schedule an event with time and optional command"),
-    HOST(true, "host", "/event host [name] [broadcast]", "Initiate a saved event"),
+    HOST(true, "host", "/event host [arena] [broadcast]", "Initiate a saved event"),
     STOP(true, "stop", "/event stop", "Terminate the ongoing event"),
     RELOAD(true, "reload", "/event reload [argument]", "Reload the entire plugin, including files",
             "config", "full"),
