@@ -29,7 +29,7 @@ public class Settings extends Config {
     public COUNTDOWN COUNTDOWN;
 
     public void reload(File file) {
-        Logger.debug("Settings", "Reload all field from settings configuration class and load from parent file");
+        Logger.information("Settings", "Reload all field from settings configuration class and load from parent file");
         load(file);
         save(file);
     }
