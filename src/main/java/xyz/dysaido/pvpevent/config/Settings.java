@@ -51,7 +51,7 @@ public class Settings extends Config {
         public String SUMO_NEXTROUND_WITHOUT_WINNER_TEXT = "&7There is not winner. Because of this the {present} hasn't given to winner";
         public String BASE_JOIN_SUCCESS = "&aYou joined the event!";
         public String BASE_JOIN_JOINED = "&cYou are already on the queue";
-        public String BASE_JOIN_CANNOT = "&cYou can't join!";
+        public String BASE_JOIN_CANNOT = "&cYou can't join! (Maybe the event has reached max capacity)";
 
         public String BASE_LEAVE_BROADCAST = "&c{user} &7left the battelfield while the battle was going on!";
         public String BASE_LEAVE_SUCCESS = "&cYou leaved the event!";

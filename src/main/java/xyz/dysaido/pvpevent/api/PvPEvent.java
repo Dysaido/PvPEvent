@@ -20,6 +20,8 @@ public interface PvPEvent {
 
     void reload();
 
+    void reloadConfig();
+
     void setMainMatch(Match<UUID> mainMatch);
 
     Optional<Match<UUID>> getMainMatch();

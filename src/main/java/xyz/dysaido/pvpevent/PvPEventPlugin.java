@@ -66,7 +66,7 @@ public class PvPEventPlugin implements PvPEvent {
 
     @Override
     public boolean isActiveMatch() {
-        return mainMatch != null && mainMatch.getState() != MatchState.INACTIVE;
+        return mainMatch != null && !mainMatch.isOver();
     }
 
     private void sendEventCommandsHelp(CommandSender sender) {
@@ -449,6 +449,11 @@ public class PvPEventPlugin implements PvPEvent {
     public void reload() {
         disable();
         enable();
+    }
+
+    @Override
+    public void reloadConfig() {
+        Settings.IMP.reload(configFile);
     }
 
     @Override
