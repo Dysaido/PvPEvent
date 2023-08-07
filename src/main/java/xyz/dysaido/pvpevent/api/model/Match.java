@@ -30,6 +30,12 @@ public interface Match<I> {
 
     void nextRound();
 
+    boolean isOver();
+
+    boolean isFull();
+
+    boolean hasEnoughParticipant();
+
     void setState(MatchState state);
 
     MatchState getState();

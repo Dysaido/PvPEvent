@@ -231,6 +231,21 @@ public abstract class AbstractMatch implements Match<UUID> {
     }
 
     @Override
+    public boolean isOver() {
+        return state == MatchState.INACTIVE;
+    }
+
+    @Override
+    public boolean isFull() {
+        return this.participantsByUUD.size() > arena.getCapacity();
+    }
+
+    @Override
+    public boolean hasEnoughParticipant() {
+        return true;
+    }
+
+    @Override
     public MatchState getState() {
         return state;
     }
