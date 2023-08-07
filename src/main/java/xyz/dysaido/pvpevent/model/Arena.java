@@ -51,7 +51,7 @@ public class Arena implements Model<String, Arena> {
         return queueCountdown;
     }
 
-    public void setKit(String kitName) {
+    public void setKitName(String kitName) {
         this.kitName = kitName;
     }
 

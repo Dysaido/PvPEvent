@@ -34,7 +34,7 @@ public interface Match<I> {
 
     boolean isFull();
 
-    boolean hasEnoughParticipant();
+    boolean isInsufficient();
 
     void setState(MatchState state);
 

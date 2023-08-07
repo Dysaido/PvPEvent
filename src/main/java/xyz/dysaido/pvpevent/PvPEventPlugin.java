@@ -286,7 +286,7 @@ public class PvPEventPlugin implements PvPEvent {
                                 case "setkit":
                                     if (args.length == 3) {
                                         String kitname = args[2];
-                                        arena.setKit(kitname);
+                                        arena.setKitName(kitname);
                                         player.sendMessage(ChatColor.GREEN + "IMPORTANT - When adding a kit to the arena, it is important that the kit name was added, if you want to use this kit in the event, then create a kit with such a name!");
                                     } else {
                                         sender.sendMessage(ChatColor.DARK_PURPLE + "/event editarena setkit [name]");
@@ -303,6 +303,19 @@ public class PvPEventPlugin implements PvPEvent {
                                         }
                                     } else {
                                         sender.sendMessage(ChatColor.DARK_PURPLE + "/event editarena setcapacity [integer]");
+                                    }
+                                    break;
+                                case "setmincapacity":
+                                    if (args.length == 3) {
+                                        String minCapacity = args[2];
+                                        if (NumericParser.ensureInteger(minCapacity)) {
+                                            arena.setMinCapacity(Math.max(Integer.parseInt(minCapacity), 1));
+                                            player.sendMessage(ChatColor.GREEN + String.format("%s has been set for min-capacity!", minCapacity));
+                                        } else {
+                                            player.sendMessage(ChatColor.RED + "This is not integer!");
+                                        }
+                                    } else {
+                                        sender.sendMessage(ChatColor.DARK_PURPLE + "/event editarena setmincapacity [integer]");
                                     }
                                     break;
                                 case "setqueuecountdown":

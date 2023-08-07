@@ -27,6 +27,7 @@ public class ArenaSerializer extends GsonSerializer<Arena> {
         JsonObject arenaObj = new JsonObject();
 
         arenaObj.addProperty("name", arena.getIdentifier());
+        arenaObj.addProperty("min-capacity", arena.getMinCapacity());
         arenaObj.addProperty("capacity", arena.getCapacity());
         arenaObj.addProperty("queue-countdown", arena.getQueueCountdown());
         arenaObj.addProperty("fight-countdown", arena.getFightCountdown());
@@ -94,12 +95,14 @@ public class ArenaSerializer extends GsonSerializer<Arena> {
         if (element.isJsonObject()) {
             JsonObject arenaObj = element.getAsJsonObject();
             JsonElement nameElement = arenaObj.get("name");
+            JsonElement minCapacityElement = arenaObj.get("min-capacity");
             JsonElement capacityElement = arenaObj.get("capacity");
             JsonElement queueElement = arenaObj.get("queue-countdown");
             JsonElement fightElement = arenaObj.get("fight-countdown");
 
-            if (nameElement != null && capacityElement != null && queueElement != null && fightElement != null) {
+            if (nameElement != null && minCapacityElement != null && capacityElement != null && queueElement != null && fightElement != null) {
                 String name = nameElement.getAsString();
+                int minCapacity = minCapacityElement.getAsInt();
                 int capacity = capacityElement.getAsInt();
                 int queueCountdown = queueElement.getAsInt();
                 int fightCountdown = fightElement.getAsInt();
@@ -118,8 +121,9 @@ public class ArenaSerializer extends GsonSerializer<Arena> {
                 }
                 JsonElement kitElement = arenaObj.get("kitname");
                 if (kitElement != null) {
-                    arena.setKit(kitElement.getAsString());
+                    arena.setKitName(kitElement.getAsString());
                 }
+                arena.setMinCapacity(minCapacity);
                 arena.setCapacity(capacity);
                 arena.setQueueCountdown(queueCountdown);
                 arena.setFightCountdown(fightCountdown);

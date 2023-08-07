@@ -25,7 +25,7 @@ public enum CommandInfo {
     EDITARENA(true, "editarena", "/event editarena [name] [argument]",
             "Modify the parameters of an existing arena",
             "save", "setlobby", "setpos1", "setpos2",
-            "setkit", "setcapacity", "setqueuecountdown", "setfightcountdown"),
+            "setkit", "setmincapacity","setcapacity", "setqueuecountdown", "setfightcountdown"),
     DELARENA(true, "delarena", "/event delarena [name]", "Delete an arena from the database"),
 
     CREATEKIT(true, "createkit", "/event createkit [name]", "Create a new empty kit"),
