@@ -16,7 +16,7 @@ public class Settings extends Config {
             "@Github: https://github.com/Dysaido/PvPEvent"
     })
     @Final
-    public String VERSION = "1.2.0-pre6";
+    public String VERSION = "1.2.0-pre7";
     @Comment("If you want to see some information from this plugin, turn on this!")
     public boolean DEBUG = false;
     @Create

@@ -1,6 +1,5 @@
 package xyz.dysaido.pvpevent.command;
 
-import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import xyz.dysaido.pvpevent.util.BukkitHelper;
 import xyz.dysaido.pvpevent.util.Logger;

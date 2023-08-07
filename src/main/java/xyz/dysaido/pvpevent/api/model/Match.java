@@ -40,6 +40,10 @@ public interface Match<I> {
 
     MatchState getState();
 
+    boolean hasParticipant(I identifier);
+
+    ParticipantStatus getParticipantStatus(I identifier);
+
     Map<I, Participant> getParticipantsByUUD();
 
     Map<I, ParticipantStatus> getStatusByUUID();

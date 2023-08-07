@@ -39,16 +39,21 @@ public abstract class AbstractMatch implements Match<UUID> {
         this.present = present;
         this.arena = arena;
         this.state = MatchState.INACTIVE;
-        this.participantsByUUD = new ConcurrentHashMap<>(arena.getCapacity());
-        this.statusByUUID = new ConcurrentHashMap<>(arena.getCapacity());
+        
+        int maxCapacity = Bukkit.getServer().getMaxPlayers();
+        this.participantsByUUD = new ConcurrentHashMap<>(maxCapacity);
+        this.statusByUUID = new ConcurrentHashMap<>(maxCapacity);
+        
         this.matchListener = new MatchListener(pvpEvent, this);
         this.playerKit = pvpEvent.getKitManager().getIfPresent(arena.getKitName());
     }
 
+    @Override
     public boolean hasParticipant(UUID identifier) {
         return participantsByUUD.containsKey(identifier);
     }
 
+    @Override
     public ParticipantStatus getParticipantStatus(UUID identifier) {
         return statusByUUID.get(identifier);
     }
@@ -56,21 +61,23 @@ public abstract class AbstractMatch implements Match<UUID> {
     @Override
     public void join(UUID identifier) {
         Player player = Bukkit.getServer().getPlayer(identifier);
-        if (state == MatchState.QUEUE) {
-            if (!hasParticipant(identifier) && player != null) {
-                Participant participant = new Participant(player);
-                Bukkit.getPluginManager().callEvent(new MatchJoinEvent(this, participant));
-                participant.resetThingsOfPlayer();
-                participant.getPlayer().teleport(arena.getLobby());
+        if (player != null) {
+            if (state == MatchState.QUEUE && !isFull()) {
+                if (!hasParticipant(identifier)) {
+                    Participant participant = new Participant(player);
+                    Bukkit.getPluginManager().callEvent(new MatchJoinEvent(this, participant, ParticipantStatus.QUEUE));
+                    participant.resetThingsOfPlayer();
+                    participant.getPlayer().teleport(arena.getLobby());
 
-                participantsByUUD.put(identifier, participant);
-                statusByUUID.put(identifier, ParticipantStatus.QUEUE);
-                player.sendMessage(BukkitHelper.colorize(Settings.IMP.MESSAGE.BASE_JOIN_SUCCESS));
+                    participantsByUUD.put(identifier, participant);
+                    statusByUUID.put(identifier, ParticipantStatus.QUEUE);
+                    player.sendMessage(BukkitHelper.colorize(Settings.IMP.MESSAGE.BASE_JOIN_SUCCESS));
+                } else {
+                    player.sendMessage(BukkitHelper.colorize(Settings.IMP.MESSAGE.BASE_JOIN_JOINED));
+                }
             } else {
-                player.sendMessage(BukkitHelper.colorize(Settings.IMP.MESSAGE.BASE_JOIN_JOINED));
+                player.sendMessage(BukkitHelper.colorize(Settings.IMP.MESSAGE.BASE_JOIN_CANNOT));
             }
-        } else {
-            player.sendMessage(BukkitHelper.colorize(Settings.IMP.MESSAGE.BASE_JOIN_CANNOT));
         }
     }
 
@@ -100,16 +107,16 @@ public abstract class AbstractMatch implements Match<UUID> {
     @Override
     public void spectate(UUID identifier) {
         Player player = Bukkit.getServer().getPlayer(identifier);
-        if (!hasParticipant(identifier) && player != null) {
-            Participant participant = new Participant(player);
-            Bukkit.getPluginManager().callEvent(new MatchJoinEvent(this, participant));
-            participantsByUUD.put(identifier, participant);
-            statusByUUID.put(identifier, ParticipantStatus.SPECTATE);
-            player.sendMessage(BukkitHelper.colorize(Settings.IMP.MESSAGE.BASE_SPECTATE_SUCCESS));
-//            player.setFlying();
-//            player.setAllowFlight();
-        } else {
-            player.sendMessage(BukkitHelper.colorize(Settings.IMP.MESSAGE.BASE_SPECTATE_JOINED));
+        if (player != null) {
+            if (!hasParticipant(identifier)) {
+                Participant participant = new Participant(player);
+                Bukkit.getPluginManager().callEvent(new MatchJoinEvent(this, participant, ParticipantStatus.SPECTATE));
+                participantsByUUD.put(identifier, participant);
+                statusByUUID.put(identifier, ParticipantStatus.SPECTATE);
+                player.sendMessage(BukkitHelper.colorize(Settings.IMP.MESSAGE.BASE_SPECTATE_SUCCESS));
+            } else {
+                player.sendMessage(BukkitHelper.colorize(Settings.IMP.MESSAGE.BASE_SPECTATE_JOINED));
+            }
         }
     }
 
@@ -137,8 +144,18 @@ public abstract class AbstractMatch implements Match<UUID> {
 
     @Override
     public void onStartTask() {
-        this.state = MatchState.ACTIVE;
         Bukkit.getPluginManager().callEvent(new MatchStartEvent(this));
+        this.state = MatchState.ACTIVE;
+
+        if (isInsufficient()) {
+            BukkitHelper.broadcast(Settings.IMP.MESSAGE.MATCH_STOP_TEXT.replace("{executor}", "CONSOLE"));
+            
+            String text = Settings.IMP.MESSAGE.SUMO_NEXTROUND_WITHOUT_WINNER_TEXT
+                    .replace("{present}", present);
+            BukkitHelper.broadcast(text);
+            onDestroy();
+            return;
+        }
 
         int cnfTimes = Settings.IMP.COUNTDOWN.BASE_START_TIMES;
         if (cnfTimes < 3) {
@@ -242,7 +259,7 @@ public abstract class AbstractMatch implements Match<UUID> {
 
     @Override
     public boolean isInsufficient() {
-        return this.participantsByUUD.size() > arena.getMinCapacity();
+        return this.participantsByUUD.size() < arena.getMinCapacity();
     }
 
     @Override
