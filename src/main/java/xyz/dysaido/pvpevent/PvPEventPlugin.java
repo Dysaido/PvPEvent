@@ -195,11 +195,24 @@ public class PvPEventPlugin implements PvPEvent {
                 .setPerm(Settings.IMP.PERMISSION.COMMAND_STOP);
         parentCommand.register(CommandInfo.RELOAD, SubCommand::new)
                 .setCommand((sender, args) -> {
-                    reload();
-                    sender.sendMessage(ChatColor.GREEN + "Reload success!");
-                    return true;
+                    if (args.length == 1) {
+                        String argument = args[0].toLowerCase(Locale.ROOT);
+                        switch (argument) {
+                            case "full":
+                                reload();
+                                sender.sendMessage(ChatColor.GREEN + "Full plugin reloaded!");
+                                break;
+                            case "config":
+                                reloadConfig();
+                                sender.sendMessage(ChatColor.GREEN + "Configuration file reloaded!");
+                                break;
+                            default:
+                                return false;
+                        }
+                        return true;
+                    }
+                    return false;
                 })
-                .setAlias("rl")
                 .setPerm(Settings.IMP.PERMISSION.COMMAND_RELOAD);
 
         parentCommand.register(CommandInfo.KICK, SubCommand::new)
@@ -274,20 +287,25 @@ public class PvPEventPlugin implements PvPEvent {
                                 case "setlobby":
                                     arena.setLobby(player.getLocation());
                                     player.sendMessage(ChatColor.GREEN + "Lobby has been set!");
+                                    player.sendMessage(ChatColor.GREEN + "Use: /event editarena [name] save");
                                     break;
                                 case "setpos1":
                                     arena.setPos1(player.getLocation());
                                     player.sendMessage(ChatColor.GREEN + "Pos1 has been set!");
+                                    player.sendMessage(ChatColor.GREEN + "Use: /event editarena [name] save");
                                     break;
                                 case "setpos2":
                                     arena.setPos2(player.getLocation());
                                     player.sendMessage(ChatColor.GREEN + "Pos2 has been set!");
+                                    player.sendMessage(ChatColor.GREEN + "Use: /event editarena [name] save");
                                     break;
                                 case "setkit":
                                     if (args.length == 3) {
                                         String kitname = args[2];
                                         arena.setKitName(kitname);
                                         player.sendMessage(ChatColor.GREEN + "IMPORTANT - When adding a kit to the arena, it is important that the kit name was added, if you want to use this kit in the event, then create a kit with such a name!");
+                                        
+                                        player.sendMessage(ChatColor.GREEN + "Use: /event editarena [name] save");
                                     } else {
                                         sender.sendMessage(ChatColor.DARK_PURPLE + "/event editarena setkit [name]");
                                     }
@@ -298,6 +316,7 @@ public class PvPEventPlugin implements PvPEvent {
                                         if (NumericParser.ensureInteger(capacity)) {
                                             arena.setCapacity(Math.max(Integer.parseInt(capacity), 1));
                                             player.sendMessage(ChatColor.GREEN + String.format("%s has been set for capacity!", capacity));
+                                            player.sendMessage(ChatColor.GREEN + "Use: /event editarena [name] save");
                                         } else {
                                             player.sendMessage(ChatColor.RED + "This is not integer!");
                                         }
@@ -311,6 +330,7 @@ public class PvPEventPlugin implements PvPEvent {
                                         if (NumericParser.ensureInteger(minCapacity)) {
                                             arena.setMinCapacity(Math.max(Integer.parseInt(minCapacity), 1));
                                             player.sendMessage(ChatColor.GREEN + String.format("%s has been set for min-capacity!", minCapacity));
+                                            player.sendMessage(ChatColor.GREEN + "Use: /event editarena [name] save");
                                         } else {
                                             player.sendMessage(ChatColor.RED + "This is not integer!");
                                         }
@@ -337,6 +357,7 @@ public class PvPEventPlugin implements PvPEvent {
                                         if (NumericParser.ensureInteger(fightCountdown)) {
                                             arena.setFightCountdown(Integer.parseInt(fightCountdown));
                                             player.sendMessage(ChatColor.GREEN + String.format("%s has been set for fight countdown!", fightCountdown));
+                                            player.sendMessage(ChatColor.GREEN + "Use: /event editarena [name] save");
                                         } else {
                                             player.sendMessage(ChatColor.RED + "This is not integer!");
                                         }

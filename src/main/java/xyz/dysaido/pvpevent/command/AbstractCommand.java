@@ -81,39 +81,44 @@ public abstract class AbstractCommand extends Command {
     @Override
     public List<String> tabComplete(CommandSender sender, String alias, String[] args) throws IllegalArgumentException {
         if (args.length == 1) {
-            String argument = args[0];
-            String argumentLowered = argument.toLowerCase(Locale.ROOT);
+            String subcommand = args[0].toLowerCase(Locale.ROOT);
             return Stream.concat(
                             Stream.of(CommandInfo.getDefaults()),
                             sender.hasPermission(Settings.IMP.PERMISSION.COMMAND_ADMIN)
                                     ? Stream.of(CommandInfo.getStaffs()) : Stream.empty()
                     )
                     .map(CommandInfo::getName)
-                    .filter(s -> s.startsWith(argumentLowered))
+                    .filter(s -> s.startsWith(subcommand))
                     .collect(Collectors.toList());
         } else {
             if (args.length >= 2) {
-                String subcommandLowered = args[0].toLowerCase();
+                String subcommand = args[0].toLowerCase(Locale.ROOT);
+                String option1 = args[1].toLowerCase(Locale.ROOT);
                 if (args.length == 3) {
-                    if (subcommandLowered.equals("editarena")) {
+                    String option2 = args[2].toLowerCase(Locale.ROOT);
+                    if (subcommand.equals("editarena")) {
                         return Stream.of(CommandInfo.EDITARENA.getArguments())
-                                .filter(s -> s.startsWith(args[2].toLowerCase(Locale.ROOT)))
+                                .filter(s -> s.startsWith(option2))
                                 .collect(Collectors.toList());
-                    } else if (subcommandLowered.equals("editkit")) {
+                    } else if (subcommand.equals("editkit")) {
                         return Stream.of(CommandInfo.EDITKIT.getArguments())
-                                .filter(s -> s.startsWith(args[2].toLowerCase(Locale.ROOT)))
+                                .filter(s -> s.startsWith(option2))
                                 .collect(Collectors.toList());
                     }
-                } else if (subcommandLowered.equals("host")
-                        || subcommandLowered.equals("editarena")
-                        || subcommandLowered.equals("delarena")
-                        || subcommandLowered.equals("autoset")) {
+                } else if (subcommand.equals("host")
+                        || subcommand.equals("editarena")
+                        || subcommand.equals("delarena")
+                        || subcommand.equals("autoset")) {
                     List<String> arenas = new ArrayList<>(pvpEvent.getArenaManager().getAll().keySet());
-                    return StringUtil.copyPartialMatches(args[1], arenas, new ArrayList<>(arenas.size()));
-                } else if (subcommandLowered.equals("editkit")
-                        || subcommandLowered.equals("delkit")) {
+                    return StringUtil.copyPartialMatches(option1, arenas, new ArrayList<>(arenas.size()));
+                } else if (subcommand.equals("editkit")
+                        || subcommand.equals("delkit")) {
                     List<String> kits = new ArrayList<>(pvpEvent.getKitManager().getAll().keySet());
-                    return StringUtil.copyPartialMatches(args[1], kits, new ArrayList<>(kits.size()));
+                    return StringUtil.copyPartialMatches(option1, kits, new ArrayList<>(kits.size()));
+                } else if (subcommand.equals("reload")) {
+                        return Stream.of(CommandInfo.RELOAD.getArguments())
+                                .filter(s -> s.startsWith(option1))
+                                .collect(Collectors.toList());
                 }
                 return super.tabComplete(sender, alias, args);
             }
