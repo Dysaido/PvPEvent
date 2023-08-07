@@ -9,7 +9,7 @@ public class Arena implements Model<String, Arena> {
     private Location lobby;
     private Location pos1;
     private Location pos2;
-    private String kitName;
+    private String kitName = "";
     private int minCapacity = 2;
     private int capacity = 30;
     private int queueCountdown = 10;
