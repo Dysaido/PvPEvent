@@ -15,7 +15,8 @@ public enum CommandInfo {
             "Automatically schedule an event with time and optional command"),
     HOST(true, "host", "/event host [name] [broadcast]", "Initiate a saved event"),
     STOP(true, "stop", "/event stop", "Terminate the ongoing event"),
-    RELOAD(true, "reload", "/event reload", "Reload the entire plugin, including files"),
+    RELOAD(true, "reload", "/event reload [argument]", "Reload the entire plugin, including files",
+            "config", "full"),
 
     KICK(true, "kick", "/event kick [user]", "Remove a user from the event"),
     BAN(true, "ban", "/event ban [user]", "Exclude a user from the event"),
