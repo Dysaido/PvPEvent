@@ -2,6 +2,6 @@ name: PvPEvent
 website: https://www.spigotmc.org/resources/pvpevent.97786/
 version: '${project.version}'
 main: xyz.dysaido.pvpevent.PvPEventLoader
-load: STARTUP
+load: POSTWORLD
 author: Dysaido
 description: This is a 1v1 game plugin for your server. You can create arenas where players can engage in 1v1 matches.
