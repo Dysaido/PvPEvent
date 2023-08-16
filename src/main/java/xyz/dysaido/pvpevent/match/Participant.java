@@ -52,6 +52,7 @@ public class Participant {
             player.removePotionEffect(effect.getType());
         }
         player.getInventory().clear();
+        player.getInventory().setArmorContents(null);
         player.updateInventory();
     }
 
