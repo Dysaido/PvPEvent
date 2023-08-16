@@ -14,8 +14,7 @@ import xyz.dysaido.pvpevent.command.SubCommand;
 import xyz.dysaido.pvpevent.config.Settings;
 import xyz.dysaido.pvpevent.listener.ConnectionListener;
 import xyz.dysaido.pvpevent.match.Kit;
-import xyz.dysaido.pvpevent.match.MatchState;
-import xyz.dysaido.pvpevent.match.impl.SumoMatch;
+import xyz.dysaido.pvpevent.match.impl.DuelMatch;
 import xyz.dysaido.pvpevent.model.Arena;
 import xyz.dysaido.pvpevent.model.manager.ArenaManager;
 import xyz.dysaido.pvpevent.model.manager.KitManager;
@@ -169,7 +168,7 @@ public class PvPEventPlugin implements PvPEvent {
                                                         .reduce((t, u) -> t + " " + u)
                                                         .orElse("");
                                 int modulo = Math.max(Settings.IMP.COUNTDOWN.BASE_CREATE_MODULO, 1);
-                                this.mainMatch = new SumoMatch(this, presentMsg, arena).onCreate(this, modulo);
+                                this.mainMatch = new DuelMatch(this, presentMsg, arena).onCreate(this, modulo);
                                 return true;
                             } else {
                                 sender.sendMessage(ChatColor.RED + String.format("%s wasn't saved by anyone!", arenaName));

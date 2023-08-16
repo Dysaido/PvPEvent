@@ -3,6 +3,7 @@ package xyz.dysaido.pvpevent.match.impl;
 import org.bukkit.Bukkit;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import xyz.dysaido.pvpevent.PvPEventPlugin;
+import xyz.dysaido.pvpevent.api.event.impl.DuelNextRoundEvent;
 import xyz.dysaido.pvpevent.api.event.sumo.SumoNextRoundEvent;
 import xyz.dysaido.pvpevent.config.Settings;
 import xyz.dysaido.pvpevent.match.AbstractMatch;
@@ -14,11 +15,11 @@ import xyz.dysaido.pvpevent.util.BukkitHelper;
 import java.util.List;
 import java.util.UUID;
 
-public class SumoMatch extends AbstractMatch {
+public class DuelMatch extends AbstractMatch {
 
     protected int round = 0;
 
-    public SumoMatch(PvPEventPlugin pvpEvent, String present, Arena arena) {
+    public DuelMatch(PvPEventPlugin pvpEvent, String present, Arena arena) {
         super(pvpEvent, present, arena);
     }
 
@@ -66,6 +67,7 @@ public class SumoMatch extends AbstractMatch {
 
             this.round++;
             Bukkit.getPluginManager().callEvent(new SumoNextRoundEvent(this, round, user1, user2));
+            Bukkit.getPluginManager().callEvent(new DuelNextRoundEvent(this, round, user1, user2));
 
             user1.getPlayer().teleport(arena.getPos1());
             user1.setFreeze(true);

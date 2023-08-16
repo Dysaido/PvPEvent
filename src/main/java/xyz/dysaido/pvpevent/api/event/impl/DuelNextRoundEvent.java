@@ -1,4 +1,4 @@
-package xyz.dysaido.pvpevent.api.event.sumo;
+package xyz.dysaido.pvpevent.api.event.impl;
 
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
@@ -6,8 +6,7 @@ import org.bukkit.event.HandlerList;
 import xyz.dysaido.pvpevent.match.AbstractMatch;
 import xyz.dysaido.pvpevent.match.Participant;
 
-@Deprecated()
-public class SumoNextRoundEvent extends Event implements Cancellable {
+public class DuelNextRoundEvent extends Event implements Cancellable {
 
     private static final HandlerList HANDLER_LIST = new HandlerList();
     private final AbstractMatch match;
@@ -16,7 +15,7 @@ public class SumoNextRoundEvent extends Event implements Cancellable {
     private final int round;
     private boolean cancel;
 
-    public SumoNextRoundEvent(AbstractMatch match, int round, Participant player1, Participant player2) {
+    public DuelNextRoundEvent(AbstractMatch match, int round, Participant player1, Participant player2) {
         this.match = match;
         this.round = round;
         this.player1 = player1;
@@ -52,5 +51,9 @@ public class SumoNextRoundEvent extends Event implements Cancellable {
 
     public Participant getPlayer2() {
         return player2;
+    }
+
+    public int getRound() {
+        return round;
     }
 }
