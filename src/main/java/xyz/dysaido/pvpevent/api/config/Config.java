@@ -14,6 +14,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.util.ArrayList;
@@ -48,15 +49,16 @@ public class Config {
             Field field = getField(split, instance);
             if (field != null) {
                 try {
-                    if (field.getAnnotation(Final.class) != null) {
+                    if (field.getAnnotation(Final.class) != null || (field.getModifiers() & Modifier.FINAL) == Modifier.FINAL) {
                         return;
                     }
                     if (field.getType() == String.class && !(value instanceof String)) {
-                        value = String.valueOf(value);
+                        value = value + "";
                     }
                     field.set(instance, value);
                     return;
-                } catch (IllegalAccessException | IllegalArgumentException e) {
+                } catch (Throwable e) {
+                    Bukkit.getLogger().log(Level.WARNING, "Error:", e);
                 }
             }
         }
@@ -140,14 +142,28 @@ public class Config {
             if (stringValue.isEmpty()) {
                 return "''";
             }
-            return "\"" + stringValue + "\"";
+            return "\"" + escapeYamlString(stringValue) + "\"";
         }
         return value != null ? value.toString() : "null";
     }
 
+    private String escapeYamlString(String input) {
+        // Escape special characters in the string
+        return input
+                .replace("\\", "\\\\")
+                .replace("\"", "\\\"")
+                .replace("\n", "\\n")
+                .replace("\r", "\\r")
+                .replace("\t", "\\t")
+                .replace("\b", "\\b")
+                .replace("\f", "\\f")
+                .replace("\u2028", "\\u2028")
+                .replace("\u2029", "\\u2029");
+    }
+
     private void save(List<String> lines, Class<?> clazz, final Object instance, int indent) {
         try {
-            String spacing = repeat(indent);
+            String spacing = repeat(" ", indent);
             for (Field field : clazz.getFields()) {
                 if (field.getAnnotation(Ignore.class) != null) {
                     continue;
@@ -273,8 +289,10 @@ public class Config {
         return field.toLowerCase().replace("_", "-");
     }
 
-    private String repeat(int n) {
-        return IntStream.range(0, n).mapToObj(i -> " ").collect(Collectors.joining());
+    private String repeat(String s, int n) {
+        return IntStream.range(0, n)
+                .mapToObj(i -> s)
+                .collect(Collectors.joining());
     }
 
     /**
