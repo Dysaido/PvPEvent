@@ -1,5 +1,6 @@
 package xyz.dysaido.pvpevent.serializer;
 
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -12,6 +13,7 @@ import xyz.dysaido.pvpevent.util.YamlStorage;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.stream.Stream;
 
 public class KitSerializer {
@@ -38,26 +40,51 @@ public class KitSerializer {
                     kit.setContents(contents);
                     kits.add(kit);
                 } catch (Exception e) {
+                    Bukkit.getLogger().log(Level.WARNING, "Error:", e);
                     Logger.warning(TAG, String.format("Cannot read %s from kits.yml. Suppose to delete this section from yaml file!", sectionName));
-                    e.printStackTrace();
                 }
             }
         }
         return kits;
     }
 
-    public void write() {
-        FileConfiguration conf = storage.getFile();
-        if (!conf.isConfigurationSection("kits")) {
-            conf.createSection("kits");
+    public void append(Kit<Player> kit) {
+        ConfigurationSection kitsSection = storage.getFile().getConfigurationSection("kits");
+        if (kitsSection == null) {
+            kitsSection = storage.getFile().createSection("kits");
         }
-        ConfigurationSection kitsSection = conf.getConfigurationSection("kits");
-        stream().forEach(kit -> {
-            ConfigurationSection section = kitsSection.createSection(kit.getName());
-            section.set("contents", kit.getContents());
-            section.set("armor", kit.getArmor());
-        });
+
+        writeKit(kitsSection, kit);
+
+        storage.saveFile();
+    }
+
+    public void remove(String kitName) {
+        ConfigurationSection kitsSection = storage.getFile().getConfigurationSection("kits");
+        if (kitsSection != null) {
+            if (kitsSection.isConfigurationSection(kitName)) {
+                kitsSection.set(kitName, null);
+                this.storage.saveFile();
+            }
+        }
+    }
+
+    public void write() {
+        ConfigurationSection kitsSection = storage.getFile().getConfigurationSection("kits");
+        if (kitsSection == null) {
+            kitsSection = storage.getFile().createSection("kits");
+        }
+
+        final ConfigurationSection finalKitsSection = kitsSection;
+        stream().forEach(kit -> writeKit(finalKitsSection, kit));
+
         this.storage.saveFile();
+    }
+
+    private void writeKit(ConfigurationSection kitsSection, Kit<Player> kit) {
+        ConfigurationSection section = kitsSection.createSection(kit.getName());
+        section.set("contents", kit.getContents());
+        section.set("armor", kit.getArmor());
     }
 
     protected Stream<Kit<Player>> stream() {

@@ -32,7 +32,7 @@ public class KitManager extends AbstractManager<String, Kit<Player>> {
     public Kit<Player> remove(String id) {
         Kit<Player> kit = getIfPresent(id);
         objects.remove(id);
-        serializer.write();
+        serializer.remove(id);
         return kit;
     }
 
