@@ -8,9 +8,9 @@ public enum CommandInfo {
     JOIN(false, "join", "/event join", "Participate in the ongoing event"),
     LEAVE(false, "leave", "/event leave", "Withdraw from the event"),
     SPECTATE(false, "spectate", "/event spectate", "Observe the current event as a spectator"),
-    VIEW(false, "view", "/event view (UI)", "Access a graphical user interface for editing"),
+    TOPLIST(false, "toplist", "/event toplist", "See top wins"),
 
-
+    VIEW(true, "view", "/event view (UI)", "Access a graphical user interface for editing"),
     AUTOSET(true, "autoset", "/event autoset [name] [arena] HH:MM [command]",
             "Automatically schedule an event with time and optional command"),
     HOST(true, "host", "/event host [arena] [broadcast]", "Initiate a saved event"),

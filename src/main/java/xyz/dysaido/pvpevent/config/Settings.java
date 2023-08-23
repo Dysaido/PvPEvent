@@ -151,7 +151,7 @@ public class Settings extends Config {
         public String EVENT_JOIN = "&e/event join";
         public String EVENT_LEAVE = "&e/event leave";
         public String EVENT_SPECTATE = "&e/event spectate";
-        public String EVENT_VIEW = "&e/event view (gui)";
+        public String EVENT_TOPLIST = "&e/event toplist";
         public String EVENT_HELP = "&e/event help - admin commands";
     }
 

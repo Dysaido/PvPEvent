@@ -18,6 +18,7 @@ import xyz.dysaido.pvpevent.match.impl.DuelMatch;
 import xyz.dysaido.pvpevent.model.Arena;
 import xyz.dysaido.pvpevent.model.manager.ArenaManager;
 import xyz.dysaido.pvpevent.model.manager.KitManager;
+import xyz.dysaido.pvpevent.model.manager.UserManager;
 import xyz.dysaido.pvpevent.util.BukkitHelper;
 import xyz.dysaido.pvpevent.util.NumericParser;
 
@@ -33,6 +34,7 @@ public class PvPEventPlugin implements PvPEvent {
     private final ConnectionListener connectionListener;
     private final ArenaManager arenaManager;
     private final KitManager kitManager;
+    private final UserManager userManager;
     private Match<UUID> mainMatch;
 
     public PvPEventPlugin(JavaPlugin plugin) {
@@ -42,6 +44,7 @@ public class PvPEventPlugin implements PvPEvent {
         this.connectionListener = new ConnectionListener(this);
         this.arenaManager = new ArenaManager(this);
         this.kitManager = new KitManager(this);
+        this.userManager = new UserManager(this);
     }
 
     @Override
@@ -53,6 +56,7 @@ public class PvPEventPlugin implements PvPEvent {
 
         arenaManager.load();
         kitManager.load();
+        userManager.load();
 
         registerCommands();
     }
@@ -81,7 +85,7 @@ public class PvPEventPlugin implements PvPEvent {
         String eventSpectate = Settings.IMP.COMMAND.EVENT_SPECTATE;
         sender.sendMessage(BukkitHelper.colorize(eventSpectate));
 
-        String eventView = Settings.IMP.COMMAND.EVENT_VIEW;
+        String eventView = Settings.IMP.COMMAND.EVENT_TOPLIST;
         sender.sendMessage(BukkitHelper.colorize(eventView));
 
         String eventHelp = Settings.IMP.COMMAND.EVENT_HELP;
@@ -519,5 +523,10 @@ public class PvPEventPlugin implements PvPEvent {
     @Override
     public KitManager getKitManager() {
         return kitManager;
+    }
+
+    @Override
+    public UserManager getUserManager() {
+        return userManager;
     }
 }
