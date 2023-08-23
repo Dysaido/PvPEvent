@@ -47,6 +47,10 @@ public class User implements Model<UUID, User> {
         return kills;
     }
 
+    public void addKill() {
+        this.kills = getKills() + 1;
+    }
+
     public void setKills(int kills) {
         this.kills = kills;
     }
@@ -55,12 +59,20 @@ public class User implements Model<UUID, User> {
         return deaths;
     }
 
+    public void addDeath() {
+        this.deaths = getDeaths() + 1;
+    }
+
     public void setDeaths(int deaths) {
         this.deaths = deaths;
     }
 
     public int getWins() {
         return wins;
+    }
+
+    public void addWin() {
+        this.wins = getWins() + 1;
     }
 
     public void setWins(int wins) {
