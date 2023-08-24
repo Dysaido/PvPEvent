@@ -24,16 +24,16 @@ public class UserManager extends AbstractManager<UUID, User> {
     }
 
     public User getOrMake(UUID id, String name) {
-        User user = objects().get(id);
-        if (user != null) {
-            return user;
-        }
-        return objects().computeIfAbsent(id, uuid -> {
-            User ret = apply(uuid);
-            ret.setName(name);
-            serializer.append(user);
-            return ret;
-        });
+        User user = getOrMake(id);
+        user.setName(name);
+        return user;
+    }
+
+    @Override
+    public User getOrMake(UUID id) {
+        User user = super.getOrMake(id);
+        serializer.append(user);
+        return user;
     }
 
     @Override
