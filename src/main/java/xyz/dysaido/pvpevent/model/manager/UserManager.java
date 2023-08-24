@@ -23,11 +23,17 @@ public class UserManager extends AbstractManager<UUID, User> {
         this.serializer = new UserSerializer(this, YamlStorage.of(pvpEvent.getPlugin(), "users"));
     }
 
-    @Override
-    public User getOrMake(UUID id) {
-        User user = super.getOrMake(id);
-        serializer.append(user);
-        return user;
+    public User getOrMake(UUID id, String name) {
+        User user = objects().get(id);
+        if (user != null) {
+            return user;
+        }
+        return objects().computeIfAbsent(id, uuid -> {
+            User ret = apply(uuid);
+            ret.setName(name);
+            serializer.append(user);
+            return ret;
+        });
     }
 
     @Override
@@ -52,13 +58,15 @@ public class UserManager extends AbstractManager<UUID, User> {
         List<User> topList = new ArrayList<>(objects.values());
         topList.sort(Comparator.comparingInt(User::getWins).reversed());
 
+        List<User> resultList = new ArrayList<>();
+
         Iterator<User> iterator = topList.iterator();
 
-        for (int i = 0; i < Math.max(10, limit) && iterator.hasNext(); i++) {
-            topList.add(iterator.next());
+        for (int i = 0; i < Math.min(10, limit) && iterator.hasNext(); i++) {
+            resultList.add(iterator.next());
         }
 
-        return Collections.unmodifiableList(topList);
+        return Collections.unmodifiableList(resultList);
     }
 
     @Override

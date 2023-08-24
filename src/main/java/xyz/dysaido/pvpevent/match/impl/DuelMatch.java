@@ -47,11 +47,11 @@ public class DuelMatch extends AbstractMatch {
 
 
 
-            User vUser = pvpEvent.getUserManager().getOrMake(identifier);
+            User vUser = pvpEvent.getUserManager().getOrMake(identifier, victim.getName());
             vUser.addDeath();
             pvpEvent.getUserManager().getSerializer().append(vUser);
 
-            User kUser = pvpEvent.getUserManager().getOrMake(winner.getIdentifier());
+            User kUser = pvpEvent.getUserManager().getOrMake(winner.getIdentifier(), winner.getName());
             kUser.addKill();
             pvpEvent.getUserManager().getSerializer().append(kUser);
 
@@ -113,7 +113,7 @@ public class DuelMatch extends AbstractMatch {
                         .replace("{present}", present);
                 BukkitHelper.broadcast(text);
 
-                User winner = pvpEvent.getUserManager().getOrMake(participant.getIdentifier());
+                User winner = pvpEvent.getUserManager().getOrMake(participant.getIdentifier(), participant.getName());
                 winner.addWin();
                 pvpEvent.getUserManager().getSerializer().append(winner);
 
