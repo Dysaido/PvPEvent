@@ -1,15 +1,17 @@
 package xyz.dysaido.pvpevent.match.impl;
 
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import xyz.dysaido.pvpevent.PvPEventPlugin;
+import xyz.dysaido.pvpevent.api.event.impl.DuelDeathEvent;
 import xyz.dysaido.pvpevent.api.event.impl.DuelNextRoundEvent;
-import xyz.dysaido.pvpevent.api.event.sumo.SumoNextRoundEvent;
 import xyz.dysaido.pvpevent.config.Settings;
 import xyz.dysaido.pvpevent.match.AbstractMatch;
 import xyz.dysaido.pvpevent.match.Participant;
 import xyz.dysaido.pvpevent.match.ParticipantStatus;
 import xyz.dysaido.pvpevent.model.Arena;
+import xyz.dysaido.pvpevent.model.User;
 import xyz.dysaido.pvpevent.util.BukkitHelper;
 
 import java.util.List;
@@ -38,7 +40,20 @@ public class DuelMatch extends AbstractMatch {
             String text = Settings.IMP.MESSAGE.MATCH_DEATH_TEXT
                     .replace("{victim}", victim.getName())
                     .replace("{winner}", winner.getName());
+
+            Bukkit.getPluginManager().callEvent(new DuelDeathEvent(this, round, victim, winner, text));
+
             BukkitHelper.broadcast(text);
+
+
+
+            User vUser = pvpEvent.getUserManager().getOrMake(identifier);
+            vUser.addDeath();
+            pvpEvent.getUserManager().getSerializer().append(vUser);
+
+            User kUser = pvpEvent.getUserManager().getOrMake(winner.getIdentifier());
+            kUser.addKill();
+            pvpEvent.getUserManager().getSerializer().append(kUser);
 
             nextRound();
             victim.getPlayer().setHealth(victim.getPlayer().getMaxHealth());
@@ -66,7 +81,6 @@ public class DuelMatch extends AbstractMatch {
             statusByUUID.put(user2.getIdentifier(), ParticipantStatus.FIGHTING);
 
             this.round++;
-            Bukkit.getPluginManager().callEvent(new SumoNextRoundEvent(this, round, user1, user2));
             Bukkit.getPluginManager().callEvent(new DuelNextRoundEvent(this, round, user1, user2));
 
             user1.getPlayer().teleport(arena.getPos1());
@@ -98,6 +112,11 @@ public class DuelMatch extends AbstractMatch {
                         .replace("{user}", participant.getName())
                         .replace("{present}", present);
                 BukkitHelper.broadcast(text);
+
+                User winner = pvpEvent.getUserManager().getOrMake(participant.getIdentifier());
+                winner.addWin();
+                pvpEvent.getUserManager().getSerializer().append(winner);
+
             } else {
                 String text = Settings.IMP.MESSAGE.SUMO_NEXTROUND_WITHOUT_WINNER_TEXT
                         .replace("{present}", present);

@@ -16,6 +16,7 @@ import xyz.dysaido.pvpevent.listener.ConnectionListener;
 import xyz.dysaido.pvpevent.match.Kit;
 import xyz.dysaido.pvpevent.match.impl.DuelMatch;
 import xyz.dysaido.pvpevent.model.Arena;
+import xyz.dysaido.pvpevent.model.User;
 import xyz.dysaido.pvpevent.model.manager.ArenaManager;
 import xyz.dysaido.pvpevent.model.manager.KitManager;
 import xyz.dysaido.pvpevent.model.manager.UserManager;
@@ -24,6 +25,7 @@ import xyz.dysaido.pvpevent.util.NumericParser;
 
 import java.io.File;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class PvPEventPlugin implements PvPEvent {
@@ -61,12 +63,6 @@ public class PvPEventPlugin implements PvPEvent {
         registerCommands();
     }
 
-    public String convertWithStream(Map<?, ?> map) {
-        return map.keySet().stream()
-                .map(key -> key + "=" + map.get(key))
-                .collect(Collectors.joining(", ", "{", "}"));
-    }
-
     @Override
     public boolean isActiveMatch() {
         return mainMatch != null && !mainMatch.isOver();
@@ -94,7 +90,7 @@ public class PvPEventPlugin implements PvPEvent {
 
     private static boolean sendStaffMsg(CommandSender sender) {
         sender.sendMessage(BukkitHelper.colorize("&5PvPEvent Staff Commands"));
-        Arrays.stream(CommandInfo.values()).forEach(info -> {
+        Arrays.stream(CommandInfo.getStaffs()).forEach(info -> {
             sender.sendMessage(BukkitHelper.colorize(String.format("%s &d- %s", info.getUsage(), info.getDescription())));
         });
         return true;
@@ -147,17 +143,46 @@ public class PvPEventPlugin implements PvPEvent {
                     return true;
                 })
                 .setPerm(Settings.IMP.PERMISSION.COMMAND_DEFAULT);
-        parentCommand.register(CommandInfo.VIEW, SubCommand::new)
+        parentCommand.register(CommandInfo.TOPLIST, SubCommand::new)
                 .setCommand((sender, args) -> {
-                    sender.sendMessage("Arena: ");
-                    sender.sendMessage(ChatColor.AQUA + convertWithStream(arenaManager.getAll()));
-                    sender.sendMessage("Kit: ");
-                    sender.sendMessage(ChatColor.AQUA + convertWithStream(kitManager.getAll()));
+                    if (args.length != 0) return false;
+                    sender.sendMessage("TopList: ");
+                    userManager.getToplist(10)
+                            .forEach(user -> {
+                                sender.sendMessage(BukkitHelper.colorize(String.format(
+                                        "&6%s &e- wins: %d, kills: %d, deaths: %d",
+                                        user.getName(), user.getWins(), user.getKills(), user.getDeaths())));
+                            });
 
-                    return false;
+                    return true;
                 })
                 .setPerm(Settings.IMP.PERMISSION.COMMAND_DEFAULT);
 
+        parentCommand.register(CommandInfo.VIEW, SubCommand::new)
+                .setCommand((sender, args) -> {
+                    sender.sendMessage(BukkitHelper.colorize("&4&lArenas: "));
+                    arenaManager.getAll().forEach((name, arena) -> {
+                        sender.sendMessage(BukkitHelper.colorize("&7 Name: &c%s", name));
+                        sender.sendMessage(BukkitHelper.colorize("&7 -lobby: &c%s", arena.getLobby() == null ? "false" : "true"));
+                        sender.sendMessage(BukkitHelper.colorize("&7 -pos1: &c%s", arena.getPos1() == null ? "false" : "true"));
+                        sender.sendMessage(BukkitHelper.colorize("&7 -pos2: &c%s", arena.getPos2() == null ? "false" : "true"));
+                        sender.sendMessage(BukkitHelper.colorize("&7 -kit: &c%s", arena.getKitName() == null || arena.getKitName().isEmpty() ? "false" : "true"));
+                        sender.sendMessage(BukkitHelper.colorize("&7 -mincapacity: &c%s", arena.getMinCapacity()));
+                        sender.sendMessage(BukkitHelper.colorize("&7 -maxcapacity: &c%s", arena.getCapacity()));
+                        sender.sendMessage(BukkitHelper.colorize("&7 -queueCT: &c%s", arena.getQueueCountdown()));
+                        sender.sendMessage(BukkitHelper.colorize("&7 -fightCT: &c%s", arena.getFightCountdown()));
+                        sender.sendMessage("--------------------");
+                    });
+                    sender.sendMessage(BukkitHelper.colorize("&6&lKits: "));
+                    kitManager.getAll().forEach((name, kit) -> {
+                        sender.sendMessage(BukkitHelper.colorize("&7 Name: &e%s", name));
+                        sender.sendMessage(BukkitHelper.colorize("&7 -contents: &e%s", kit.getContents() == null ? "false" : "true"));
+                        sender.sendMessage(BukkitHelper.colorize("&7 -armors: &e%s", kit.getArmor() == null ? "false" : "true"));
+                        sender.sendMessage("--------------------");
+                    });
+                    return true;
+                })
+                .setPerm(Settings.IMP.PERMISSION.COMMAND_ADMIN);
         parentCommand.register(CommandInfo.HOST, SubCommand::new)
                 .setCommand((sender, args) -> {
                     if (isActiveMatch()) {
@@ -283,32 +308,28 @@ public class PvPEventPlugin implements PvPEvent {
                             String option = args[1].toLowerCase();
                             // <save|setlobby|setpos1|setpos2|setkit|setcapacity|setqueuecountdown|setfightcountdown>
                             switch (option) {
-                                case "save":
-                                    arenaManager.getSerializer().write();
-                                    player.sendMessage(ChatColor.GREEN + "Arenas.json has been updated!");
-                                    break;
                                 case "setlobby":
                                     arena.setLobby(player.getLocation());
                                     player.sendMessage(ChatColor.GREEN + "Lobby has been set!");
-                                    player.sendMessage(ChatColor.GREEN + "Use: /event editarena [name] save");
+                                    arenaManager.getSerializer().write();
                                     break;
                                 case "setpos1":
                                     arena.setPos1(player.getLocation());
                                     player.sendMessage(ChatColor.GREEN + "Pos1 has been set!");
-                                    player.sendMessage(ChatColor.GREEN + "Use: /event editarena [name] save");
+                                    arenaManager.getSerializer().write();
                                     break;
                                 case "setpos2":
                                     arena.setPos2(player.getLocation());
                                     player.sendMessage(ChatColor.GREEN + "Pos2 has been set!");
-                                    player.sendMessage(ChatColor.GREEN + "Use: /event editarena [name] save");
+                                    arenaManager.getSerializer().write();
                                     break;
                                 case "setkit":
                                     if (args.length == 3) {
                                         String kitname = args[2];
                                         arena.setKitName(kitname);
                                         player.sendMessage(ChatColor.GREEN + "IMPORTANT - When adding a kit to the arena, it is important that the kit name was added, if you want to use this kit in the event, then create a kit with such a name!");
-                                        
-                                        player.sendMessage(ChatColor.GREEN + "Use: /event editarena [name] save");
+
+                                        arenaManager.getSerializer().write();
                                     } else {
                                         sender.sendMessage(ChatColor.DARK_PURPLE + "/event editarena setkit [name]");
                                     }
@@ -319,7 +340,8 @@ public class PvPEventPlugin implements PvPEvent {
                                         if (NumericParser.ensureInteger(capacity)) {
                                             arena.setCapacity(Math.max(Integer.parseInt(capacity), 1));
                                             player.sendMessage(ChatColor.GREEN + String.format("%s has been set for capacity!", capacity));
-                                            player.sendMessage(ChatColor.GREEN + "Use: /event editarena [name] save");
+
+                                            arenaManager.getSerializer().write();
                                         } else {
                                             player.sendMessage(ChatColor.RED + "This is not integer!");
                                         }
@@ -333,7 +355,8 @@ public class PvPEventPlugin implements PvPEvent {
                                         if (NumericParser.ensureInteger(minCapacity)) {
                                             arena.setMinCapacity(Math.max(Integer.parseInt(minCapacity), 1));
                                             player.sendMessage(ChatColor.GREEN + String.format("%s has been set for min-capacity!", minCapacity));
-                                            player.sendMessage(ChatColor.GREEN + "Use: /event editarena [name] save");
+
+                                            arenaManager.getSerializer().write();
                                         } else {
                                             player.sendMessage(ChatColor.RED + "This is not integer!");
                                         }
@@ -347,6 +370,8 @@ public class PvPEventPlugin implements PvPEvent {
                                         if (NumericParser.ensureInteger(queueCountdown)) {
                                             arena.setQueueCountdown(Math.max(Integer.parseInt(queueCountdown), 10));
                                             player.sendMessage(ChatColor.GREEN + String.format("%s has been set for queue countdown!", queueCountdown));
+
+                                            arenaManager.getSerializer().write();
                                         } else {
                                             player.sendMessage(ChatColor.RED + "This is not integer!");
                                         }
@@ -360,7 +385,8 @@ public class PvPEventPlugin implements PvPEvent {
                                         if (NumericParser.ensureInteger(fightCountdown)) {
                                             arena.setFightCountdown(Integer.parseInt(fightCountdown));
                                             player.sendMessage(ChatColor.GREEN + String.format("%s has been set for fight countdown!", fightCountdown));
-                                            player.sendMessage(ChatColor.GREEN + "Use: /event editarena [name] save");
+
+                                            arenaManager.getSerializer().write();
                                         } else {
                                             player.sendMessage(ChatColor.RED + "This is not integer!");
                                         }
@@ -459,6 +485,11 @@ public class PvPEventPlugin implements PvPEvent {
                     return false;
                 })
                 .setPerm(Settings.IMP.PERMISSION.COMMAND_KIT);
+    }
+
+    @Override
+    public Map<String, User> getTop10Wins() {
+        return userManager.getToplist(10).stream().collect(Collectors.toMap(User::getName, Function.identity()));
     }
 
     @Override

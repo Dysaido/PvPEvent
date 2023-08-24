@@ -3,11 +3,13 @@ package xyz.dysaido.pvpevent.api;
 import org.bukkit.plugin.java.JavaPlugin;
 import xyz.dysaido.pvpevent.api.model.Match;
 import xyz.dysaido.pvpevent.command.ParentCommand;
+import xyz.dysaido.pvpevent.model.User;
 import xyz.dysaido.pvpevent.model.manager.ArenaManager;
 import xyz.dysaido.pvpevent.model.manager.KitManager;
 import xyz.dysaido.pvpevent.model.manager.UserManager;
 
 import java.io.File;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -42,4 +44,6 @@ public interface PvPEvent {
     KitManager getKitManager();
 
     UserManager getUserManager();
+
+    Map<String, User> getTop10Wins();
 }
