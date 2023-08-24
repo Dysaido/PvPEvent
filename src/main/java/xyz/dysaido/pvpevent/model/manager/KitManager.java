@@ -6,6 +6,7 @@ import xyz.dysaido.pvpevent.match.Kit;
 import xyz.dysaido.pvpevent.serializer.KitSerializer;
 import xyz.dysaido.pvpevent.util.YamlStorage;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -13,6 +14,7 @@ import java.util.stream.Collectors;
 
 public class KitManager extends AbstractManager<String, Kit<Player>> {
 
+    private final Map<String, Kit<Player>> objects = new HashMap<>();
     private final PvPEventPlugin pvpEvent;
     private final KitSerializer serializer;
 
@@ -56,5 +58,10 @@ public class KitManager extends AbstractManager<String, Kit<Player>> {
 
     public KitSerializer getSerializer() {
         return serializer;
+    }
+
+    @Override
+    protected Map<String, Kit<Player>> objects() {
+        return objects;
     }
 }

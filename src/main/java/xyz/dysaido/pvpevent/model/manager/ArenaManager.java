@@ -5,12 +5,15 @@ import xyz.dysaido.pvpevent.model.Arena;
 import xyz.dysaido.pvpevent.serializer.ArenaSerializer;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class ArenaManager extends AbstractManager<String, Arena> {
+
+    private final Map<String, Arena> objects = new HashMap<>();
     private final PvPEventPlugin pvpEvent;
     private final ArenaSerializer serializer;
 
@@ -48,5 +51,10 @@ public class ArenaManager extends AbstractManager<String, Arena> {
 
     public ArenaSerializer getSerializer() {
         return serializer;
+    }
+
+    @Override
+    protected Map<String, Arena> objects() {
+        return objects;
     }
 }

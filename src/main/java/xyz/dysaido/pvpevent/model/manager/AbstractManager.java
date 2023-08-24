@@ -8,39 +8,39 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public abstract class AbstractManager<I, T> implements Manager<I, T> {
 
-    protected final Map<I, T> objects = new ConcurrentHashMap<>();
-
     @Override
     public T getIfPresent(I id) {
-        return objects.get(id);
+        return objects().get(id);
     }
 
     @Override
     public T getOrMake(I id) {
-        T t = objects.get(id);
+        T t = objects().get(id);
         if (t != null) {
             return t;
         }
-        return objects.computeIfAbsent(id, this);
+        return objects().computeIfAbsent(id, this);
     }
 
     @Override
     public void unload() {
-        objects.clear();
+        objects().clear();
     }
 
     @Override
     public T remove(I id) {
-        return objects.remove(id);
+        return objects().remove(id);
     }
 
     @Override
     public boolean isLoaded(I id) {
-        return objects.containsKey(id);
+        return objects().containsKey(id);
     }
 
     @Override
     public Map<I, T> getAll() {
-        return Collections.unmodifiableMap(objects);
+        return Collections.unmodifiableMap(objects());
     }
+
+    protected abstract Map<I, T> objects();
 }
