@@ -15,8 +15,8 @@ public class BukkitHelper {
 
     private static final String TAG = "BukkitHelper";
 
-    public static String colorize(String text) {
-        return ChatColor.translateAlternateColorCodes('&', text);
+    public static String colorize(String text, Object... objects) {
+        return ChatColor.translateAlternateColorCodes('&', String.format(text, objects));
     }
 
     public static void broadcast(String text) {
