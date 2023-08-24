@@ -39,9 +39,14 @@ public class KitSerializer {
                     kit.setArmor(armor);
                     kit.setContents(contents);
                     kits.add(kit);
-                } catch (Exception e) {
-                    Bukkit.getLogger().log(Level.WARNING, "Error:", e);
-                    Logger.warning(TAG, String.format("Cannot read %s from kits.yml. Suppose to delete this section from yaml file!", sectionName));
+                } catch (Throwable e) {
+                    try {
+                        kits.add(new Kit<>(sectionName));
+                    } catch (Throwable e2) {
+                        e.addSuppressed(e2);
+                        Bukkit.getLogger().log(Level.WARNING, "Error:", e);
+                        Logger.warning(TAG, String.format("Cannot read %s from kits.yml. Suppose to delete this section from yaml file!", sectionName));
+                    }
                 }
             }
         }
