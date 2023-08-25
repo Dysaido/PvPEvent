@@ -14,6 +14,7 @@ public class Arena implements Model<String, Arena> {
     private int capacity = 30;
     private int queueCountdown = 10;
     private int fightCountdown = 3;
+    private boolean toggleInventory = false;
 
     public Arena(String identifier) {
         this.identifier = identifier;
@@ -98,5 +99,13 @@ public class Arena implements Model<String, Arena> {
 
     public void setLobby(Location lobby) {
         this.lobby = lobby;
+    }
+
+    public boolean isToggleInventory() {
+        return toggleInventory;
+    }
+
+    public void setToggleInventory(boolean toggleInventory) {
+        this.toggleInventory = toggleInventory;
     }
 }

@@ -31,6 +31,7 @@ public class ArenaSerializer extends GsonSerializer<Arena> {
         arenaObj.addProperty("capacity", arena.getCapacity());
         arenaObj.addProperty("queue-countdown", arena.getQueueCountdown());
         arenaObj.addProperty("fight-countdown", arena.getFightCountdown());
+        arenaObj.addProperty("toggle-inventory", arena.isToggleInventory());
         if (arena.getKitName() != null) {
             arenaObj.addProperty("kitname", arena.getKitName());
         }
@@ -99,13 +100,16 @@ public class ArenaSerializer extends GsonSerializer<Arena> {
             JsonElement capacityElement = arenaObj.get("capacity");
             JsonElement queueElement = arenaObj.get("queue-countdown");
             JsonElement fightElement = arenaObj.get("fight-countdown");
+            JsonElement tInvElement = arenaObj.get("toggle-inventory");
 
-            if (nameElement != null && minCapacityElement != null && capacityElement != null && queueElement != null && fightElement != null) {
+            if (nameElement != null && minCapacityElement != null && capacityElement != null
+                    && queueElement != null && fightElement != null && tInvElement != null) {
                 String name = nameElement.getAsString();
                 int minCapacity = minCapacityElement.getAsInt();
                 int capacity = capacityElement.getAsInt();
                 int queueCountdown = queueElement.getAsInt();
                 int fightCountdown = fightElement.getAsInt();
+                boolean toggleInventory = tInvElement.getAsBoolean();
 
                 Arena arena = new Arena(name);
                 JsonElement lobbyElement = arenaObj.get("lobby");
@@ -127,6 +131,7 @@ public class ArenaSerializer extends GsonSerializer<Arena> {
                 arena.setCapacity(capacity);
                 arena.setQueueCountdown(queueCountdown);
                 arena.setFightCountdown(fightCountdown);
+                arena.setToggleInventory(toggleInventory);
 
                 return Optional.of(arena);
             }

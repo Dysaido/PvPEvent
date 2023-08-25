@@ -297,7 +297,6 @@ public class PvPEventPlugin implements PvPEvent {
                             sender.sendMessage(ChatColor.DARK_PURPLE + "/event editarena [name] <option>");
                             sender.sendMessage(ChatColor.DARK_PURPLE + "Options: setlobby, setpos1, setpos2, setkit [name]");
                             sender.sendMessage(ChatColor.DARK_PURPLE + "setcapacity [integer], setqueuecountdown [integer], setfightcountdown [integer]");
-                            sender.sendMessage(ChatColor.DARK_PURPLE + "save - it is worth saving after setting each parameter, because if you do not use it, it will not be saved in the config");
                         } else {
                             if (!(sender instanceof Player)) {
                                 sender.sendMessage(ChatColor.RED+ "You don't have permission to perform this!");
@@ -392,6 +391,21 @@ public class PvPEventPlugin implements PvPEvent {
                                         }
                                     } else {
                                         sender.sendMessage(ChatColor.DARK_PURPLE + "/event editarena setfightcountdown [integer, 1 = 1second, 30 = 30second]");
+                                    }
+                                    break;
+                                case "toggleinventory":
+                                    if (args.length == 3) {
+                                        String tInvBool = args[2];
+                                        if (Boolean.parseBoolean(tInvBool)) {
+                                            player.sendMessage(ChatColor.GREEN + String.format("%b has been set for toggle inventory!", true));
+                                            arena.setToggleInventory(true);
+                                        } else {
+                                            player.sendMessage(ChatColor.GREEN + String.format("%b has been set for toggle inventory!", false));
+                                            arena.setToggleInventory(false);
+                                        }
+                                        // player.sendMessage(ChatColor.RED + "This is not boolean!");
+                                    } else {
+                                        sender.sendMessage(ChatColor.DARK_PURPLE + "/event editarena toggleinventory [boolean, true-false]");
                                     }
                                     break;
                                 default:
