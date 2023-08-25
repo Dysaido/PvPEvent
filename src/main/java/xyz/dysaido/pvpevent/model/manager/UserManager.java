@@ -24,24 +24,24 @@ public class UserManager extends AbstractManager<UUID, User> {
     }
 
     public User getOrMake(UUID id, String name) {
-        User user = getOrMake(id);
-        user.setName(name);
-        return user;
+        return getOrMake(id, name, false);
     }
 
-    @Override
-    public User getOrMake(UUID id) {
-        User user = super.getOrMake(id);
-        serializer.append(user);
+    public User getOrMake(UUID id, String name, boolean save) {
+        User user = getOrMake(id);
+        if (name != null) {
+            user.setName(name);
+        }
+        if (save) {
+            serializer.append(user);
+        }
         return user;
     }
 
     @Override
     public User remove(UUID id) {
-        User user = getIfPresent(id);
-        objects.remove(id);
         serializer.remove(id);
-        return user;
+        return super.remove(id);
     }
 
     @Override
@@ -77,7 +77,10 @@ public class UserManager extends AbstractManager<UUID, User> {
 
     @Override
     public User apply(UUID uuid) {
-        return new User(uuid);
+        User ret =  new User(uuid);
+        serializer.append(ret);
+
+        return ret;
     }
 
     public UserSerializer getSerializer() {

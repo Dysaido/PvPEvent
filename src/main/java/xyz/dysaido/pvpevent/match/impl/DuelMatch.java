@@ -87,7 +87,7 @@ public class DuelMatch extends AbstractMatch {
             user1.setFreeze(true);
             user2.getPlayer().teleport(arena.getPos2());
             user2.setFreeze(true);
-            if (playerKit != null && !arena.isToggleInventory()) {
+            if (arena.shouldApplyKit() && !arena.isToggleInventory()) {
                 playerKit.accept(user1.getPlayer());
                 playerKit.accept(user2.getPlayer());
             } else if (arena.isToggleInventory()){

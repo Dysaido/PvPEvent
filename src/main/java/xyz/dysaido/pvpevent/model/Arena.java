@@ -30,12 +30,12 @@ public class Arena implements Model<String, Arena> {
         return this;
     }
 
-    public boolean isValidPositions() {
-        return pos1 != null && pos2 != null;
+    public boolean shouldTeleport() {
+        return lobby != null && (pos1 != null || pos2 != null);
     }
 
-    public boolean isValidKit() {
-        return kitName != null;
+    public boolean shouldApplyKit() {
+        return kitName != null && kitName.isEmpty();
     }
 
     public void setMinCapacity(int minCapacity) {

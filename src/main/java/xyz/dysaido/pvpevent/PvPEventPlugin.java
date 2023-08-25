@@ -196,6 +196,10 @@ public class PvPEventPlugin implements PvPEvent {
                                                         .skip(1)
                                                         .reduce((t, u) -> t + " " + u)
                                                         .orElse("");
+                                if (!arena.shouldTeleport()) {
+                                    sender.sendMessage(BukkitHelper.colorize("&4&lYou cannot start any events while locations do not set!"));
+                                    return true;
+                                }
                                 int modulo = Math.max(Settings.IMP.COUNTDOWN.BASE_CREATE_MODULO, 1);
                                 this.mainMatch = new DuelMatch(this, presentMsg, arena).onCreate(this, modulo);
                                 return true;
