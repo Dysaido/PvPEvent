@@ -70,31 +70,26 @@ public class YamlStorage {
     }
 
     public FileConfiguration getFile() {
-        synchronized (this) {
-            if (configuration == null) {
-                configuration = createDataFile(file);
-                reload(file.getName());
-            }
-            return configuration;
+        if (configuration == null) {
+            configuration = createDataFile(file);
+            reload(file.getName());
         }
+        return configuration;
     }
 
     public void reload() {
-        synchronized (this) {
-            configuration = YamlConfiguration.loadConfiguration(file);
-            final InputStream defConfigStream = getResource(file.getName());
-            if (defConfigStream == null) return;
-            configuration.setDefaults(YamlConfiguration.loadConfiguration(new InputStreamReader(defConfigStream, StandardCharsets.UTF_8)));
-        }
+        configuration = YamlConfiguration.loadConfiguration(file);
+        final InputStream defConfigStream = getResource(file.getName());
+        if (defConfigStream == null) return;
+        configuration.setDefaults(YamlConfiguration.loadConfiguration(new InputStreamReader(defConfigStream, StandardCharsets.UTF_8)));
+
     }
 
     public void saveFile() {
-        synchronized (this) {
-            try {
-                getFile().save(file);
-            } catch (IOException e) {
-                Bukkit.getLogger().log(Level.WARNING, e.getMessage());
-            }
+        try {
+            getFile().save(file);
+        } catch (IOException e) {
+            Bukkit.getLogger().log(Level.WARNING, e.getMessage());
         }
     }
 
