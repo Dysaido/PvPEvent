@@ -29,7 +29,9 @@ public abstract class AbstractManager<I, T> implements Manager<I, T> {
 
     @Override
     public T remove(I id) {
-        return objects().remove(id);
+        T t = getIfPresent(id);
+        objects().remove(id);
+        return t;
     }
 
     @Override
