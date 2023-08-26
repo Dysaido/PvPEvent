@@ -2,13 +2,16 @@ package xyz.dysaido.pvpevent.model;
 
 import org.bukkit.Location;
 import xyz.dysaido.pvpevent.api.model.Model;
+import xyz.dysaido.pvpevent.util.CustomLocation;
 
 public class Arena implements Model<String, Arena> {
 
     private final String identifier;
-    private Location lobby;
-    private Location pos1;
-    private Location pos2;
+    private CustomLocation lobby;
+    private CustomLocation pos1;
+    private CustomLocation pos2;
+    private CustomLocation min;
+    private CustomLocation max;
     private String kitName = "";
     private int minCapacity = 2;
     private int capacity = 30;
@@ -77,35 +80,35 @@ public class Arena implements Model<String, Arena> {
         return fightCountdown;
     }
 
-    public void setPos1(Location pos1) {
+    public void setPos1(CustomLocation pos1) {
         this.pos1 = pos1;
     }
 
-    public Location getPos1() {
+    public CustomLocation getPos1() {
         return pos1;
     }
 
-    public void setPos2(Location pos2) {
+    public void setPos2(CustomLocation pos2) {
         this.pos2 = pos2;
     }
 
-    public Location getPos2() {
+    public CustomLocation getPos2() {
         return pos2;
     }
 
-    public Location getLobby() {
-        return lobby;
-    }
-
-    public void setLobby(Location lobby) {
+    public void setLobby(CustomLocation lobby) {
         this.lobby = lobby;
     }
 
-    public boolean isToggleInventory() {
-        return toggleInventory;
+    public CustomLocation getLobby() {
+        return lobby;
     }
 
     public void setToggleInventory(boolean toggleInventory) {
         this.toggleInventory = toggleInventory;
+    }
+
+    public boolean isToggleInventory() {
+        return toggleInventory;
     }
 }

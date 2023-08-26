@@ -67,7 +67,7 @@ public abstract class AbstractMatch implements Match<UUID> {
                     Participant participant = new Participant(player);
                     Bukkit.getPluginManager().callEvent(new MatchJoinEvent(this, participant, ParticipantStatus.QUEUE));
                     participant.resetThingsOfPlayer();
-                    participant.getPlayer().teleport(arena.getLobby());
+                    participant.getPlayer().teleport(arena.getLobby().asBukkit(true));
 
                     participantsByUUD.put(identifier, participant);
                     statusByUUID.put(identifier, ParticipantStatus.QUEUE);

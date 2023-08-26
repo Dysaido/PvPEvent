@@ -7,6 +7,7 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import xyz.dysaido.pvpevent.model.Arena;
 import xyz.dysaido.pvpevent.model.manager.ArenaManager;
+import xyz.dysaido.pvpevent.util.CustomLocation;
 
 import java.io.File;
 import java.util.Comparator;
@@ -32,106 +33,76 @@ public class ArenaSerializer extends GsonSerializer<Arena> {
         arenaObj.addProperty("queue-countdown", arena.getQueueCountdown());
         arenaObj.addProperty("fight-countdown", arena.getFightCountdown());
         arenaObj.addProperty("toggle-inventory", arena.isToggleInventory());
+
         if (arena.getKitName() != null) {
             arenaObj.addProperty("kitname", arena.getKitName());
         }
         if (arena.getLobby() != null) {
-            Location lobby = arena.getLobby();
-            JsonElement lobbyObj = setPosition(lobby);
-            arenaObj.add("lobby", lobbyObj);
+            arenaObj.add("lobby", arena.getLobby().serialize());
         }
         if (arena.getPos1() != null) {
-            Location pos1 = arena.getPos1();
-            JsonElement pos1Obj = setPosition(pos1);
-            arenaObj.add("pos1", pos1Obj);
+            arenaObj.add("pos1", arena.getPos1().serialize());
         }
         if (arena.getPos2() != null) {
-            Location pos2 = arena.getPos2();
-            JsonElement pos1Obj = setPosition(pos2);
-            arenaObj.add("pos2", pos1Obj);
+            arenaObj.add("pos2", arena.getPos2().serialize());
         }
 
 
         return arenaObj;
     }
 
-    protected JsonElement setPosition(Location location) {
-        JsonObject object = new JsonObject();
-
-        object.addProperty("world", location.getWorld().getName());
-        object.addProperty("x", location.getX());
-        object.addProperty("y", location.getY());
-        object.addProperty("z", location.getZ());
-        object.addProperty("yaw", location.getYaw());
-        object.addProperty("pitch", location.getPitch());
-
-        return object;
-    }
-
-    protected Location getPosition(JsonObject object) {
-        JsonElement worldElement = object.get("world");
-        JsonElement xElement = object.get("x");
-        JsonElement yElement = object.get("y");
-        JsonElement zElement = object.get("z");
-        JsonElement yawElement = object.get("yaw");
-        JsonElement pitchElement = object.get("pitch");
-        if (worldElement != null && xElement != null && yElement != null && zElement != null) {
-            World world = Bukkit.getServer().getWorld(worldElement.getAsString());
-            double x = xElement.getAsDouble();
-            double y = yElement.getAsDouble();
-            double z = zElement.getAsDouble();
-            if (yawElement != null && pitchElement != null) {
-                float yaw = yawElement.getAsFloat();
-                float pitch = pitchElement.getAsFloat();
-                return new Location(world, x, y, z, yaw, pitch);
-            } else {
-                return new Location(world, x, y, z);
-            }
-        }
-        return null;
-    }
-
     @Override
     protected Optional<Arena> readObject(JsonElement element) {
         if (element.isJsonObject()) {
             JsonObject arenaObj = element.getAsJsonObject();
-            JsonElement nameElement = arenaObj.get("name");
-            JsonElement minCapacityElement = arenaObj.get("min-capacity");
-            JsonElement capacityElement = arenaObj.get("capacity");
-            JsonElement queueElement = arenaObj.get("queue-countdown");
-            JsonElement fightElement = arenaObj.get("fight-countdown");
-            JsonElement tInvElement = arenaObj.get("toggle-inventory");
+            JsonElement arenaElement = arenaObj.get("name");
+            if (arenaElement != null) {
+                Arena arena = new Arena(arenaElement.getAsString());
 
-            if (nameElement != null && minCapacityElement != null && capacityElement != null
-                    && queueElement != null && fightElement != null && tInvElement != null) {
-                String name = nameElement.getAsString();
-                int minCapacity = minCapacityElement.getAsInt();
-                int capacity = capacityElement.getAsInt();
-                int queueCountdown = queueElement.getAsInt();
-                int fightCountdown = fightElement.getAsInt();
-                boolean toggleInventory = tInvElement.getAsBoolean();
+                arenaElement = arenaObj.get("min-capacity");
+                if (arenaElement != null) {
+                    arena.setMinCapacity(arenaElement.getAsInt());
+                }
 
-                Arena arena = new Arena(name);
-                JsonElement lobbyElement = arenaObj.get("lobby");
-                JsonElement pos1Element = arenaObj.get("pos1");
-                JsonElement pos2Element = arenaObj.get("pos2");
-                if (lobbyElement != null && pos1Element != null && pos2Element != null) {
-                    Location lobby = getPosition(lobbyElement.getAsJsonObject());
-                    Location pos1 = getPosition(pos1Element.getAsJsonObject());
-                    Location pos2 = getPosition(pos2Element.getAsJsonObject());
-                    arena.setLobby(lobby);
-                    arena.setPos1(pos1);
-                    arena.setPos2(pos2);
+                arenaElement = arenaObj.get("capacity");
+                if (arenaElement != null) {
+                    arena.setCapacity(arenaElement.getAsInt());
                 }
-                JsonElement kitElement = arenaObj.get("kitname");
-                if (kitElement != null) {
-                    arena.setKitName(kitElement.getAsString());
+
+                arenaElement = arenaObj.get("queue-countdown");
+                if (arenaElement != null) {
+                    arena.setQueueCountdown(arenaElement.getAsInt());
                 }
-                arena.setMinCapacity(minCapacity);
-                arena.setCapacity(capacity);
-                arena.setQueueCountdown(queueCountdown);
-                arena.setFightCountdown(fightCountdown);
-                arena.setToggleInventory(toggleInventory);
+
+                arenaElement = arenaObj.get("fight-countdown");
+                if (arenaElement != null) {
+                    arena.setFightCountdown(arenaElement.getAsInt());
+                }
+
+                arenaElement = arenaObj.get("toggle-inventory");
+                if (arenaElement != null) {
+                    arena.setToggleInventory(arenaElement.getAsBoolean());
+                }
+
+                arenaElement = arenaObj.get("kitname");
+                if (arenaElement != null) {
+                    arena.setKitName(arenaElement.getAsString());
+                }
+
+                arenaElement = arenaObj.get("lobby");
+                if (arenaElement != null) {
+                    arena.setLobby(CustomLocation.of(arenaElement.getAsJsonObject()));
+                }
+
+                arenaElement = arenaObj.get("pos1");
+                if (arenaElement != null) {
+                    arena.setPos1(CustomLocation.of(arenaElement.getAsJsonObject()));
+                }
+
+                arenaElement = arenaObj.get("pos2");
+                if (arenaElement != null) {
+                    arena.setPos2(CustomLocation.of(arenaElement.getAsJsonObject()));
+                }
 
                 return Optional.of(arena);
             }

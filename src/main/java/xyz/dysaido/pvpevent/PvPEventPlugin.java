@@ -313,19 +313,19 @@ public class PvPEventPlugin implements PvPEvent {
                             // <setlobby|setpos1|setpos2|setkit|setcapacity|setqueuecountdown|setfightcountdown|toggleinventory>
                             switch (option) {
                                 case "setlobby":
-                                    arena.setLobby(player.getLocation());
+                                    arena.setLobby(CustomLocation.of(player.getLocation()));
                                     player.sendMessage(ChatColor.LIGHT_PURPLE + "It sets the position where you are currently standing!");
                                     player.sendMessage(ChatColor.GREEN + "Lobby has been set!");
                                     arenaManager.getSerializer().write();
                                     break;
                                 case "setpos1":
-                                    arena.setPos1(player.getLocation());
+                                    arena.setPos1(CustomLocation.of(player.getLocation()));
                                     player.sendMessage(ChatColor.LIGHT_PURPLE + "It sets the position where you are currently standing!");
                                     player.sendMessage(ChatColor.GREEN + "Pos1 has been set!");
                                     arenaManager.getSerializer().write();
                                     break;
                                 case "setpos2":
-                                    arena.setPos2(player.getLocation());
+                                    arena.setPos2(CustomLocation.of(player.getLocation()));
                                     player.sendMessage(ChatColor.LIGHT_PURPLE + "It sets the position where you are currently standing!");
                                     player.sendMessage(ChatColor.GREEN + "Pos2 has been set!");
                                     arenaManager.getSerializer().write();

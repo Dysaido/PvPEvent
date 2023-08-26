@@ -29,12 +29,16 @@ public class DuelMatch extends AbstractMatch {
     public void onDeath(UUID identifier, PlayerDeathEvent event) {
         if (statusByUUID.get(identifier) == ParticipantStatus.FIGHTING) {
             Participant victim = participantsByUUD.get(identifier);
+            victim.getPlayer().setHealth(victim.getPlayer().getMaxHealth());
+            victim.getPlayer().setFoodLevel(20);
+            victim.getPlayer().teleport(arena.getLobby().asBukkit(true));
+            statusByUUID.put(identifier, ParticipantStatus.SPECTATE);
+
             event.getDrops().clear();
             event.setDeathMessage(null);
 
-            statusByUUID.put(identifier, ParticipantStatus.SPECTATE);
             Participant winner = getFighting().get(0);
-            winner.getPlayer().teleport(arena.getLobby());
+            winner.getPlayer().teleport(arena.getLobby().asBukkit(true));
             statusByUUID.put(winner.getIdentifier(), ParticipantStatus.QUEUE);
 
             String text = Settings.IMP.MESSAGE.MATCH_DEATH_TEXT
@@ -56,9 +60,6 @@ public class DuelMatch extends AbstractMatch {
             pvpEvent.getUserManager().getSerializer().append(kUser);
 
             nextRound();
-            victim.getPlayer().setHealth(victim.getPlayer().getMaxHealth());
-            victim.getPlayer().setFoodLevel(20);
-            victim.getPlayer().teleport(arena.getLobby());
         }
     }
 
@@ -83,9 +84,17 @@ public class DuelMatch extends AbstractMatch {
             this.round++;
             Bukkit.getPluginManager().callEvent(new DuelNextRoundEvent(this, round, user1, user2));
 
-            user1.getPlayer().teleport(arena.getPos1());
+            if (arena.getPos1() != null) {
+                if (arena.getPos2() != null) {
+                    user1.getPlayer().teleport(arena.getPos1().asBukkit(true));
+                    user2.getPlayer().teleport(arena.getPos2().asBukkit(true));
+                } else {
+                    user1.getPlayer().teleport(arena.getPos1().asBukkit(true));
+                    user2.getPlayer().teleport(arena.getPos1().asBukkit(true));
+                }
+            }
+
             user1.setFreeze(true);
-            user2.getPlayer().teleport(arena.getPos2());
             user2.setFreeze(true);
             if (arena.shouldApplyKit() && !arena.isToggleInventory()) {
                 playerKit.accept(user1.getPlayer());
