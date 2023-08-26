@@ -10,12 +10,12 @@ public enum CommandInfo {
     SPECTATE(false, "spectate", "/event spectate", "Observe the current event as a spectator"),
     TOPLIST(false, "toplist", "/event toplist", "See top wins"),
 
-    VIEW(true, "view", "/event view (UI)", "Access a graphical user interface for editing"),
-    AUTOSET(true, "autoset", "/event autoset [name] [arena] HH:MM [command]",
+    VIEW(true, "view", "/event view [gui(alpha)]", "Access a graphical user interface for editing"),
+    AUTOSET(true, "autoset", "/event autoset(alpha) [name] [arena] HH:MM [command]",
             "Automatically schedule an event with time and optional command"),
     HOST(true, "host", "/event host [arena] [broadcast]", "Initiate a saved event"),
     STOP(true, "stop", "/event stop", "Terminate the ongoing event"),
-    RELOAD(true, "reload", "/event reload [argument]", "Reload the entire plugin, including files",
+    RELOAD(true, "reload", "/event reload [config|full]", "Reload the entire plugin, including files",
             "config", "full"),
 
     KICK(true, "kick", "/event kick [user]", "Remove a user from the event"),
@@ -26,7 +26,7 @@ public enum CommandInfo {
     EDITARENA(true, "editarena", "/event editarena [name] [argument]",
             "Modify the parameters of an existing arena",
             "setlobby", "setpos1", "setpos2",
-            "setkit", "setmincapacity","setcapacity", "setqueuecountdown", "setfightcountdown", "toggleinventory"),
+            "setkit", "mincapacity","capacity", "queuetimer", "fighttimer", "invtoggle"),
     DELARENA(true, "delarena", "/event delarena [name]", "Delete an arena from the database"),
 
     CREATEKIT(true, "createkit", "/event createkit [name]", "Create a new empty kit"),

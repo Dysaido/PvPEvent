@@ -21,6 +21,7 @@ import xyz.dysaido.pvpevent.model.manager.ArenaManager;
 import xyz.dysaido.pvpevent.model.manager.KitManager;
 import xyz.dysaido.pvpevent.model.manager.UserManager;
 import xyz.dysaido.pvpevent.util.BukkitHelper;
+import xyz.dysaido.pvpevent.util.CustomLocation;
 import xyz.dysaido.pvpevent.util.NumericParser;
 
 import java.io.File;
@@ -309,20 +310,23 @@ public class PvPEventPlugin implements PvPEvent {
                             Player player = (Player) sender;
                             Arena arena = arenaManager.getIfPresent(name);
                             String option = args[1].toLowerCase();
-                            // <save|setlobby|setpos1|setpos2|setkit|setcapacity|setqueuecountdown|setfightcountdown>
+                            // <setlobby|setpos1|setpos2|setkit|setcapacity|setqueuecountdown|setfightcountdown|toggleinventory>
                             switch (option) {
                                 case "setlobby":
                                     arena.setLobby(player.getLocation());
+                                    player.sendMessage(ChatColor.LIGHT_PURPLE + "It sets the position where you are currently standing!");
                                     player.sendMessage(ChatColor.GREEN + "Lobby has been set!");
                                     arenaManager.getSerializer().write();
                                     break;
                                 case "setpos1":
                                     arena.setPos1(player.getLocation());
+                                    player.sendMessage(ChatColor.LIGHT_PURPLE + "It sets the position where you are currently standing!");
                                     player.sendMessage(ChatColor.GREEN + "Pos1 has been set!");
                                     arenaManager.getSerializer().write();
                                     break;
                                 case "setpos2":
                                     arena.setPos2(player.getLocation());
+                                    player.sendMessage(ChatColor.LIGHT_PURPLE + "It sets the position where you are currently standing!");
                                     player.sendMessage(ChatColor.GREEN + "Pos2 has been set!");
                                     arenaManager.getSerializer().write();
                                     break;
@@ -334,10 +338,10 @@ public class PvPEventPlugin implements PvPEvent {
 
                                         arenaManager.getSerializer().write();
                                     } else {
-                                        sender.sendMessage(ChatColor.DARK_PURPLE + "/event editarena setkit [name]");
+                                        sender.sendMessage(ChatColor.DARK_PURPLE + "/event editarena [name] setkit [name]");
                                     }
                                     break;
-                                case "setcapacity":
+                                case "capacity":
                                     if (args.length == 3) {
                                         String capacity = args[2];
                                         if (NumericParser.ensureInteger(capacity)) {
@@ -349,10 +353,11 @@ public class PvPEventPlugin implements PvPEvent {
                                             player.sendMessage(ChatColor.RED + "This is not integer!");
                                         }
                                     } else {
-                                        sender.sendMessage(ChatColor.DARK_PURPLE + "/event editarena setcapacity [integer]");
+                                        sender.sendMessage(ChatColor.DARK_PURPLE + "/event editarena [name] capacity [integer]");
+                                        player.sendMessage(ChatColor.LIGHT_PURPLE + "Sets the arena's maximum capacity.");
                                     }
                                     break;
-                                case "setmincapacity":
+                                case "mincapacity":
                                     if (args.length == 3) {
                                         String minCapacity = args[2];
                                         if (NumericParser.ensureInteger(minCapacity)) {
@@ -364,10 +369,11 @@ public class PvPEventPlugin implements PvPEvent {
                                             player.sendMessage(ChatColor.RED + "This is not integer!");
                                         }
                                     } else {
-                                        sender.sendMessage(ChatColor.DARK_PURPLE + "/event editarena setmincapacity [integer]");
+                                        sender.sendMessage(ChatColor.DARK_PURPLE + "/event editarena [name] mincapacity [integer]");
+                                        player.sendMessage(ChatColor.LIGHT_PURPLE + "Sets the required capacity for the arena's start.");
                                     }
                                     break;
-                                case "setqueuecountdown":
+                                case "queuetimer":
                                     if (args.length == 3) {
                                         String queueCountdown = args[2];
                                         if (NumericParser.ensureInteger(queueCountdown)) {
@@ -379,10 +385,11 @@ public class PvPEventPlugin implements PvPEvent {
                                             player.sendMessage(ChatColor.RED + "This is not integer!");
                                         }
                                     } else {
-                                        sender.sendMessage(ChatColor.DARK_PURPLE + "/event editarena setqueuecountdown [integer, 1 = 1second, 30 = 30second]");
+                                        sender.sendMessage(ChatColor.DARK_PURPLE + "/event editarena [name] queuetimer [integer, 1 = 1second, 30 = 30second]");
+                                        player.sendMessage(ChatColor.LIGHT_PURPLE + "Sets the connection countdown in seconds.");
                                     }
                                     break;
-                                case "setfightcountdown":
+                                case "fighttimer":
                                     if (args.length == 3) {
                                         String fightCountdown = args[2];
                                         if (NumericParser.ensureInteger(fightCountdown)) {
@@ -394,10 +401,11 @@ public class PvPEventPlugin implements PvPEvent {
                                             player.sendMessage(ChatColor.RED + "This is not integer!");
                                         }
                                     } else {
-                                        sender.sendMessage(ChatColor.DARK_PURPLE + "/event editarena setfightcountdown [integer, 1 = 1second, 30 = 30second]");
+                                        sender.sendMessage(ChatColor.DARK_PURPLE + "/event editarena [name] fighttimer [integer, 1 = 1second, 30 = 30second]");
+                                        player.sendMessage(ChatColor.LIGHT_PURPLE + "Sets the time elapsed between battles.");
                                     }
                                     break;
-                                case "toggleinventory":
+                                case "invtoggle":
                                     if (args.length == 3) {
                                         String tInvBool = args[2];
                                         if (Boolean.parseBoolean(tInvBool)) {
@@ -409,7 +417,8 @@ public class PvPEventPlugin implements PvPEvent {
                                         }
                                         // player.sendMessage(ChatColor.RED + "This is not boolean!");
                                     } else {
-                                        sender.sendMessage(ChatColor.DARK_PURPLE + "/event editarena toggleinventory [boolean, true-false]");
+                                        sender.sendMessage(ChatColor.DARK_PURPLE + "/event editarena [name] invtoggle [boolean, true-false]");
+                                        player.sendMessage(ChatColor.LIGHT_PURPLE + "Inventory toggle: if true, the player receives the inventory they had on them at the moment of connection.");
                                     }
                                     break;
                                 default:
