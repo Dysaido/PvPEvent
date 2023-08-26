@@ -1,7 +1,7 @@
-package xyz.dysaido.pvpevent.api.inventory.button;
+package xyz.dysaido.pvpevent.api.pagination.button;
 
 import org.bukkit.entity.Player;
-import xyz.dysaido.pvpevent.api.inventory.ItemBuilder;
+import xyz.dysaido.pvpevent.api.pagination.ItemBuilder;
 
 import java.util.Objects;
 import java.util.function.Consumer;

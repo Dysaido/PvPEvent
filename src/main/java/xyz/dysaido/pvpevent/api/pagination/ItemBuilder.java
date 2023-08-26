@@ -1,4 +1,4 @@
-package xyz.dysaido.pvpevent.api.inventory;
+package xyz.dysaido.pvpevent.api.pagination;
 
 import org.bukkit.Color;
 import org.bukkit.DyeColor;

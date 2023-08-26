@@ -1,6 +1,6 @@
-package xyz.dysaido.pvpevent.api.inventory.row;
+package xyz.dysaido.pvpevent.api.pagination.row;
 
-import xyz.dysaido.pvpevent.api.inventory.BaseInventory;
+import xyz.dysaido.pvpevent.api.pagination.BaseInventory;
 
 import java.util.function.BiFunction;
 

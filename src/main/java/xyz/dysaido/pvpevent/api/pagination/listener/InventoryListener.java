@@ -1,10 +1,10 @@
-package xyz.dysaido.pvpevent.api.inventory.listener;
+package xyz.dysaido.pvpevent.api.pagination.listener;
 
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
-import xyz.dysaido.pvpevent.api.inventory.BaseInventory;
+import xyz.dysaido.pvpevent.api.pagination.BaseInventory;
 
 public class InventoryListener implements Listener {
 

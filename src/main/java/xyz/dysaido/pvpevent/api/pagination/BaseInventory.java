@@ -1,4 +1,4 @@
-package xyz.dysaido.pvpevent.api.inventory;
+package xyz.dysaido.pvpevent.api.pagination;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -8,7 +8,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.InventoryView;
-import xyz.dysaido.pvpevent.api.inventory.button.Button;
+import xyz.dysaido.pvpevent.api.pagination.button.Button;
 import xyz.dysaido.pvpevent.util.Logger;
 
 import java.util.HashMap;
