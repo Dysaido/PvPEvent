@@ -23,6 +23,8 @@ public class Participant {
     private final float originalWalkSpeed;
     private final GameMode originalGamemode;
     private final Kit<Player> originalInventory;
+    private final int originalLevel;
+    private final float originalExp;
     private boolean freeze;
     public Participant(Player player) {
         this.player = player;
@@ -36,21 +38,24 @@ public class Participant {
         this.originalFireTicks = player.getFireTicks();
         this.originalWalkSpeed = player.getWalkSpeed();
         this.originalGamemode = player.getGameMode();
-        this.originalInventory = new Kit<>(String.format("OriginalKit:%s", player.getName()));
+        this.originalLevel = player.getLevel();
+        this.originalExp = player.getExp();
 
+        this.originalInventory = new Kit<>(String.format("OriginalKit:%s", player.getName()));
         this.originalInventory.setArmor(player.getInventory().getArmorContents());
         this.originalInventory.setContents(player.getInventory().getContents());
     }
 
     public void resetThingsOfPlayer() {
-        player.setHealth(player.getMaxHealth());
+        player.setHealth(20.0D);
         player.setFoodLevel(20);
         player.setFireTicks(0);
         player.setWalkSpeed(0.2f);
+        player.setLevel(0);
+        player.setExp(0.0F);
         player.setGameMode(GameMode.SURVIVAL);
-        for (PotionEffect effect : player.getActivePotionEffects()) {
-            player.removePotionEffect(effect.getType());
-        }
+        player.getActivePotionEffects().stream().map(PotionEffect::getType).forEach(player::removePotionEffect);
+        player.getInventory().setHeldItemSlot(0);
         player.getInventory().clear();
         player.getInventory().setArmorContents(null);
         player.updateInventory();
@@ -61,11 +66,13 @@ public class Participant {
         player.setFoodLevel(originalFoodLevel);
         player.setFireTicks(originalFireTicks);
         player.setWalkSpeed(originalWalkSpeed);
+        player.setLevel(originalLevel);
+        player.setExp(originalExp);
         player.setGameMode(originalGamemode);
-        for (PotionEffect effect : player.getActivePotionEffects()) {
-            player.removePotionEffect(effect.getType());
-        }
+
+        player.getActivePotionEffects().stream().map(PotionEffect::getType).forEach(player::removePotionEffect);
         originalPotionEffects.forEach(player::addPotionEffect);
+
         player.teleport(originalLocation);
 
         originalInventory.accept(player);
