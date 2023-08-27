@@ -39,10 +39,9 @@ public abstract class AbstractMatch implements Match<UUID> {
         this.present = present;
         this.arena = arena;
         this.state = MatchState.INACTIVE;
-        
-        int maxCapacity = Bukkit.getServer().getMaxPlayers();
-        this.participantsByUUD = new ConcurrentHashMap<>(maxCapacity);
-        this.statusByUUID = new ConcurrentHashMap<>(maxCapacity);
+
+        this.participantsByUUD = new ConcurrentHashMap<>();
+        this.statusByUUID = new ConcurrentHashMap<>();
         
         this.matchListener = new MatchListener(pvpEvent, this);
         this.playerKit = pvpEvent.getKitManager().getIfPresent(arena.getKitName());
