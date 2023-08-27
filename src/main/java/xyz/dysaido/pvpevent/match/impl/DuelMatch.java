@@ -95,6 +95,9 @@ public class DuelMatch extends AbstractMatch {
                     user1.getPlayer().teleport(arena.getPos1().asBukkit(true));
                     user2.getPlayer().teleport(arena.getPos1().asBukkit(true));
                 }
+            } else {
+                user1.getPlayer().teleport(arena.getPos2().asBukkit(true));
+                user2.getPlayer().teleport(arena.getPos2().asBukkit(true));
             }
 
             user1.setFreeze(true);
