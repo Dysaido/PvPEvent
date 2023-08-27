@@ -38,7 +38,7 @@ public class Arena implements Model<String, Arena> {
     }
 
     public boolean shouldApplyKit() {
-        return kitName != null && kitName.isEmpty();
+        return kitName != null && !kitName.isEmpty();
     }
 
     public void setMinCapacity(int minCapacity) {
