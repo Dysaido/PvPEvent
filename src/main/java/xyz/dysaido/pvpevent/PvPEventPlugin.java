@@ -98,6 +98,7 @@ public class PvPEventPlugin implements PvPEvent {
     }
 
     private void registerCommands() {
+        // event vote - permission, legyen egy szavazasi mennyiseg aminel elindulhat az event
         parentCommand.register(CommandInfo.NONE, SubCommand::new)
                 .setCommand((sender, args) -> {
                     sendEventCommandsHelp(sender);
@@ -167,6 +168,8 @@ public class PvPEventPlugin implements PvPEvent {
                         sender.sendMessage(BukkitHelper.colorize("&7 -lobby: &c%s", arena.getLobby() == null ? "false" : "true"));
                         sender.sendMessage(BukkitHelper.colorize("&7 -pos1: &c%s", arena.getPos1() == null ? "false" : "true"));
                         sender.sendMessage(BukkitHelper.colorize("&7 -pos2: &c%s", arena.getPos2() == null ? "false" : "true"));
+                        sender.sendMessage(BukkitHelper.colorize("&7 -invtoggle: &c%s", arena.isToggleInventory() ? "true" : "false"));
+                        sender.sendMessage(BukkitHelper.colorize("&7 -combomode: &c%s", arena.isComboMode() ? "true" : "false"));
                         sender.sendMessage(BukkitHelper.colorize("&7 -kit: &c%s", arena.getKitName() == null || arena.getKitName().isEmpty() ? "false" : "true"));
                         sender.sendMessage(BukkitHelper.colorize("&7 -mincapacity: &c%s", arena.getMinCapacity()));
                         sender.sendMessage(BukkitHelper.colorize("&7 -maxcapacity: &c%s", arena.getCapacity()));
@@ -310,7 +313,7 @@ public class PvPEventPlugin implements PvPEvent {
                             Player player = (Player) sender;
                             Arena arena = arenaManager.getIfPresent(name);
                             String option = args[1].toLowerCase();
-                            // <setlobby|setpos1|setpos2|setkit|setcapacity|setqueuecountdown|setfightcountdown|toggleinventory>
+                            // <setlobby|setpos1|setpos2|setkit|mincapacity|capacity|queuetimer|fighttimer|invtoggle|combomode>
                             switch (option) {
                                 case "setlobby":
                                     arena.setLobby(CustomLocation.of(player.getLocation()));
@@ -419,6 +422,22 @@ public class PvPEventPlugin implements PvPEvent {
                                     } else {
                                         sender.sendMessage(ChatColor.DARK_PURPLE + "/event editarena [name] invtoggle [boolean, true-false]");
                                         player.sendMessage(ChatColor.LIGHT_PURPLE + "Inventory toggle: if true, the player receives the inventory they had on them at the moment of connection.");
+                                    }
+                                    break;
+                                case "combomode":
+                                    if (args.length == 3) {
+                                        String tcomboBool = args[2];
+                                        if (Boolean.parseBoolean(tcomboBool)) {
+                                            player.sendMessage(ChatColor.GREEN + String.format("%b has been set for combo mode!", true));
+                                            arena.setComboMode(true);
+                                        } else {
+                                            player.sendMessage(ChatColor.GREEN + String.format("%b has been set for combo mode!", false));
+                                            arena.setComboMode(false);
+                                        }
+                                        // player.sendMessage(ChatColor.RED + "This is not boolean!");
+                                    } else {
+                                        sender.sendMessage(ChatColor.DARK_PURPLE + "/event editarena [name] combomode [boolean, true-false]");
+                                        player.sendMessage(ChatColor.LIGHT_PURPLE + "If you set this value to true, the combo mode will be enabled. Conversely, if set to false, it will be disabled.");
                                     }
                                     break;
                                 default:

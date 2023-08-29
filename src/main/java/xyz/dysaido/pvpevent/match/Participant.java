@@ -1,10 +1,14 @@
 package xyz.dysaido.pvpevent.match;
 
+import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
+import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.scoreboard.Scoreboard;
+import xyz.dysaido.pvpevent.scoreboard.PvPEventSidebar;
+import xyz.dysaido.pvpevent.scoreboard.impl.MatchSidebar;
 
 import java.util.Collection;
 import java.util.UUID;
@@ -14,6 +18,7 @@ public class Participant {
     private final UUID id;
     private final String name;
     private final Player player;
+    private final AbstractMatch match;
     private final Scoreboard originalScoreboard;
     private final Location originalLocation;
     private final Collection<PotionEffect> originalPotionEffects;
@@ -23,11 +28,13 @@ public class Participant {
     private final float originalWalkSpeed;
     private final GameMode originalGamemode;
     private final Kit<Player> originalInventory;
+    private final int originalNoDamageTicks;
     private final int originalLevel;
     private final float originalExp;
     private boolean freeze;
-    public Participant(Player player) {
+    public Participant(Player player, AbstractMatch match) {
         this.player = player;
+        this.match = match;
         this.id = player.getUniqueId();
         this.name = player.getName();
         this.originalScoreboard = player.getScoreboard();
@@ -44,6 +51,12 @@ public class Participant {
         this.originalInventory = new Kit<>(String.format("OriginalKit:%s", player.getName()));
         this.originalInventory.setArmor(player.getInventory().getArmorContents());
         this.originalInventory.setContents(player.getInventory().getContents());
+
+        this.originalNoDamageTicks = player.getMaximumNoDamageTicks();
+
+        if (match.getArena().isComboMode()) {
+            player.setMaximumNoDamageTicks(1);
+        }
     }
 
     public void resetThingsOfPlayer() {
@@ -62,6 +75,7 @@ public class Participant {
     }
 
     public void setOriginalsOfPlayer() {
+        player.setMaximumNoDamageTicks(originalNoDamageTicks);
         player.setHealth(originalHealth);
         player.setFoodLevel(originalFoodLevel);
         player.setFireTicks(originalFireTicks);

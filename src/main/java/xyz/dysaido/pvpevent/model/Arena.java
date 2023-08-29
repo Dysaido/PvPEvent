@@ -18,6 +18,7 @@ public class Arena implements Model<String, Arena> {
     private int queueCountdown = 10;
     private int fightCountdown = 3;
     private boolean toggleInventory = false;
+    private boolean comboMode = false;
 
     public Arena(String identifier) {
         this.identifier = identifier;
@@ -110,5 +111,13 @@ public class Arena implements Model<String, Arena> {
 
     public boolean isToggleInventory() {
         return toggleInventory;
+    }
+
+    public void setComboMode(boolean comboMode) {
+        this.comboMode = comboMode;
+    }
+
+    public boolean isComboMode() {
+        return comboMode;
     }
 }

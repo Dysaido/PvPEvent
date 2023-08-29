@@ -33,6 +33,7 @@ public class ArenaSerializer extends GsonSerializer<Arena> {
         arenaObj.addProperty("queue-countdown", arena.getQueueCountdown());
         arenaObj.addProperty("fight-countdown", arena.getFightCountdown());
         arenaObj.addProperty("toggle-inventory", arena.isToggleInventory());
+        arenaObj.addProperty("combo-mode", arena.isComboMode());
 
         if (arena.getKitName() != null) {
             arenaObj.addProperty("kitname", arena.getKitName());
@@ -82,6 +83,11 @@ public class ArenaSerializer extends GsonSerializer<Arena> {
                 arenaElement = arenaObj.get("toggle-inventory");
                 if (arenaElement != null) {
                     arena.setToggleInventory(arenaElement.getAsBoolean());
+                }
+
+                arenaElement = arenaObj.get("combo-mode");
+                if (arenaElement != null) {
+                    arena.setComboMode(arenaElement.getAsBoolean());
                 }
 
                 arenaElement = arenaObj.get("kitname");

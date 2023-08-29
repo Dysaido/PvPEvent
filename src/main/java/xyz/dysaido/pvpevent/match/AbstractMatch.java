@@ -63,7 +63,7 @@ public abstract class AbstractMatch implements Match<UUID> {
         if (player != null) {
             if (state == MatchState.QUEUE && !isFull()) {
                 if (!hasParticipant(identifier)) {
-                    Participant participant = new Participant(player);
+                    Participant participant = new Participant(player, this);
                     Bukkit.getPluginManager().callEvent(new MatchJoinEvent(this, participant, ParticipantStatus.QUEUE));
                     participant.resetThingsOfPlayer();
                     participant.getPlayer().teleport(arena.getLobby().asBukkit(true));
@@ -108,7 +108,7 @@ public abstract class AbstractMatch implements Match<UUID> {
         Player player = Bukkit.getServer().getPlayer(identifier);
         if (player != null) {
             if (!hasParticipant(identifier)) {
-                Participant participant = new Participant(player);
+                Participant participant = new Participant(player, this);
                 Bukkit.getPluginManager().callEvent(new MatchJoinEvent(this, participant, ParticipantStatus.SPECTATE));
                 participantsByUUD.put(identifier, participant);
                 statusByUUID.put(identifier, ParticipantStatus.SPECTATE);
