@@ -521,6 +521,9 @@ public class PvPEventPlugin implements PvPEvent {
 
     @Override
     public void disable() {
+        if (isActiveMatch()) {
+            mainMatch.onDestroy();
+        }
         parentCommand.unload();
         connectionListener.unload();
         arenaManager.unload();
