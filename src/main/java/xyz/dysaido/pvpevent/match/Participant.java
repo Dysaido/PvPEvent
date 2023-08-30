@@ -58,7 +58,7 @@ public class Participant {
         this.originalNoDamageTicks = player.getMaximumNoDamageTicks();
 
         if (match.getArena().isComboMode()) {
-            player.setMaximumNoDamageTicks(1);
+            player.setMaximumNoDamageTicks(3);
         }
     }
 
