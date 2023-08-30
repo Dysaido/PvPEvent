@@ -300,10 +300,11 @@ public class PvPEventPlugin implements PvPEvent {
                     if (args.length > 1) {
                         String name = args[0].toLowerCase(Locale.ROOT);
                         if (!arenaManager.isLoaded(name)) {
-                            sender.sendMessage(ChatColor.RED + "Arena hasn't been registrated!");
+                            sender.sendMessage(ChatColor.RED + "Arena hasn't been registered!");
                             sender.sendMessage(ChatColor.DARK_PURPLE + "/event editarena [name] <option>");
                             sender.sendMessage(ChatColor.DARK_PURPLE + "Options: setlobby, setpos1, setpos2, setkit [name]");
-                            sender.sendMessage(ChatColor.DARK_PURPLE + "setcapacity [integer], setqueuecountdown [integer], setfightcountdown [integer]");
+                            sender.sendMessage(ChatColor.DARK_PURPLE + " mincapacity [integer], capacity [integer], queuetimer [integer], fighttimer [integer]");
+                            sender.sendMessage(ChatColor.DARK_PURPLE + " invtoggle [true|false], combomode [true|false]");
                         } else {
                             if (!(sender instanceof Player)) {
                                 sender.sendMessage(ChatColor.RED+ "You don't have permission to perform this!");
