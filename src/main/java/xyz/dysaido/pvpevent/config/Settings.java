@@ -27,6 +27,8 @@ public class Settings extends Config {
     public MESSAGE MESSAGE;
     @Create
     public COUNTDOWN COUNTDOWN;
+    @Create
+    public GUI GUI;
 
     public void reload(File file) {
         Logger.information("Settings", "Reload all field from settings configuration class and load from parent file");
@@ -185,6 +187,20 @@ public class Settings extends Config {
                 "Condition: FightTimes % 2 == 0"
         })
         public int SUMO_NEXTROUND_MODULO = 1;
+    }
+
+    @Comment({
+            "GUI settings"
+    })
+    public static class GUI {
+        @Comment({
+                "This setting indicates the position of the leave button. Its value can range between 0 and 8."
+        })
+        public int QUEUE_LEAVE_SLOTBAR = 8;
+        @Comment({
+                "This setting specifies the name of the leave button."
+        })
+        public String QUEUE_LEAVE_NAME = "&aLEAVE &7(Click to leave)";
     }
 
 }

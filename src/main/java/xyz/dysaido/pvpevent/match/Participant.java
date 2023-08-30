@@ -7,6 +7,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.scoreboard.Scoreboard;
+import xyz.dysaido.pvpevent.api.pagination.ItemBuilder;
+import xyz.dysaido.pvpevent.api.pagination.Materials;
+import xyz.dysaido.pvpevent.config.Settings;
 import xyz.dysaido.pvpevent.scoreboard.PvPEventSidebar;
 import xyz.dysaido.pvpevent.scoreboard.impl.MatchSidebar;
 
@@ -71,6 +74,10 @@ public class Participant {
         player.getInventory().setHeldItemSlot(0);
         player.getInventory().clear();
         player.getInventory().setArmorContents(null);
+        Settings.GUI guiSets = Settings.IMP.GUI;
+        ItemBuilder item = new ItemBuilder(Materials.CLOCK.asBukkit()).displayName(guiSets.QUEUE_LEAVE_NAME);
+        int slot = guiSets.QUEUE_LEAVE_SLOTBAR > 0 ? Math.min(8, guiSets.QUEUE_LEAVE_SLOTBAR) : 0;
+        player.getInventory().setItem(slot, item.build());
         player.updateInventory();
     }
 

@@ -3,15 +3,15 @@ package xyz.dysaido.pvpevent.listener;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.player.PlayerCommandPreprocessEvent;
-import org.bukkit.event.player.PlayerKickEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.*;
+import org.bukkit.inventory.ItemStack;
 import xyz.dysaido.pvpevent.api.PvPEvent;
+import xyz.dysaido.pvpevent.api.pagination.Materials;
 import xyz.dysaido.pvpevent.config.Settings;
 import xyz.dysaido.pvpevent.match.AbstractMatch;
 import xyz.dysaido.pvpevent.match.Participant;
@@ -136,6 +136,33 @@ public class MatchListener extends EventListener {
         if (match.hasParticipant(id) && match.getStatusByUUID().get(id) != ParticipantStatus.FIGHTING) {
             Logger.debug(TAG, "InventoryClick - Queued player do not authorized to use own inventory");
             event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onPlayerDropItem(PlayerDropItemEvent event) {
+        Player player = event.getPlayer();
+        UUID id = player.getUniqueId();
+        if (match.hasParticipant(id) && match.getStatusByUUID().get(id) != ParticipantStatus.FIGHTING) {
+            Logger.debug(TAG, "PlayerDropItem - Queued player do not authorized to drop any items");
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onPlayerInteract(PlayerInteractEvent event) {
+        Player player = event.getPlayer();
+        UUID id = player.getUniqueId();
+        if (match.hasParticipant(id) && match.getStatusByUUID().get(id) != ParticipantStatus.FIGHTING) {
+            Logger.debug(TAG, "PlayerInteract - Queued player do not authorized to interact");
+            event.setCancelled(true);
+
+            if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+                ItemStack heldItem = player.getInventory().getItemInHand();
+                if (heldItem.getType() == Materials.CLOCK.asBukkit()) {
+                    match.leave(id);
+                }
+            }
         }
     }
 
