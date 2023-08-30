@@ -4,6 +4,8 @@ import xyz.dysaido.pvpevent.api.config.Config;
 import xyz.dysaido.pvpevent.util.Logger;
 
 import java.io.File;
+import java.util.Arrays;
+import java.util.List;
 
 public class Settings extends Config {
 
@@ -160,33 +162,27 @@ public class Settings extends Config {
     @Comment({
             "Countdown settings",
             "!!!IMPORTANT!!!",
-            "\tIf the QueueCountdown value is less than 10, it will be set to 10, as what kind of event would it be if you had no time to join?",
-            "\tIf the FightCountdown value is less than 3, it will immediately start the next round! This can be used to control how long players are frozen."
+            "\tIf the QueueTimer value is less than 10, it will be set to 10, as what kind of event would it be if you had no time to join?",
+            "\tIf the FightTimer value is less than 3, it will immediately start the next round! This can be used to control how long players are frozen."
     })
     public static class COUNTDOWN {
         @Comment({
-                "This controls how many times the intermediary text should be displayed.",
-                "!!!Cannot be less than 1!!!",
-                "Condition: QueueTimes % 2 == 0"
+                "This dictates when the intermediary text will be shown.",
         })
-        public int BASE_CREATE_MODULO = 2;
+        public List<Integer> BASE_CREATE_ANNOUNCE = Arrays.asList(50, 30, 20, 15, 10, 5, 4, 3, 2, 1);
         @Comment({
                 "This controls the countdown to the start.",
                 "If it's less than three, the PvP event starts immediately."
         })
         public int BASE_START_TIMES = 3;
         @Comment({
-                "This controls how many times the intermediary text should be displayed.",
-                "!!!Cannot be less than 1!!!",
-                "Condition: StartTimes % 2 == 0"
+                "This dictates when the intermediary text will be shown.",
         })
-        public int BASE_START_MODULO = 1;
+        public List<Integer> BASE_START_ANNOUNCE = Arrays.asList(5, 4, 3, 2, 1);
         @Comment({
-                "This controls how many times the intermediary text should be displayed.",
-                "!!!Cannot be less than 1!!!",
-                "Condition: FightTimes % 2 == 0"
+                "This dictates when the intermediary text will be shown.",
         })
-        public int SUMO_NEXTROUND_MODULO = 1;
+        public List<Integer> BASE_NEXTROUND_ANNOUNCE = Arrays.asList(5, 4, 3, 2, 1);
     }
 
     @Comment({

@@ -204,8 +204,7 @@ public class PvPEventPlugin implements PvPEvent {
                                     sender.sendMessage(BukkitHelper.colorize("&4&lYou cannot start any events while locations do not set!"));
                                     return true;
                                 }
-                                int modulo = Math.max(Settings.IMP.COUNTDOWN.BASE_CREATE_MODULO, 1);
-                                this.mainMatch = new DuelMatch(this, presentMsg, arena).onCreate(this, modulo);
+                                this.mainMatch = new DuelMatch(this, presentMsg, arena).onCreate(this, Settings.IMP.COUNTDOWN.BASE_CREATE_ANNOUNCE);
                                 return true;
                             } else {
                                 sender.sendMessage(ChatColor.RED + String.format("%s wasn't saved by anyone!", arenaName));

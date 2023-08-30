@@ -115,8 +115,7 @@ public class DuelMatch extends AbstractMatch {
             if (freezeTimes < 3) {
                 runnable.run();
             } else {
-                int modulo = Math.max(Settings.IMP.COUNTDOWN.SUMO_NEXTROUND_MODULO, 1);
-                this.task = syncTaskFactory(freezeTimes, modulo,
+                this.task = syncTaskFactory(freezeTimes, Settings.IMP.COUNTDOWN.BASE_NEXTROUND_ANNOUNCE,
                         times -> {
 
                             String text = Settings.IMP.MESSAGE.SUMO_NEXTROUND_COUNTDOWN_TEXT

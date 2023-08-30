@@ -6,7 +6,9 @@ import xyz.dysaido.pvpevent.match.MatchState;
 import xyz.dysaido.pvpevent.match.Participant;
 import xyz.dysaido.pvpevent.match.ParticipantStatus;
 
+import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 public interface Match<I> {
 
@@ -18,9 +20,9 @@ public interface Match<I> {
 
     void onDeath(I identifier, PlayerDeathEvent event);
 
-    Match<I> onCreate(PvPEvent pvpEvent, int modulo);
-
     void onDestroy();
+
+    Match<I> onCreate(PvPEvent pvpEvent, List<Integer> announcements);
 
     void onStartTask();
 

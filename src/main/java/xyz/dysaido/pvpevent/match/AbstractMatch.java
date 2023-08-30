@@ -120,7 +120,7 @@ public abstract class AbstractMatch implements Match<UUID> {
     }
 
     @Override
-    public Match<UUID> onCreate(PvPEvent pvpEvent, int modulo) {
+    public Match<UUID> onCreate(PvPEvent pvpEvent, List<Integer> announcements) {
         this.pvpEvent = pvpEvent;
 
         this.state = MatchState.QUEUE;
@@ -128,7 +128,7 @@ public abstract class AbstractMatch implements Match<UUID> {
 
         int arenaQueueTimes = Math.max(arena.getQueueCountdown(), 10);
 
-        this.task = syncTaskFactory(arenaQueueTimes, modulo,
+        this.task = syncTaskFactory(arenaQueueTimes, announcements,
                 times -> {
                     String text = Settings.IMP.MESSAGE.COUNTDOWN_QUEUE
                             .replace("{second}", String.valueOf(times))
@@ -166,8 +166,7 @@ public abstract class AbstractMatch implements Match<UUID> {
             BukkitHelper.broadcast(text);
             nextRound();
         } else {
-            int modulo = Math.max(Settings.IMP.COUNTDOWN.BASE_START_MODULO, 1);
-            this.task = syncTaskFactory(cnfTimes, modulo, times -> {
+            this.task = syncTaskFactory(cnfTimes, Settings.IMP.COUNTDOWN.BASE_START_ANNOUNCE, times -> {
                 String text = Settings.IMP.MESSAGE.COUNTDOWN_START
                         .replace("{second}", String.valueOf(times))
                         .replace("{present}", present)
@@ -191,18 +190,18 @@ public abstract class AbstractMatch implements Match<UUID> {
         this.matchListener.unload();
     }
 
-    protected BukkitTask syncTaskFactory(final long times, final long countdownModulo, Consumer<Long> counter, Runnable executor) {
+    protected BukkitTask syncTaskFactory(final int times, final List<Integer> announcements, Consumer<Integer> counter, Runnable executor) {
         return new BukkitRunnable() {
 
             private long lastTransaction = 0;
-            private long currentTimes = times;
+            private int currentTimes = times;
 
             @Override
             public void run() {
                 long tick = System.currentTimeMillis();
                 if (tick - this.lastTransaction >= (2 << 9)) {
                     this.lastTransaction = tick;
-                    if (currentTimes % countdownModulo == 0) {
+                    if (announcements.contains(currentTimes)) {
                         counter.accept(currentTimes);
                     }
                     currentTimes--;
