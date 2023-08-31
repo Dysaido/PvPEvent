@@ -27,7 +27,7 @@ public interface Manager<I, T> extends Function<I, T> {
 
     @FunctionalInterface
     interface Operation<T> {
-        void perform(T user);
+        void perform(T t);
     }
 
     class Action<T, M> {
