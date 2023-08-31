@@ -11,7 +11,7 @@ public enum CommandInfo {
     TOPLIST(false, "toplist", "/event toplist", "See top wins"),
 
     VIEW(true, "view", "/event view [gui(alpha)]", "Access a graphical user interface for editing"),
-    AUTOSET(true, "autoset", "/event autoset(alpha) [name] [arena] HH:MM [command]",
+    AUTOSET(true, "autoset", "/event autoset [name] [arena] HH:MM or h:mm a",
             "Automatically schedule an event with time and optional command"),
     HOST(true, "host", "/event host [arena] [broadcast]", "Initiate a saved event"),
     STOP(true, "stop", "/event stop", "Terminate the ongoing event"),
