@@ -143,7 +143,7 @@ public class PvPEventPlugin implements PvPEvent {
                     if (!(sender instanceof Player)) return false;
                     Player player = (Player) sender;
                     if (isActiveMatch()) {
-                        mainMatch.leave(player.getUniqueId());
+                        mainMatch.spectate(player.getUniqueId());
                     } else {
                         sender.sendMessage(BukkitHelper.colorize(Settings.IMP.COMMAND.DEFAULT_NO_EVENT));
                     }
