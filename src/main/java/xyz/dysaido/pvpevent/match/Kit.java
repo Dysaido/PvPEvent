@@ -27,7 +27,9 @@ public class Kit<T extends Player> implements Consumer<T> {
     @Override
     public void accept(T player) {
         Preconditions.checkArgument(player != null, "Player cannot be null");
-        player.getInventory().setContents(contents);
+        if (contents != null) {
+            player.getInventory().setContents(contents);
+        }
         player.getInventory().setArmorContents(armor);
         player.updateInventory();
     }

@@ -1,6 +1,7 @@
 package xyz.dysaido.pvpevent;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import xyz.dysaido.pvpevent.command.CommandTask;
 import xyz.dysaido.pvpevent.model.AutoRun;
@@ -35,7 +36,7 @@ public class AutosetCommand implements CommandTask<CommandSender> {
             run.setDate(parseTime(dateC).getTime());
             manager.getSerializer().append(run);
         });*/
-
+        sender.sendMessage(ChatColor.GOLD + "BETA");
         return false;
     }
 

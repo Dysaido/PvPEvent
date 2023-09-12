@@ -1,17 +1,13 @@
 package xyz.dysaido.pvpevent.match;
 
-import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
-import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.scoreboard.Scoreboard;
 import xyz.dysaido.pvpevent.api.pagination.ItemBuilder;
 import xyz.dysaido.pvpevent.api.pagination.Materials;
 import xyz.dysaido.pvpevent.config.Settings;
-import xyz.dysaido.pvpevent.scoreboard.PvPEventSidebar;
-import xyz.dysaido.pvpevent.scoreboard.impl.MatchSidebar;
 
 import java.util.Collection;
 import java.util.UUID;
@@ -99,15 +95,6 @@ public class Participant {
         originalInventory.accept(player);
         player.setScoreboard(originalScoreboard);
     }
-
-    public void freeze() {
-        player.setWalkSpeed(0f);
-    }
-
-    public void unfreeze() {
-        player.setWalkSpeed(0.2f);
-    }
-
     public Player getPlayer() {
         return player;
     }
@@ -162,5 +149,6 @@ public class Participant {
 
     public void setFreeze(boolean freeze) {
         this.freeze = freeze;
+        this.player.setWalkSpeed(freeze ? 0f : 0.2f);
     }
 }
