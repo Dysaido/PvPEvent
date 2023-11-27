@@ -21,8 +21,6 @@ public class Participant {
     private final Scoreboard originalScoreboard;
     private final Location originalLocation;
     private final Collection<PotionEffect> originalPotionEffects;
-    private final double originalHealth;
-    private final int originalFoodLevel;
     private final int originalFireTicks;
     private final float originalWalkSpeed;
     private final GameMode originalGamemode;
@@ -39,8 +37,6 @@ public class Participant {
         this.originalScoreboard = player.getScoreboard();
         this.originalLocation = player.getLocation();
         this.originalPotionEffects = player.getActivePotionEffects();
-        this.originalHealth = player.getHealth();
-        this.originalFoodLevel = player.getFoodLevel();
         this.originalFireTicks = player.getFireTicks();
         this.originalWalkSpeed = player.getWalkSpeed();
         this.originalGamemode = player.getGameMode();
@@ -78,9 +74,10 @@ public class Participant {
     }
 
     public void setOriginalsOfPlayer() {
+        originalInventory.accept(player);
         player.setMaximumNoDamageTicks(originalNoDamageTicks);
-        player.setHealth(originalHealth);
-        player.setFoodLevel(originalFoodLevel);
+        player.setHealth(20.0);
+        player.setFoodLevel(20);
         player.setFireTicks(originalFireTicks);
         player.setWalkSpeed(originalWalkSpeed);
         player.setLevel(originalLevel);
@@ -91,8 +88,6 @@ public class Participant {
         originalPotionEffects.forEach(player::addPotionEffect);
 
         player.teleport(originalLocation);
-
-        originalInventory.accept(player);
         player.setScoreboard(originalScoreboard);
     }
     public Player getPlayer() {
@@ -111,12 +106,14 @@ public class Participant {
         return originalPotionEffects;
     }
 
+    @Deprecated
     public double getOriginalHealth() {
-        return originalHealth;
+        return 20;
     }
 
+    @Deprecated
     public int getOriginalFoodLevel() {
-        return originalFoodLevel;
+        return 20;
     }
 
     public int getOriginalFireTicks() {
