@@ -62,7 +62,7 @@ public enum Materials {
 
     private static Material get(String name) {
         Material material;
-        if (ServerVersion.runtimeVersion().afterEquals(ServerVersion.v1_13_R1) && (material = Material.getMaterial("LEGACY_" + name)) != null) {
+        if (ServerVersion.runtimeVersion().after(ServerVersion.v1_8_R3) && (material = Material.getMaterial("LEGACY_" + name)) != null) {
             return material;
         }
         return Material.getMaterial(name);
