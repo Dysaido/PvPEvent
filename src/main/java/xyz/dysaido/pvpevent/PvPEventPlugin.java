@@ -49,7 +49,6 @@ import xyz.dysaido.pvpevent.model.manager.UserManager;
 import xyz.dysaido.pvpevent.util.BukkitHelper;
 import xyz.dysaido.pvpevent.util.CustomLocation;
 import xyz.dysaido.pvpevent.util.NumericParser;
-import xyz.dysaido.pvpevent.util.YamlStorage;
 
 import java.io.File;
 import java.util.*;
