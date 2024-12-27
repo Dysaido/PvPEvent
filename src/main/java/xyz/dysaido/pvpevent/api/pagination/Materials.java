@@ -26,7 +26,6 @@
 package xyz.dysaido.pvpevent.api.pagination;
 
 import org.bukkit.Material;
-import xyz.dysaido.pvpevent.util.ServerVersion;
 
 import java.util.Arrays;
 import java.util.Objects;
@@ -62,7 +61,7 @@ public enum Materials {
 
     private static Material get(String name) {
         Material material;
-        if (ServerVersion.runtimeVersion().after(ServerVersion.v1_8_R3) && (material = Material.getMaterial("LEGACY_" + name)) != null) {
+        if ((material = Material.getMaterial("LEGACY_" + name)) != null) {
             return material;
         }
         return Material.getMaterial(name);
