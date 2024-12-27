@@ -60,7 +60,7 @@ public class AutosetSerializer {
                 runs.add(run);
             } catch (Exception e) {
                 Bukkit.getLogger().log(Level.WARNING, "Error:", e);
-                Logger.warning(TAG, String.format("Cannot read %s from autosets.yml. Suppose to delete this section from yaml file!", sectionName));
+                Logger.warn(TAG, String.format("Cannot read %s from autosets.yml. Suppose to delete this section from yaml file!", sectionName));
             }
         }
         return runs;

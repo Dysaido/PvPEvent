@@ -38,7 +38,7 @@ public final class Logger {
 
     private Logger() {}
 
-    public static void warning(String tag, String message) {
+    public static void warn(String tag, String message) {
         println(WARNING, tag, message);
     }
 
@@ -46,7 +46,7 @@ public final class Logger {
         println(ERROR, tag, message);
     }
 
-    public static void information(String tag, String message) {
+    public static void info(String tag, String message) {
         println(INFORMATION, tag, message);
     }
 

@@ -70,7 +70,7 @@ public class KitSerializer {
                     } catch (Throwable e2) {
                         e.addSuppressed(e2);
                         Bukkit.getLogger().log(Level.WARNING, "Error:", e);
-                        Logger.warning(TAG, String.format("Cannot read %s from kits.yml. Suppose to delete this section from yaml file!", sectionName));
+                        Logger.warn(TAG, String.format("Cannot read %s from kits.yml. Suppose to delete this section from yaml file!", sectionName));
                     }
                 }
             }

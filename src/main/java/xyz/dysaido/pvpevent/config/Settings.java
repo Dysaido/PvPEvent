@@ -58,7 +58,7 @@ public class Settings extends Config {
     public GUI GUI;
 
     public void reload(File file) {
-        Logger.information("Settings", "Reload all field from settings configuration class and load from parent file");
+        Logger.info("Settings", "Reload all field from settings configuration class and load from parent file");
         load(file);
         save(file);
     }

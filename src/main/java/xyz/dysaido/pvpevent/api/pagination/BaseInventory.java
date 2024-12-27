@@ -94,7 +94,7 @@ public class BaseInventory implements InventoryHolder {
     public void setButton(int coordinate, Button button) {
         Objects.requireNonNull(button);
         if (coordinate > Math.min(coordinate, Math.min(row, 6) * 9 - 1)) {
-            Logger.warning(TAG, "Overflow prevented");
+            Logger.warn(TAG, "Overflow prevented");
             return;
         }
         setItem(coordinate, button.getItem());
@@ -104,7 +104,7 @@ public class BaseInventory implements InventoryHolder {
     public void setItem(int coordinate, ItemBuilder item) {
         Objects.requireNonNull(item);
         if (coordinate > Math.min(coordinate, Math.min(row, 6) * 9 - 1)) {
-            Logger.warning(TAG, "Overflow prevented");
+            Logger.warn(TAG, "Overflow prevented");
             return;
         }
         this.inventory.setItem(coordinate, item.build());

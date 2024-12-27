@@ -39,32 +39,32 @@ public final class PvPEventLoader extends JavaPlugin {
     @Override
     public void onEnable() {
         if (this.event != null) {
-            Logger.debug(TAG, String.format("Call enable method from %s", PvPEventPlugin.class));
+            Logger.debug(TAG, "enable");
             metrics = new Metrics(this, 19693);
 
             // Optional: Add custom charts
             this.event.enable();
         } else {
-            Logger.error(TAG, "PvPEvent was unloaded by unknown reason, please restart the server or use plugman!");
+            Logger.error(TAG, "Plugin is null, unload this plugin from the server and load it again!");
         }
     }
 
     @Override
     public void onDisable() {
-        Logger.debug(TAG, String.format("Call disable method from %s", PvPEventPlugin.class));
+        Logger.debug(TAG, "disable");
         if (this.event != null) {
             this.event.disable();
-            this.event = null;
         }
         if (this.metrics != null) {
             this.metrics.shutdown();
         }
-
+        this.event = null;
+        this.metrics = null;
     }
 
     @Override
     public void onLoad() {
-        Logger.debug(TAG, "Initialize...");
+        Logger.info(TAG, "Initialize plugin");
         this.event = new PvPEventPlugin(this);
     }
 

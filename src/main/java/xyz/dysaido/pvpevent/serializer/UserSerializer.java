@@ -61,7 +61,7 @@ public class UserSerializer {
                 users.add(user);
             } catch (Exception e) {
                 Bukkit.getLogger().log(Level.WARNING, "Error:", e);
-                Logger.warning(TAG, String.format("Cannot read %s from users.yml. Suppose to delete this section from yaml file!", sectionName));
+                Logger.warn(TAG, String.format("Cannot read %s from users.yml. Suppose to delete this section from yaml file!", sectionName));
             }
         }
         return users;
