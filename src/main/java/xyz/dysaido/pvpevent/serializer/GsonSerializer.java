@@ -30,6 +30,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import xyz.dysaido.pvpevent.util.Logger;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -39,6 +40,7 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 public abstract class GsonSerializer<T> {
+    private static final String TAG = "GsonSerializer";
 
     private static final Gson PRETTY_PRINTING = new GsonBuilder().disableHtmlEscaping().setPrettyPrinting().create();
 
@@ -79,7 +81,7 @@ public abstract class GsonSerializer<T> {
             }
 
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            Logger.debug(TAG, String.format("File (%s) not found", this.file.getName()));
         } catch (IOException e) {
             e.printStackTrace();
         }
