@@ -77,8 +77,6 @@ public class PvPEventPlugin implements PvPEvent {
 
     @Override
     public void enable() {
-        Settings.IMP.reload(configFile);
-
         parentCommand.load();
         connectionListener.load();
 

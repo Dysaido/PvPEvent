@@ -28,6 +28,7 @@ package xyz.dysaido.pvpevent;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.plugin.java.JavaPlugin;
 import xyz.dysaido.pvpevent.api.PvPEvent;
+import xyz.dysaido.pvpevent.config.Settings;
 import xyz.dysaido.pvpevent.util.Logger;
 
 public final class PvPEventLoader extends JavaPlugin {
@@ -39,6 +40,7 @@ public final class PvPEventLoader extends JavaPlugin {
     @Override
     public void onEnable() {
         if (this.event != null) {
+            Settings.IMP.reload(this.event.getConfigFile());
             Logger.debug(TAG, "enable");
             metrics = new Metrics(this, 19693);
 
