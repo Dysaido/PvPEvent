@@ -43,7 +43,6 @@ import xyz.dysaido.pvpevent.match.impl.DuelMatch;
 import xyz.dysaido.pvpevent.model.Arena;
 import xyz.dysaido.pvpevent.model.User;
 import xyz.dysaido.pvpevent.model.manager.ArenaManager;
-import xyz.dysaido.pvpevent.model.manager.AutosetManager;
 import xyz.dysaido.pvpevent.model.manager.KitManager;
 import xyz.dysaido.pvpevent.model.manager.UserManager;
 import xyz.dysaido.pvpevent.util.BukkitHelper;
@@ -64,7 +63,6 @@ public class PvPEventPlugin implements PvPEvent {
     private final ArenaManager arenaManager;
     private final KitManager kitManager;
     private final UserManager userManager;
-    private final AutosetManager autosetManager;
     private Match<UUID> mainMatch;
 
     public PvPEventPlugin(JavaPlugin plugin) {
@@ -75,7 +73,6 @@ public class PvPEventPlugin implements PvPEvent {
         this.arenaManager = new ArenaManager(this);
         this.kitManager = new KitManager(this);
         this.userManager = new UserManager(this);
-        this.autosetManager = new AutosetManager(this);
     }
 
     @Override
@@ -88,7 +85,6 @@ public class PvPEventPlugin implements PvPEvent {
         arenaManager.load();
         kitManager.load();
         userManager.load();
-        autosetManager.load();
 
         registerCommands();
     }
@@ -215,9 +211,6 @@ public class PvPEventPlugin implements PvPEvent {
                     });
                     return true;
                 })
-                .setPerm(Settings.IMP.PERMISSION.COMMAND_ADMIN);
-        parentCommand.register(CommandInfo.AUTOSET, SubCommand::new)
-                .setCommand(new AutosetCommand(this))
                 .setPerm(Settings.IMP.PERMISSION.COMMAND_ADMIN);
         parentCommand.register(CommandInfo.HOST, SubCommand::new)
                 .setCommand((sender, args) -> {
@@ -579,7 +572,6 @@ public class PvPEventPlugin implements PvPEvent {
         connectionListener.unload();
         arenaManager.unload();
         kitManager.unload();
-        autosetManager.unload();
     }
 
     @Override
@@ -593,7 +585,6 @@ public class PvPEventPlugin implements PvPEvent {
         Settings.IMP.reload(configFile);
         kitManager.getSerializer().getStorage().reload();
         userManager.getSerializer().getStorage().reload();
-        autosetManager.getSerializer().getStorage().reload();
     }
 
     @Override
@@ -646,8 +637,4 @@ public class PvPEventPlugin implements PvPEvent {
         return userManager;
     }
 
-    @Override
-    public AutosetManager getAutosetManager() {
-        return autosetManager;
-    }
 }

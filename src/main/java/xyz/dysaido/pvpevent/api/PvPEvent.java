@@ -30,7 +30,6 @@ import xyz.dysaido.pvpevent.api.model.Match;
 import xyz.dysaido.pvpevent.command.ParentCommand;
 import xyz.dysaido.pvpevent.model.User;
 import xyz.dysaido.pvpevent.model.manager.ArenaManager;
-import xyz.dysaido.pvpevent.model.manager.AutosetManager;
 import xyz.dysaido.pvpevent.model.manager.KitManager;
 import xyz.dysaido.pvpevent.model.manager.UserManager;
 import xyz.dysaido.pvpevent.util.YamlStorage;
@@ -74,5 +73,4 @@ public interface PvPEvent {
 
     Map<String, User> getTop10Wins();
 
-    AutosetManager getAutosetManager();
 }
