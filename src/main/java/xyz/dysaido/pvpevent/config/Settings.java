@@ -46,6 +46,8 @@ public class Settings extends Config {
     public String VERSION = "1.2.9";
     @Comment("If you want to see some information from this plugin, turn on this!")
     public boolean DEBUG = false;
+    @Comment("This attr changes the metrics status, if true this plugin will appear on bstats, false it won't")
+    public boolean METRICS = true;
     @Create
     public PERMISSION PERMISSION;
     @Create

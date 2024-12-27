@@ -42,7 +42,12 @@ public final class PvPEventLoader extends JavaPlugin {
         if (this.event != null) {
             Settings.IMP.reload(this.event.getConfigFile());
             Logger.debug(TAG, "enable");
-            metrics = new Metrics(this, 19693);
+            if (Settings.IMP.METRICS) {
+                Logger.debug(TAG, "metrics active");
+                metrics = new Metrics(this, 19693);
+            } else {
+                Logger.debug(TAG, "metrics inactive");
+            }
 
             // Optional: Add custom charts
             this.event.enable();
