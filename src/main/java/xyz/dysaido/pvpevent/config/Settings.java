@@ -25,12 +25,15 @@
 
 package xyz.dysaido.pvpevent.config;
 
+import xyz.dysaido.pvpevent.PvPEventLoader;
 import xyz.dysaido.pvpevent.api.config.Config;
 import xyz.dysaido.pvpevent.util.Logger;
 
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
+
+import org.bukkit.plugin.java.JavaPlugin;
 
 public class Settings extends Config {
 
@@ -43,7 +46,7 @@ public class Settings extends Config {
             "@Github: https://github.com/Dysaido/PvPEvent"
     })
     @Final
-    public String VERSION = "1.2.9";
+    public String VERSION = JavaPlugin.getPlugin(PvPEventLoader.class).getDescription().getVersion();
     @Comment("If you want to see some information from this plugin, turn on this!")
     public boolean DEBUG = false;
     @Comment("This attr changes the metrics status, if true this plugin will appear on bstats, false it won't")
