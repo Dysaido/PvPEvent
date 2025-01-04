@@ -11,9 +11,8 @@
 
     <name>PvPEvent</name>
 
-    <description>This is a game plugin for your server. You can make some arena and in those the players play an 1v1
-        game.
-    </description>
+    <description>Simple PvP event plugin.</description>
+    
     <properties>
         <java.version>1.8</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

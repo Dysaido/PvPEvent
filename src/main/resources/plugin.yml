@@ -5,7 +5,7 @@ main: xyz.dysaido.pvpevent.PvPEventLoader
 load: POSTWORLD
 author: Dysaido
 softdepend: [PlaceholderAPI]
-description: This is a 1v1 game plugin for your server. You can create arenas where players can engage in 1v1 matches.
+description: "${project.description}"
 
 # Remove outdated alert
 api-version: 1.13
