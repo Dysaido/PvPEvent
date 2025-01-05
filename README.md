@@ -1,7 +1,5 @@
 # PvPEvent
 
-PvPEvent Plugin Announcement
-
 This project started as a hobby to enhance my own Minecraft server development. Unable to find a solution that truly satisfied me on the internet, I decided to create and share PvPEvent - a powerful plugin designed to organize thrilling PVP events on Minecraft servers!
 
 ## Description
@@ -10,17 +8,9 @@ PvPEvent is a compact yet powerful add-on that allows you to host regular PVP ev
 
 ## Key Features
 
-- User-friendly and easy to install
 - Offers flexible configuration options
-- Supports the creation of custom arenas
-- Customize arena capacities and countdown types per arena
-- Automatic restarts and scheduling options (please note that these features are currently not available)
-
-## Installation Guide
-
-1. Download the PvPEvent plugin file from the [SpigotMC website](https://www.spigotmc.org/resources/pvpevent.97786/).
-2. Copy the plugin file into your server's "plugins" folder.
-3. Restart the server to successfully load the plugin.
+- Supports the creation of custom arenas and kits
+- Customize arena parameters (capacities, countdowns, kits/custom inventory and combo types per arena)
 
 ## Contribution
 
@@ -34,3 +24,7 @@ This project is licensed under the [MIT License](LICENSE).
 If you have any further questions regarding the plugin's usage, please feel free to submit a ticket or contact us privately (response times may vary).
 
 We hope you find this plugin invaluable for your server's PVP excitement!
+
+## Websites
+- Jar file from [SpigotMC](https://www.spigotmc.org/resources/pvpevent.97786/).
+- Plugin metrics [Statistics](https://bstats.org/plugin/bukkit/PvPEvent/19693).
