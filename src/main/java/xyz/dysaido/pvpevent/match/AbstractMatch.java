@@ -26,6 +26,8 @@
 package xyz.dysaido.pvpevent.match;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
@@ -40,6 +42,7 @@ import xyz.dysaido.pvpevent.config.Settings;
 import xyz.dysaido.pvpevent.listener.MatchListener;
 import xyz.dysaido.pvpevent.model.Arena;
 import xyz.dysaido.pvpevent.util.BukkitHelper;
+import xyz.dysaido.pvpevent.util.Logger;
 
 import java.util.List;
 import java.util.Map;
@@ -90,8 +93,8 @@ public abstract class AbstractMatch implements Match<UUID> {
                 if (!hasParticipant(identifier)) {
                     Participant participant = new Participant(player, this);
                     Bukkit.getPluginManager().callEvent(new MatchJoinEvent(this, participant, ParticipantStatus.QUEUE));
-                    participant.resetThingsOfPlayer();
                     participant.getPlayer().teleport(arena.getLobby().asBukkit(true));
+                    participant.resetThingsOfPlayer();
 
                     participantsByUUD.put(identifier, participant);
                     statusByUUID.put(identifier, ParticipantStatus.QUEUE);
@@ -153,6 +156,23 @@ public abstract class AbstractMatch implements Match<UUID> {
 
         int arenaQueueTimes = Math.max(arena.getQueueCountdown(), 10);
 
+        Location lobby = this.arena.getLobby().asBukkit(true);
+        World world = lobby.getWorld();
+        int cx = floor(lobby.getX()) >> 4; // = lobby.getBlockX() >> 4;
+        int cz = floor(lobby.getZ()) >> 4; // = lobby.getBlockZ() >> 4;
+        Logger.debug("AbstractMatch", String.format("ChunkPos(x=%d, z=%d) - isLoaded:%b", cx, cz, world.isChunkLoaded(cx, cz)));
+        /*if (!world.isChunkLoaded(cx, cz)) {
+            //  /\
+            //  ||
+            // shit 
+            for (int dx = -1; dx <= 1; ++dx) {
+                for (int dz = -1; dz <= 1; ++dz) {
+                    world.getChunkAt(cx + dx, cz + dz);
+                    Logger.debug("AbstractMatch", String.format("ChunkPreloader(x=%d, z=%d)", cx + dx, cz + dz));
+                }
+            }
+        }*/
+        
         this.task = syncTaskFactory(arenaQueueTimes, announcements,
                 times -> {
                     String text = Settings.IMP.MESSAGE.COUNTDOWN_QUEUE
@@ -164,6 +184,11 @@ public abstract class AbstractMatch implements Match<UUID> {
                 }, this::onStartTask);
 
         return this;
+    }
+    
+    public static int floor(double num) {
+        int floor = (int) num;
+        return floor == num ? floor : floor - (int) (Double.doubleToRawLongBits(num) >>> 63);
     }
 
     @Override

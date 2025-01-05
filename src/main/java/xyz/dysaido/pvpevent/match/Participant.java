@@ -28,6 +28,7 @@ package xyz.dysaido.pvpevent.match;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.scoreboard.Scoreboard;
 import xyz.dysaido.pvpevent.api.pagination.ItemBuilder;
@@ -36,6 +37,7 @@ import xyz.dysaido.pvpevent.config.Settings;
 
 import java.util.Collection;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 public class Participant {
 
@@ -88,18 +90,28 @@ public class Participant {
         player.setExp(0.0F);
         player.setGameMode(GameMode.SURVIVAL);
         player.getActivePotionEffects().stream().map(PotionEffect::getType).forEach(player::removePotionEffect);
-        player.getInventory().setHeldItemSlot(0);
-        player.getInventory().clear();
-        player.getInventory().setArmorContents(null);
+        
         Settings.GUI guiSets = Settings.IMP.GUI;
         ItemBuilder item = new ItemBuilder(Materials.CLOCK.asBukkit()).displayName(guiSets.QUEUE_LEAVE_NAME);
         int slot = guiSets.QUEUE_LEAVE_SLOTBAR > 0 ? Math.min(8, guiSets.QUEUE_LEAVE_SLOTBAR) : 0;
-        player.getInventory().setItem(slot, item.build());
+        clearInv(inv -> {
+            inv.setItem(slot, item.build());
+        });
+    }
+
+    public void clearInv(Consumer<Inventory> beforUpdate) {
+        player.getInventory().setHeldItemSlot(0);
+        player.getInventory().clear();
+        player.getInventory().setArmorContents(null);
+
+        if (beforUpdate != null) beforUpdate.accept(player.getInventory());
+        
         player.updateInventory();
     }
 
     public void setOriginalsOfPlayer() {
-        originalInventory.accept(player);
+        clearInv(null);
+        player.teleport(originalLocation);
         player.setMaximumNoDamageTicks(originalNoDamageTicks);
         player.setHealth(20.0);
         player.setFoodLevel(20);
@@ -112,8 +124,8 @@ public class Participant {
         player.getActivePotionEffects().stream().map(PotionEffect::getType).forEach(player::removePotionEffect);
         originalPotionEffects.forEach(player::addPotionEffect);
 
-        player.teleport(originalLocation);
-        player.setScoreboard(originalScoreboard);
+        //player.setScoreboard(originalScoreboard);
+        originalInventory.accept(player);
     }
     public Player getPlayer() {
         return player;
