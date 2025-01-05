@@ -29,6 +29,7 @@ import org.bukkit.Material;
 
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.Optional;
 
 public enum Materials {
 
@@ -42,28 +43,23 @@ public enum Materials {
 
     private final Material material;
     Materials(String... array) {
-        Material material;
-        if (array.length == 0) {
-            material = findByName(name());
-        } else {
-            material = findByName(array);
-        }
-        this.material = material;
+        this.material = findFirstValid(array).orElse(Material.AIR);
     }
 
     public Material asBukkit() {
         return material;
     }
 
+    @Deprecated
     public static Material findByName(String... arrstring) {
         return Arrays.stream(arrstring).map(Materials::get).filter(Objects::nonNull).findFirst().orElse(null);
     }
 
+    public static Optional<Material> findFirstValid(String... arrstring) {
+        return Arrays.stream(arrstring).map(Materials::get).filter(Objects::nonNull).findFirst();
+    }
+
     private static Material get(String name) {
-        Material material;
-        if ((material = Material.getMaterial("LEGACY_" + name)) != null) {
-            return material;
-        }
         return Material.getMaterial(name);
     }
 
