@@ -1,11 +1,13 @@
 name: PvPEvent
-website: https://www.spigotmc.org/resources/pvpevent.97786/
-version: '${project.version}'
 main: xyz.dysaido.pvpevent.PvPEventLoader
-load: POSTWORLD
-author: Dysaido
-softdepend: [PlaceholderAPI]
-description: "${project.description}"
 
-# Remove outdated alert
+version: ${version}
+author: Dysaido
+load: POSTWORLD
+softdepend: [PlaceholderAPI]
+
+description: "Simple PvP event plugin."
+website: https://www.spigotmc.org/resources/pvpevent.97786/
+
+# Prevent Legacy Detect
 api-version: 1.13
