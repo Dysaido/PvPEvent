@@ -20,7 +20,7 @@ java {
 val artifactId: String by extra("PvPEvent")
 
 group = "xyz.dysaido"
-version = "1.2.11-dev"
+version = "1.2.11"
 
 repositories {
     mavenCentral() // public maven repo
